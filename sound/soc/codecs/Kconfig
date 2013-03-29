@@ -243,8 +243,8 @@ config SND_SOC_TLV320AIC26
 config SND_SOC_TVL320AIC32X4
 	tristate
 
-config SND_SOC_TLV320AIC3X
-	tristate
+config SND_SOC_TLV320AIC3X	
+	tristate "Support for TI TLV320aix3x codecs"
 
 config SND_SOC_TLV320DAC33
 	tristate
