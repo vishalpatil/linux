@@ -1,37 +1,35 @@
 /*
- * Copyright (C) 2011-2012 Freescale Semiconductor, Inc. All Rights Reserved.
- */
-
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
-
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
-
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *  isl29023.c - Linux kernel modules for ambient light sensor
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/slab.h>
 #include <linux/i2c.h>
-#include <linux/input.h>
-#include <linux/interrupt.h>
-#include <linux/irq.h>
 #include <linux/mutex.h>
-#include <linux/delay.h>
-#include <linux/isl29023.h>
-#include <linux/fsl_devices.h>
+#include <linux/input.h>
+#include <linux/wakelock.h>
 
 #define ISL29023_DRV_NAME	"isl29023"
-#define DRIVER_VERSION		"1.0"
+#define DRIVER_VERSION		"0.9"
+
+/*
+ * Defines
+ */
 
 #define ISL29023_COMMAND1		0x00
 #define ISL29023_MODE_SHIFT		(5)
@@ -54,733 +52,399 @@
 #define ISL29023_REG_IRQ_TH_HI_LSB	0x06
 #define ISL29023_REG_IRQ_TH_HI_MSB	0x07
 
-#define ISL29023_NUM_CACHABLE_REGS	8
-#define DEF_RANGE			2
+
+#if 1
+#define ISL29023_POWER_DOWN		0x00
+#define ISL29023_POWER_UP		0x03
+#define ISL29023_STANDARD_RANGE		0x18
+#define ISL29023_EXTENDED_RANGE		0x1d
+#define ISL29023_READ_ADC0		0x43
+#define ISL29023_READ_ADC1		0x83
+#endif
+
+/* start time delay for light sensor in nano seconds */
+#define LIGHT_SENSOR_START_TIME_DELAY 50000000
+
+#define BUFFER_NUM	6
+
+#define isl29023_dbgmsg(str, args...) pr_debug("%s: " str, __func__, ##args)
+
+/*
+ * Structs
+ */
 
 struct isl29023_data {
 	struct i2c_client *client;
-	struct mutex lock;
-	struct input_dev *input;
-	struct work_struct work;
-	struct workqueue_struct *workqueue;
-	char phys[32];
-	u8 reg_cache[ISL29023_NUM_CACHABLE_REGS];
-	u8 mode_before_suspend;
-	u8 mode_before_interrupt;
-	u16 rext;
-};
+	struct input_dev *light_input_dev;
+	struct mutex update_lock;
+	struct workqueue_struct *wq;
+	struct wake_lock prx_wake_lock;
+	struct work_struct work_light;
+	struct hrtimer timer;
+	ktime_t light_poll_delay;
+	int lux_value_buf[BUFFER_NUM];
+	int index_count;
+	bool buf_initialized;
 
-static int gain_range[] = {
-	1000, 4000, 16000, 64000
+	unsigned int power_state:1;
+	unsigned int operating_mode:1;
+	unsigned int enable:1;
 };
 
 /*
- * register access helpers
+ * Global data
  */
-static int __isl29023_read_reg(struct i2c_client *client,
-			       u32 reg, u8 mask, u8 shift)
-{
-	struct isl29023_data *data = i2c_get_clientdata(client);
-	return (data->reg_cache[reg] & mask) >> shift;
-}
 
-static int __isl29023_write_reg(struct i2c_client *client,
-				u32 reg, u8 mask, u8 shift, u8 val)
-{
-	struct isl29023_data *data = i2c_get_clientdata(client);
-	int ret = 0;
-	u8 tmp;
+static int isl29023_debug = 0;
 
-	if (reg >= ISL29023_NUM_CACHABLE_REGS)
-		return -EINVAL;
-
-	mutex_lock(&data->lock);
-
-	tmp = data->reg_cache[reg];
-	tmp &= ~mask;
-	tmp |= val << shift;
-
-	ret = i2c_smbus_write_byte_data(client, reg, tmp);
-	if (!ret)
-		data->reg_cache[reg] = tmp;
-
-	mutex_unlock(&data->lock);
-	return ret;
-}
+static const u8 ISL29023_MODE_RANGE[2] = {
+	ISL29023_STANDARD_RANGE, ISL29023_EXTENDED_RANGE,
+};
 
 /*
- * internally used functions
+ * Management functions
  */
 
-/* interrupt persists */
-static int isl29023_get_int_persists(struct i2c_client *client)
-{
-	return __isl29023_read_reg(client, ISL29023_COMMAND1,
-		ISL29023_INT_PERSISTS_MASK, ISL29023_INT_PERSISTS_SHIFT);
-}
-
-static int isl29023_set_int_persists(struct i2c_client *client,
-				int int_persists)
-{
-	return __isl29023_write_reg(client, ISL29023_COMMAND1,
-		ISL29023_INT_PERSISTS_MASK, ISL29023_INT_PERSISTS_SHIFT,
-		int_persists);
-}
-
-/* interrupt flag */
-static int isl29023_get_int_flag(struct i2c_client *client)
-{
-	return __isl29023_read_reg(client, ISL29023_COMMAND1,
-		ISL29023_INT_FLAG_MASK, ISL29023_INT_FLAG_SHIFT);
-}
-
-static int isl29023_set_int_flag(struct i2c_client *client, int flag)
-{
-	return __isl29023_write_reg(client, ISL29023_COMMAND1,
-		ISL29023_INT_FLAG_MASK, ISL29023_INT_FLAG_SHIFT, flag);
-}
-
-/* interrupt lt */
-static int isl29023_get_int_lt(struct i2c_client *client)
+/*
+static int isl29023_set_operating_mode(struct i2c_client *client, int mode)
 {
 	struct isl29023_data *data = i2c_get_clientdata(client);
-	int lsb, msb, lt;
 
-	mutex_lock(&data->lock);
-	lsb = i2c_smbus_read_byte_data(client, ISL29023_REG_IRQ_TH_LO_LSB);
+	int ret = i2c_smbus_write_byte(client, ISL29023_MODE_RANGE[mode]);
 
-	if (lsb < 0) {
-		mutex_unlock(&data->lock);
-		return lsb;
-	}
-
-	msb = i2c_smbus_read_byte_data(client, ISL29023_REG_IRQ_TH_LO_MSB);
-	mutex_unlock(&data->lock);
-
-	if (msb < 0)
-		return msb;
-
-	lt = ((msb << 8) | lsb);
-
-	return lt;
-}
-
-static int isl29023_set_int_lt(struct i2c_client *client, int lt)
-{
-	int ret = 0;
-	struct isl29023_data *data = i2c_get_clientdata(client);
-
-	mutex_lock(&data->lock);
-	ret = i2c_smbus_write_byte_data(client, ISL29023_REG_IRQ_TH_LO_LSB,
-					lt & 0xff);
-	if (ret < 0) {
-		mutex_unlock(&data->lock);
-		return ret;
-	}
-
-	ret = i2c_smbus_write_byte_data(client, ISL29023_REG_IRQ_TH_LO_MSB,
-					(lt >> 8) & 0xff);
-	if (ret < 0) {
-		mutex_unlock(&data->lock);
-		return ret;
-	}
-
-	data->reg_cache[ISL29023_REG_IRQ_TH_LO_MSB] = (lt >> 8) & 0xff;
-	data->reg_cache[ISL29023_REG_IRQ_TH_LO_LSB] = lt & 0xff;
-	mutex_unlock(&data->lock);
+	data->operating_mode = mode;
 
 	return ret;
 }
+*/
 
-/* interrupt ht */
-static int isl29023_get_int_ht(struct i2c_client *client)
-{
-	struct isl29023_data *data = i2c_get_clientdata(client);
-	int lsb, msb, ht;
-
-	mutex_lock(&data->lock);
-	lsb = i2c_smbus_read_byte_data(client, ISL29023_REG_IRQ_TH_HI_LSB);
-
-	if (lsb < 0) {
-		mutex_unlock(&data->lock);
-		return lsb;
-	}
-
-	msb = i2c_smbus_read_byte_data(client, ISL29023_REG_IRQ_TH_HI_MSB);
-	mutex_unlock(&data->lock);
-
-	if (msb < 0)
-		return msb;
-
-	ht = ((msb << 8) | lsb);
-
-	return ht;
-}
-
-static int isl29023_set_int_ht(struct i2c_client *client, int ht)
-{
-	int ret = 0;
-	struct isl29023_data *data = i2c_get_clientdata(client);
-
-	mutex_lock(&data->lock);
-	ret = i2c_smbus_write_byte_data(client, ISL29023_REG_IRQ_TH_HI_LSB,
-					ht & 0xff);
-	if (ret < 0) {
-		mutex_unlock(&data->lock);
-		return ret;
-	}
-
-	ret = i2c_smbus_write_byte_data(client, ISL29023_REG_IRQ_TH_HI_MSB,
-					(ht >> 8) & 0xff);
-	if (ret < 0) {
-		mutex_unlock(&data->lock);
-		return ret;
-	}
-
-	data->reg_cache[ISL29023_REG_IRQ_TH_HI_MSB] = (ht >> 8) & 0xff;
-	data->reg_cache[ISL29023_REG_IRQ_TH_HI_LSB] = ht & 0xff;
-	mutex_unlock(&data->lock);
-
-	return ret;
-}
-
-/* range */
-static int isl29023_get_range(struct i2c_client *client)
-{
-	return __isl29023_read_reg(client, ISL29023_COMMAND2,
-		ISL29023_RANGE_MASK, ISL29023_RANGE_SHIFT);
-}
-
-static int isl29023_set_range(struct i2c_client *client, int range)
-{
-	return __isl29023_write_reg(client, ISL29023_COMMAND2,
-		ISL29023_RANGE_MASK, ISL29023_RANGE_SHIFT, range);
-}
-
-/* resolution */
-static int isl29023_get_resolution(struct i2c_client *client)
-{
-	return __isl29023_read_reg(client, ISL29023_COMMAND2,
-		ISL29023_RES_MASK, ISL29023_RES_SHIFT);
-}
-
-static int isl29023_set_resolution(struct i2c_client *client, int res)
-{
-	return __isl29023_write_reg(client, ISL29023_COMMAND2,
-		ISL29023_RES_MASK, ISL29023_RES_SHIFT, res);
-}
-
-/* mode */
-static int isl29023_get_mode(struct i2c_client *client)
-{
-	return __isl29023_read_reg(client, ISL29023_COMMAND1,
-		ISL29023_MODE_MASK, ISL29023_MODE_SHIFT);
-}
-
-static int isl29023_set_mode(struct i2c_client *client, int mode)
-{
-	return __isl29023_write_reg(client, ISL29023_COMMAND1,
-		ISL29023_MODE_MASK, ISL29023_MODE_SHIFT, mode);
-}
-
-/* power_state */
 static int isl29023_set_power_state(struct i2c_client *client, int state)
 {
-	return __isl29023_write_reg(client, ISL29023_COMMAND1,
-				ISL29023_MODE_MASK, ISL29023_MODE_SHIFT,
-				state ?
-				ISL29023_ALS_ONCE_MODE : ISL29023_PD_MODE);
+	struct isl29023_data *data = i2c_get_clientdata(client);
+	int ret;
+
+	if (state == 0)
+		ret = i2c_smbus_write_byte_data(client, ISL29023_COMMAND1, 0x0);
+	else {
+		ret = i2c_smbus_write_byte_data(client, ISL29023_COMMAND1, 0xa0);
+#if 0
+		/* On power up we should reset operating mode also... */
+		isl29023_set_operating_mode(client, data->operating_mode);
+#endif
+	}
+
+	data->power_state = state;
+
+	return ret;
 }
 
-static int isl29023_get_power_state(struct i2c_client *client)
+#if 0
+static int isl29023_get_adc_value(struct i2c_client *client, u8 cmd)
 {
-	struct isl29023_data *data = i2c_get_clientdata(client);
-	u8 cmdreg = data->reg_cache[ISL29023_COMMAND1];
+	int ret;
 
-	if (cmdreg & ISL29023_MODE_MASK)
-		return 1;
+	ret = i2c_smbus_read_byte_data(client, cmd);
+	if (ret < 0)
+		return ret;
+	if (!(ret & 0x80))
+		return -EAGAIN;
+	return ret & 0x7f;	/* remove the "valid" bit */
+}
+#endif
+
+/*
+ * LUX calculation
+ */
+
+#define	ISL29023_MAX_LUX		1846
+
+static const u8 ratio_lut[] = {
+	100, 100, 100, 100, 100, 100, 100, 100,
+	100, 100, 100, 100, 100, 100, 99, 99,
+	99, 99, 99, 99, 99, 99, 99, 99,
+	99, 99, 99, 98, 98, 98, 98, 98,
+	98, 98, 97, 97, 97, 97, 97, 96,
+	96, 96, 96, 95, 95, 95, 94, 94,
+	93, 93, 93, 92, 92, 91, 91, 90,
+	89, 89, 88, 87, 87, 86, 85, 84,
+	83, 82, 81, 80, 79, 78, 77, 75,
+	74, 73, 71, 69, 68, 66, 64, 62,
+	60, 58, 56, 54, 52, 49, 47, 44,
+	42, 41, 40, 40, 39, 39, 38, 38,
+	37, 37, 37, 36, 36, 36, 35, 35,
+	35, 35, 34, 34, 34, 34, 33, 33,
+	33, 33, 32, 32, 32, 32, 32, 31,
+	31, 31, 31, 31, 30, 30, 30, 30,
+	30,
+};
+
+static const u16 count_lut[] = {
+	0, 1, 2, 3, 4, 5, 6, 7,
+	8, 9, 10, 11, 12, 13, 14, 15,
+	16, 18, 20, 22, 24, 26, 28, 30,
+	32, 34, 36, 38, 40, 42, 44, 46,
+	49, 53, 57, 61, 65, 69, 73, 77,
+	81, 85, 89, 93, 97, 101, 105, 109,
+	115, 123, 131, 139, 147, 155, 163, 171,
+	179, 187, 195, 203, 211, 219, 227, 235,
+	247, 263, 279, 295, 311, 327, 343, 359,
+	375, 391, 407, 423, 439, 455, 471, 487,
+	511, 543, 575, 607, 639, 671, 703, 735,
+	767, 799, 831, 863, 895, 927, 959, 991,
+	1039, 1103, 1167, 1231, 1295, 1359, 1423, 1487,
+	1551, 1615, 1679, 1743, 1807, 1871, 1935, 1999,
+	2095, 2223, 2351, 2479, 2607, 2735, 2863, 2991,
+	3119, 3247, 3375, 3503, 3631, 3759, 3887, 4015,
+};
+
+/*
+ * This function is described into Taos ISL29023 Designer's Notebook
+ * pages 2, 3.
+ */
+static int isl29023_calculate_lux(u8 ch0, u8 ch1)
+{
+	unsigned int lux;
+#if 1
+	u16 lux_data = ch1<<8;/*MSB*/
+	lux_data += ch0;/*plus with lsb*/
+
+	if(isl29023_debug)
+		printk("%s:lux reading is 0x%x\n",__FUNCTION__,lux_data);
+	/*
+	The EQ of transformation is:
+	Ecal = ( rangL / 2^n ) * lux_data;
+	which rangK is COMMAND-II [1:0] for 0x0=1000,0x1=4000,0x2=16000,0x3=64000
+	n is COMMAND-II [3:2] for 0x0=16,0x1=12,0x2=8,0x3=4
+	*/
+
+	lux = (lux_data * 1000 )/ 65536;
+	lux *= 4;
+	/*
+	0x01c2 == 6.86;
+	0x55bf == 334.9
+	*/
+
+	if(isl29023_debug)
+		printk("Sense light Ambient is %d\n", lux);
+
+#else
+	/* Look up count from channel values */
+	u16 c0 = count_lut[ch0];
+	u16 c1 = count_lut[ch1];
+
+	/*
+	 * Calculate ratio.
+	 * Note: the "128" is a scaling factor
+	 */
+	u8 r = 128;
+
+	/* Avoid division by 0 and count 1 cannot be greater than count 0 */
+	if (c1 <= c0)
+		if (c0) {
+			r = c1 * 128 / c0;
+
+			/* Calculate LUX */
+			lux = ((c0 - c1) * ratio_lut[r]) / 256;
+		} else
+			lux = 0;
 	else
-		return 0;
+		return -EAGAIN;
+#endif
+	/* LUX range check */
+	return lux > ISL29023_MAX_LUX ? ISL29023_MAX_LUX : lux;
 }
 
-static int isl29023_get_adc_value(struct i2c_client *client)
+static void isl29023_light_enable(struct isl29023_data *data)
 {
-	struct isl29023_data *data = i2c_get_clientdata(client);
-	int lsb, msb, range, bitdepth;
-
-	mutex_lock(&data->lock);
-	lsb = i2c_smbus_read_byte_data(client, ISL29023_REG_LSB_SENSOR);
-
-	if (lsb < 0) {
-		mutex_unlock(&data->lock);
-		return lsb;
-	}
-
-	msb = i2c_smbus_read_byte_data(client, ISL29023_REG_MSB_SENSOR);
-	mutex_unlock(&data->lock);
-
-	if (msb < 0)
-		return msb;
-
-	range = isl29023_get_range(client);
-	bitdepth = (4 - isl29023_get_resolution(client)) * 4;
-	return (((msb << 8) | lsb) * ((gain_range[range] * 499) / data->rext))
-		>> bitdepth;
+	isl29023_dbgmsg("starting poll timer, delay %lldns\n",
+		    ktime_to_ns(data->light_poll_delay));
+	/* push -1 to input subsystem to enable real value to go through next */
+	input_report_abs(data->light_input_dev, ABS_MISC, -1);
+	hrtimer_start(&data->timer, ktime_set(0, LIGHT_SENSOR_START_TIME_DELAY),
+					HRTIMER_MODE_REL);
 }
 
-static int isl29023_get_int_lt_value(struct i2c_client *client)
+static void isl29023_light_disable(struct isl29023_data *data)
 {
-	struct isl29023_data *data = i2c_get_clientdata(client);
-	int lsb, msb, range, bitdepth;
-
-	mutex_lock(&data->lock);
-	lsb = i2c_smbus_read_byte_data(client, ISL29023_REG_IRQ_TH_LO_LSB);
-
-	if (lsb < 0) {
-		mutex_unlock(&data->lock);
-		return lsb;
-	}
-
-	msb = i2c_smbus_read_byte_data(client, ISL29023_REG_IRQ_TH_LO_MSB);
-	mutex_unlock(&data->lock);
-
-	if (msb < 0)
-		return msb;
-
-	range = isl29023_get_range(client);
-	bitdepth = (4 - isl29023_get_resolution(client)) * 4;
-	return (((msb << 8) | lsb) * ((gain_range[range] * 499) / data->rext))
-		>> bitdepth;
-}
-
-static int isl29023_get_int_ht_value(struct i2c_client *client)
-{
-	struct isl29023_data *data = i2c_get_clientdata(client);
-	int lsb, msb, range, bitdepth;
-
-	mutex_lock(&data->lock);
-	lsb = i2c_smbus_read_byte_data(client, ISL29023_REG_IRQ_TH_HI_LSB);
-
-	if (lsb < 0) {
-		mutex_unlock(&data->lock);
-		return lsb;
-	}
-
-	msb = i2c_smbus_read_byte_data(client, ISL29023_REG_IRQ_TH_HI_MSB);
-	mutex_unlock(&data->lock);
-
-	if (msb < 0)
-		return msb;
-
-	range = isl29023_get_range(client);
-	bitdepth = (4 - isl29023_get_resolution(client)) * 4;
-	return (((msb << 8) | lsb) * ((gain_range[range] * 499) / data->rext))
-		>> bitdepth;
+	isl29023_dbgmsg("cancelling poll timer\n");
+	hrtimer_cancel(&data->timer);
+	cancel_work_sync(&data->work_light);
+	/* mark the adc buff as not initialized
+	 * so that it will be filled again on next light sensor start
+	 */
+	data->buf_initialized = false;
 }
 
 /*
- * sysfs layer
+ * SysFS support
  */
 
-/* interrupt persists */
-static ssize_t isl29023_show_int_persists(struct device *dev,
-					  struct device_attribute *attr,
-					  char *buf)
-{
-	struct i2c_client *client = to_i2c_client(dev);
-	return sprintf(buf, "%i\n", isl29023_get_int_persists(client));
-}
-
-static ssize_t isl29023_store_int_persists(struct device *dev,
-					   struct device_attribute *attr,
-					   const char *buf, size_t count)
-{
-	struct i2c_client *client = to_i2c_client(dev);
-	unsigned long val;
-	int ret;
-
-	if ((strict_strtoul(buf, 10, &val) < 0) ||
-	    (val > ISL29023_INT_PERSISTS_16))
-		return -EINVAL;
-
-	ret = isl29023_set_int_persists(client, val);
-	if (ret < 0)
-		return ret;
-
-	return count;
-}
-
-static DEVICE_ATTR(int_persists, S_IWUSR | S_IRUGO,
-		   isl29023_show_int_persists, isl29023_store_int_persists);
-
-/* interrupt flag */
-static ssize_t isl29023_show_int_flag(struct device *dev,
-					  struct device_attribute *attr,
-					  char *buf)
-{
-	struct i2c_client *client = to_i2c_client(dev);
-	return sprintf(buf, "%i\n", isl29023_get_int_flag(client));
-}
-
-static ssize_t isl29023_store_int_flag(struct device *dev,
-					   struct device_attribute *attr,
-					   const char *buf, size_t count)
-{
-	struct i2c_client *client = to_i2c_client(dev);
-	unsigned long val;
-	int ret;
-
-	if ((strict_strtoul(buf, 10, &val) < 0) || (val > 1))
-		return -EINVAL;
-
-	ret = isl29023_set_int_flag(client, val);
-	if (ret < 0)
-		return ret;
-
-	return count;
-}
-
-static DEVICE_ATTR(int_flag, S_IWUSR | S_IRUGO,
-		   isl29023_show_int_flag, isl29023_store_int_flag);
-
-/* interrupt lt */
-static ssize_t isl29023_show_int_lt(struct device *dev,
-				   struct device_attribute *attr, char *buf)
-{
-	struct i2c_client *client = to_i2c_client(dev);
-	return sprintf(buf, "%i\n", isl29023_get_int_lt(client));
-}
-
-static ssize_t isl29023_store_int_lt(struct device *dev,
-				    struct device_attribute *attr,
-				    const char *buf, size_t count)
-{
-	struct i2c_client *client = to_i2c_client(dev);
-	unsigned long val;
-	int ret;
-
-	if ((strict_strtoul(buf, 16, &val) < 0) || (val > 0xffff))
-		return -EINVAL;
-
-	ret = isl29023_set_int_lt(client, val);
-	if (ret < 0)
-		return ret;
-
-	return count;
-}
-
-static DEVICE_ATTR(int_lt, S_IWUSR | S_IRUGO,
-		   isl29023_show_int_lt, isl29023_store_int_lt);
-
-/* interrupt ht */
-static ssize_t isl29023_show_int_ht(struct device *dev,
-				   struct device_attribute *attr, char *buf)
-{
-	struct i2c_client *client = to_i2c_client(dev);
-	return sprintf(buf, "%i\n", isl29023_get_int_ht(client));
-}
-
-static ssize_t isl29023_store_int_ht(struct device *dev,
-				    struct device_attribute *attr,
-				    const char *buf, size_t count)
-{
-	struct i2c_client *client = to_i2c_client(dev);
-	unsigned long val;
-	int ret;
-
-	if ((strict_strtoul(buf, 16, &val) < 0) || (val > 0xffff))
-		return -EINVAL;
-
-	ret = isl29023_set_int_ht(client, val);
-	if (ret < 0)
-		return ret;
-
-	return count;
-}
-
-static DEVICE_ATTR(int_ht, S_IWUSR | S_IRUGO,
-		   isl29023_show_int_ht, isl29023_store_int_ht);
-
-/* range */
-static ssize_t isl29023_show_range(struct device *dev,
-				   struct device_attribute *attr, char *buf)
-{
-	struct i2c_client *client = to_i2c_client(dev);
-	return sprintf(buf, "%i\n", isl29023_get_range(client));
-}
-
-static ssize_t isl29023_store_range(struct device *dev,
-				    struct device_attribute *attr,
-				    const char *buf, size_t count)
-{
-	struct i2c_client *client = to_i2c_client(dev);
-	unsigned long val;
-	int ret;
-
-	if ((strict_strtoul(buf, 10, &val) < 0) || (val > ISL29023_RANGE_64K))
-		return -EINVAL;
-
-	ret = isl29023_set_range(client, val);
-	if (ret < 0)
-		return ret;
-
-	return count;
-}
-
-static DEVICE_ATTR(range, S_IWUSR | S_IRUGO,
-		   isl29023_show_range, isl29023_store_range);
-
-
-/* resolution */
-static ssize_t isl29023_show_resolution(struct device *dev,
-					struct device_attribute *attr,
-					char *buf)
-{
-	struct i2c_client *client = to_i2c_client(dev);
-	return sprintf(buf, "%d\n", isl29023_get_resolution(client));
-}
-
-static ssize_t isl29023_store_resolution(struct device *dev,
-					 struct device_attribute *attr,
-					 const char *buf, size_t count)
-{
-	struct i2c_client *client = to_i2c_client(dev);
-	unsigned long val;
-	int ret;
-
-	if ((strict_strtoul(buf, 10, &val) < 0) || (val > ISL29023_RES_4))
-		return -EINVAL;
-
-	ret = isl29023_set_resolution(client, val);
-	if (ret < 0)
-		return ret;
-
-	return count;
-}
-
-static DEVICE_ATTR(resolution, S_IWUSR | S_IRUGO,
-		   isl29023_show_resolution, isl29023_store_resolution);
-
-/* mode */
-static ssize_t isl29023_show_mode(struct device *dev,
-				  struct device_attribute *attr, char *buf)
-{
-	struct i2c_client *client = to_i2c_client(dev);
-	return sprintf(buf, "%d\n", isl29023_get_mode(client));
-}
-
-static ssize_t isl29023_store_mode(struct device *dev,
-		struct device_attribute *attr, const char *buf, size_t count)
-{
-	struct i2c_client *client = to_i2c_client(dev);
-	unsigned long val;
-	int ret;
-
-	if ((strict_strtoul(buf, 10, &val) < 0) ||
-	    (val > ISL29023_IR_CONT_MODE))
-		return -EINVAL;
-
-	ret = isl29023_set_mode(client, val);
-	if (ret < 0)
-		return ret;
-
-	return count;
-}
-
-static DEVICE_ATTR(mode, S_IWUSR | S_IRUGO,
-		   isl29023_show_mode, isl29023_store_mode);
-
-
-/* power state */
 static ssize_t isl29023_show_power_state(struct device *dev,
-					 struct device_attribute *attr,
-					 char *buf)
+		struct device_attribute *attr, char *buf)
 {
-	struct i2c_client *client = to_i2c_client(dev);
-	return sprintf(buf, "%d\n", isl29023_get_power_state(client));
+	struct isl29023_data *data = i2c_get_clientdata(to_i2c_client(dev));
+
+	return sprintf(buf, "%u\n", data->power_state);
 }
 
 static ssize_t isl29023_store_power_state(struct device *dev,
-					  struct device_attribute *attr,
-					  const char *buf, size_t count)
+		struct device_attribute *attr, const char *buf, size_t count)
 {
-	struct i2c_client *client = to_i2c_client(dev);
-	unsigned long val;
+	struct isl29023_data *data = dev_get_drvdata(dev);
 	int ret;
+	bool new_value;
 
-	if ((strict_strtoul(buf, 10, &val) < 0) || (val > 1))
+	if (sysfs_streq(buf, "1"))
+	{
+		isl29023_debug = 0;
+		new_value = true;
+	}
+	else if (sysfs_streq(buf, "0"))
+	{
+		isl29023_debug = 0;
+		new_value = false;
+	}
+	else if (sysfs_streq(buf, "3"))
+	{
+		isl29023_debug = 1;
+		new_value = true;
+	}
+	else {
+		pr_err("%s: invalid value %d\n", __func__, *buf);
 		return -EINVAL;
+	}
 
-	ret = isl29023_set_power_state(client, val);
-	return ret ? ret : count;
+	mutex_lock(&data->update_lock);
+	ret = isl29023_set_power_state(data->client, new_value);
+	/* Save power state for suspend/resume */
+	data->enable = new_value;
+	mutex_unlock(&data->update_lock);
+
+	if (ret < 0)
+		return ret;
+
+	if (new_value)
+		isl29023_light_enable(data);
+	else
+		isl29023_light_disable(data);
+
+	return count;
 }
 
-static DEVICE_ATTR(power_state, S_IWUSR | S_IRUGO,
+static DEVICE_ATTR(enable, S_IWUSR | S_IRUGO | S_IWGRP,
 		   isl29023_show_power_state, isl29023_store_power_state);
 
-/* lux */
-static ssize_t isl29023_show_lux(struct device *dev,
-				 struct device_attribute *attr, char *buf)
+static ssize_t poll_delay_show(struct device *dev,
+				struct device_attribute *attr, char *buf)
+{
+	struct isl29023_data *data = dev_get_drvdata(dev);
+	return sprintf(buf, "%lld\n", ktime_to_ns(data->light_poll_delay));
+}
+
+
+static ssize_t poll_delay_store(struct device *dev,
+				struct device_attribute *attr,
+				const char *buf, size_t size)
+{
+	struct isl29023_data *data = dev_get_drvdata(dev);
+	int64_t new_delay;
+	int err;
+
+	err = strict_strtoll(buf, 10, &new_delay);
+	if (err < 0)
+		return err;
+
+	isl29023_dbgmsg("new delay = %lldns, old delay = %lldns\n",
+		    new_delay, ktime_to_ns(data->light_poll_delay));
+	mutex_lock(&data->update_lock);
+	if (new_delay != ktime_to_ns(data->light_poll_delay)) {
+		data->light_poll_delay = ns_to_ktime(new_delay);
+		if (data->power_state) {
+			isl29023_light_disable(data);
+			isl29023_light_enable(data);
+		}
+	}
+	mutex_unlock(&data->update_lock);
+
+	return size;
+}
+
+static DEVICE_ATTR(poll_delay, S_IRUGO | S_IWUSR | S_IWGRP,
+		   poll_delay_show, poll_delay_store);
+
+#if 0
+static ssize_t isl29023_show_operating_mode(struct device *dev,
+		struct device_attribute *attr, char *buf)
+{
+	struct isl29023_data *data = i2c_get_clientdata(to_i2c_client(dev));
+
+	return sprintf(buf, "%u\n", data->operating_mode);
+}
+
+static ssize_t isl29023_store_operating_mode(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
+	struct isl29023_data *data = i2c_get_clientdata(client);
+	unsigned long val = simple_strtoul(buf, NULL, 10);
+	int ret;
 
-	/* No LUX data if not operational */
-	if (!isl29023_get_power_state(client))
+	if (val < 0 || val > 1)
+		return -EINVAL;
+
+	if (data->power_state == 0)
 		return -EBUSY;
 
-	return sprintf(buf, "%d\n", isl29023_get_adc_value(client));
-}
+	mutex_lock(&data->update_lock);
+	ret = isl29023_set_operating_mode(client, val);
+	mutex_unlock(&data->update_lock);
 
-static DEVICE_ATTR(lux, S_IRUGO, isl29023_show_lux, NULL);
-
-/* lux interrupt low threshold */
-static ssize_t isl29023_show_int_lt_lux(struct device *dev,
-				 struct device_attribute *attr, char *buf)
-{
-	struct i2c_client *client = to_i2c_client(dev);
-
-	/* No LUX data if not operational */
-	if (isl29023_get_mode(client) != ISL29023_ALS_ONCE_MODE &&
-	    isl29023_get_mode(client) != ISL29023_ALS_CONT_MODE)
-		return -EIO;
-
-	return sprintf(buf, "%d\n", isl29023_get_int_lt_value(client));
-}
-
-static ssize_t isl29023_store_int_lt_lux(struct device *dev,
-		struct device_attribute *attr, const char *buf, size_t count)
-{
-	struct i2c_client *client = to_i2c_client(dev);
-	struct isl29023_data *data = i2c_get_clientdata(client);
-	unsigned long val, lux_data;
-	int range, bitdepth, ret;
-	u8 lsb, msb;
-
-	if ((strict_strtoul(buf, 10, &val) < 0))
-		return -EINVAL;
-
-	/* No LUX data if not operational */
-	if (isl29023_get_mode(client) != ISL29023_ALS_ONCE_MODE &&
-	    isl29023_get_mode(client) != ISL29023_ALS_CONT_MODE)
-		return -EIO;
-
-	if (val > (gain_range[isl29023_get_range(client)]*499/data->rext))
-		return -EINVAL;
-
-	range = isl29023_get_range(client);
-	bitdepth = (4 - isl29023_get_resolution(client)) * 4;
-	lux_data = ((unsigned long)(val << bitdepth)) /
-		((gain_range[range] * 499) / data->rext);
-	lux_data &= 0xffff;
-
-	msb = lux_data >> 8;
-	lsb = lux_data & 0xff;
-
-	mutex_lock(&data->lock);
-	ret = i2c_smbus_write_byte_data(client, ISL29023_REG_IRQ_TH_LO_LSB,
-					lsb);
-	if (ret < 0) {
-		mutex_unlock(&data->lock);
+	if (ret < 0)
 		return ret;
-	}
-
-	ret = i2c_smbus_write_byte_data(client, ISL29023_REG_IRQ_TH_LO_MSB,
-					msb);
-	if (ret < 0) {
-		mutex_unlock(&data->lock);
-		return ret;
-	}
-
-	data->reg_cache[ISL29023_REG_IRQ_TH_LO_MSB] = msb;
-	data->reg_cache[ISL29023_REG_IRQ_TH_LO_LSB] = lsb;
-	mutex_unlock(&data->lock);
 
 	return count;
 }
 
-static DEVICE_ATTR(int_lt_lux, S_IWUSR | S_IRUGO,
-		isl29023_show_int_lt_lux, isl29023_store_int_lt_lux);
+static DEVICE_ATTR(operating_mode, S_IWUSR | S_IRUGO,
+		   isl29023_show_operating_mode, isl29023_store_operating_mode);
 
-/* lux interrupt high threshold */
-static ssize_t isl29023_show_int_ht_lux(struct device *dev,
-				 struct device_attribute *attr, char *buf)
+#endif
+
+static int __isl29023_show_lux(struct i2c_client *client)
 {
-	struct i2c_client *client = to_i2c_client(dev);
-
-	/* No LUX data if not operational */
-	if (isl29023_get_mode(client) != ISL29023_ALS_ONCE_MODE &&
-	    isl29023_get_mode(client) != ISL29023_ALS_CONT_MODE)
-		return -EIO;
-
-	return sprintf(buf, "%d\n", isl29023_get_int_ht_value(client));
-}
-
-static ssize_t isl29023_store_int_ht_lux(struct device *dev,
-		struct device_attribute *attr, const char *buf, size_t count)
-{
-	struct i2c_client *client = to_i2c_client(dev);
 	struct isl29023_data *data = i2c_get_clientdata(client);
-	unsigned long val, lux_data;
-	int range, bitdepth, ret;
-	u8 lsb, msb;
+	u8 lux_lsb, lux_msb;
+	int ret;
 
-	if ((strict_strtoul(buf, 10, &val) < 0))
-		return -EINVAL;
+	ret = i2c_smbus_read_byte_data(client, ISL29023_REG_LSB_SENSOR);
 
-	/* No LUX data if not operational */
-	if (isl29023_get_mode(client) != ISL29023_ALS_ONCE_MODE &&
-	    isl29023_get_mode(client) != ISL29023_ALS_CONT_MODE)
-		return -EIO;
-
-	if (val > (gain_range[isl29023_get_range(client)]*499/data->rext))
-		return -EINVAL;
-
-	range = isl29023_get_range(client);
-	bitdepth = (4 - isl29023_get_resolution(client)) * 4;
-	lux_data = ((unsigned long)(val << bitdepth)) /
-		((gain_range[range] * 499) / data->rext);
-	lux_data &= 0xffff;
-
-	msb = lux_data >> 8;
-	lsb = lux_data & 0xff;
-
-	mutex_lock(&data->lock);
-	ret = i2c_smbus_write_byte_data(client, ISL29023_REG_IRQ_TH_HI_LSB,
-					lsb);
-	if (ret < 0) {
-		mutex_unlock(&data->lock);
+	if (ret < 0)
 		return ret;
-	}
+	lux_lsb = ret;
 
-	ret = i2c_smbus_write_byte_data(client, ISL29023_REG_IRQ_TH_HI_MSB,
-					msb);
-	if (ret < 0) {
-		mutex_unlock(&data->lock);
+	ret = i2c_smbus_read_byte_data(client, ISL29023_REG_MSB_SENSOR);
+
+	if (ret < 0)
 		return ret;
-	}
+	lux_msb = ret;
 
-	data->reg_cache[ISL29023_REG_IRQ_TH_HI_MSB] = msb;
-	data->reg_cache[ISL29023_REG_IRQ_TH_HI_LSB] = lsb;
-	mutex_unlock(&data->lock);
-
-	return count;
+	/* Do the job */
+	ret = isl29023_calculate_lux(lux_lsb, lux_msb);
+	if (ret < 0)
+		return ret;
+/*
+	if (data->operating_mode == 1)
+		ret *= 5;
+*/
+	return ret;
 }
-
-static DEVICE_ATTR(int_ht_lux, S_IWUSR | S_IRUGO,
-		isl29023_show_int_ht_lux, isl29023_store_int_ht_lux);
 
 static struct attribute *isl29023_attributes[] = {
-	&dev_attr_int_persists.attr,
-	&dev_attr_range.attr,
-	&dev_attr_resolution.attr,
-	&dev_attr_mode.attr,
-	&dev_attr_power_state.attr,
-	&dev_attr_lux.attr,
-	&dev_attr_int_lt_lux.attr,
-	&dev_attr_int_ht_lux.attr,
-	&dev_attr_int_lt.attr,
-	&dev_attr_int_ht.attr,
-	&dev_attr_int_flag.attr,
+	&dev_attr_enable.attr,
+	&dev_attr_poll_delay.attr,
+#if 0
+	&dev_attr_operating_mode.attr,
+#endif
 	NULL
 };
 
@@ -788,199 +452,290 @@ static const struct attribute_group isl29023_attr_group = {
 	.attrs = isl29023_attributes,
 };
 
+static int lightsensor_get_luxvalue(struct isl29023_data *data)
+{
+	int i = 0;
+	int j = 0;
+	unsigned int lux_total = 0;
+	int lux_avr_value;
+	unsigned int index = 0;
+	unsigned int lux_max = 0;
+	unsigned int lux_min = 0;
+	int value = 0;
+
+	/* get lux value */
+	mutex_lock(&data->update_lock);
+	value = __isl29023_show_lux(data->client);
+	mutex_unlock(&data->update_lock);
+
+	if (value < 0) {
+		pr_err("lightsensor returned error %d\n", value);
+		return value;
+	}
+	isl29023_dbgmsg("light value %d\n", value);
+
+	index = (data->index_count++) % BUFFER_NUM;
+
+	/* buffer initialize (light sensor off ---> light sensor on) */
+	if (!data->buf_initialized) {
+		data->buf_initialized = true;
+		for (j = 0; j < BUFFER_NUM; j++)
+			data->lux_value_buf[j] = value;
+	} else
+		data->lux_value_buf[index] = value;
+
+	lux_max = data->lux_value_buf[0];
+	lux_min = data->lux_value_buf[0];
+
+	for (i = 0; i < BUFFER_NUM; i++) {
+		lux_total += data->lux_value_buf[i];
+
+		if (lux_max < data->lux_value_buf[i])
+			lux_max = data->lux_value_buf[i];
+
+		if (lux_min > data->lux_value_buf[i])
+			lux_min = data->lux_value_buf[i];
+	}
+	lux_avr_value = (lux_total-(lux_max+lux_min))/(BUFFER_NUM-2);
+
+	if (data->index_count == BUFFER_NUM)
+		data->index_count = 0;
+
+	isl29023_dbgmsg("average light value %d\n", lux_avr_value);
+	return lux_avr_value;
+}
+
+static void isl29023_work_func_light(struct work_struct *work)
+{
+	struct isl29023_data *data = container_of(work, struct isl29023_data,
+					      work_light);
+
+	int adc = lightsensor_get_luxvalue(data);
+	if (adc >= 0) {
+		input_report_abs(data->light_input_dev, ABS_MISC, adc);
+		input_sync(data->light_input_dev);
+	}
+}
+
+/* This function is for light sensor.  It operates every a few seconds.
+ * It asks for work to be done on a thread because i2c needs a thread
+ * context (slow and blocking) and then reschedules the timer to run again.
+ */
+static enum hrtimer_restart isl29023_timer_func(struct hrtimer *timer)
+{
+	struct isl29023_data *data = container_of(timer, struct isl29023_data, timer);
+	queue_work(data->wq, &data->work_light);
+	hrtimer_forward_now(&data->timer, data->light_poll_delay);
+	return HRTIMER_RESTART;
+}
+
+
+
+/*
+ * Initialization function
+ */
+
 static int isl29023_init_client(struct i2c_client *client)
 {
 	struct isl29023_data *data = i2c_get_clientdata(client);
-	int i;
+	int err;
 
-	/* read all the registers once to fill the cache.
-	 * if one of the reads fails, we consider the init failed */
-	for (i = 0; i < ARRAY_SIZE(data->reg_cache); i++) {
-		int v = i2c_smbus_read_byte_data(client, i);
-		if (v < 0)
-			return -ENODEV;
+	err = i2c_smbus_write_byte_data(client,
+				   ISL29023_COMMAND1, 0xa0);
+	if (err < 0)
+		return err;
 
-		data->reg_cache[i] = v;
-	}
+	err = i2c_smbus_read_byte_data(client, ISL29023_COMMAND1);
+	if (err != 0xa0)
+		return err;
 
-	/* set defaults */
-	isl29023_set_int_persists(client, ISL29023_INT_PERSISTS_8);
-	isl29023_set_int_ht(client, 0xffff);
-	isl29023_set_int_lt(client, 0x0);
-	isl29023_set_range(client, ISL29023_RANGE_16K);
-	isl29023_set_resolution(client, ISL29023_RES_16);
-	isl29023_set_mode(client, ISL29023_ALS_ONCE_MODE);
-	isl29023_set_int_flag(client, 0);
-	isl29023_set_power_state(client, 0);
+	printk("%s: OK!\n",__FUNCTION__);
+
+	data->power_state = 1;
 
 	return 0;
 }
 
-static void isl29023_work(struct work_struct *work)
-{
-	struct isl29023_data *data =
-			container_of(work, struct isl29023_data, work);
-	struct i2c_client *client = data->client;
-	int lux;
-
-	/* Clear interrupt flag */
-	isl29023_set_int_flag(client, 0);
-
-	data->mode_before_interrupt = isl29023_get_mode(client);
-	lux = isl29023_get_adc_value(client);
-
-	/* To clear the interrpt status */
-	isl29023_set_power_state(client, ISL29023_PD_MODE);
-	isl29023_set_mode(client, data->mode_before_interrupt);
-
-	msleep(100);
-
-	input_report_abs(data->input, ABS_MISC, lux);
-	input_sync(data->input);
-}
-
-static irqreturn_t isl29023_irq_handler(int irq, void *handle)
-{
-	struct isl29023_data *data = handle;
-	queue_work(data->workqueue, &data->work);
-	return IRQ_HANDLED;
-}
-
 /*
- * I2C layer
+ * I2C init/probing/exit functions
  */
 
+static struct i2c_driver isl29023_driver;
 static int __devinit isl29023_probe(struct i2c_client *client,
-				    const struct i2c_device_id *id)
+				   const struct i2c_device_id *id)
 {
 	struct i2c_adapter *adapter = to_i2c_adapter(client->dev.parent);
 	struct isl29023_data *data;
-	struct fsl_mxc_lightsensor_platform_data *ls_data;
 	struct input_dev *input_dev;
-	int err = 0;
+	int *opmode, err = -ENODEV;
 
-	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE))
-		return -EIO;
+	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_WRITE_BYTE
+					    | I2C_FUNC_SMBUS_READ_BYTE_DATA)) {
+		err = -EIO;
+		goto exit;
+	}
 
 	data = kzalloc(sizeof(struct isl29023_data), GFP_KERNEL);
-	if (!data)
+	if (!data) {
+		err = -ENOMEM;
+		pr_err("%s: failed to alloc memory for module data\n",
+		       __func__);
 		return -ENOMEM;
-
-	ls_data = (struct fsl_mxc_lightsensor_platform_data *)
-	    (client->dev).platform_data;
-
+	}
 	data->client = client;
-	data->rext = ls_data->rext;
-	snprintf(data->phys, sizeof(data->phys),
-		 "%s", dev_name(&client->dev));
 	i2c_set_clientdata(client, data);
-	mutex_init(&data->lock);
 
-	/* initialize the ISL29023 chip */
+	/* Check platform data */
+	opmode = client->dev.platform_data;
+	if (opmode) {
+		if (*opmode < 0 || *opmode > 1) {
+			dev_err(&client->dev, "invalid operating_mode (%d)\n",
+					*opmode);
+			err = -EINVAL;
+			goto exit_kfree;
+		}
+		data->operating_mode = *opmode;
+	} else
+		data->operating_mode = 0;	/* default mode is standard */
+	dev_info(&client->dev, "%s operating mode\n",
+			data->operating_mode ? "extended" : "standard");
+
+	/* Initialize the ISL29023 chip */
 	err = isl29023_init_client(client);
 	if (err)
 		goto exit_kfree;
 
-	/* register sysfs hooks */
+	wake_lock_init(&data->prx_wake_lock, WAKE_LOCK_SUSPEND,
+		"prx_wake_lock");
+	mutex_init(&data->update_lock);
+
+	/* Register sysfs hooks */
 	err = sysfs_create_group(&client->dev.kobj, &isl29023_attr_group);
 	if (err)
 		goto exit_kfree;
 
+	/* hrtimer settings.  we poll for light values using a timer. */
+	hrtimer_init(&data->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+	data->light_poll_delay = ns_to_ktime(200 * NSEC_PER_MSEC);
+	data->timer.function = isl29023_timer_func;
+
+	/* the timer just fires off a work queue request.  we need a thread
+	 * to read the i2c (can be slow and blocking)
+	 */
+	data->wq = create_singlethread_workqueue("isl29023_wq");
+	if (!data->wq) {
+		err = -ENOMEM;
+		pr_err("%s: could not create workqueue\n", __func__);
+		goto err_create_workqueue;
+	}
+	/* this is the thread function we run on the work queue */
+	INIT_WORK(&data->work_light, isl29023_work_func_light);
+
+	/* allocate lightsensor-level input_device */
 	input_dev = input_allocate_device();
 	if (!input_dev) {
+		pr_err("%s: could not allocate input device\n", __func__);
 		err = -ENOMEM;
-		goto exit_kfree;
+		goto err_input_allocate_device_light;
 	}
+	input_set_drvdata(input_dev, data);
+	input_dev->name = "lightsensor-level";
+	input_set_capability(input_dev, EV_ABS, ABS_MISC);
+	input_set_abs_params(input_dev, ABS_MISC, 0, 1, 0, 0);
 
-	data->input = input_dev;
-	input_dev->name = "isl29023 light sensor";
-	input_dev->id.bustype = BUS_I2C;
-	input_dev->phys = data->phys;
-
-	__set_bit(EV_ABS, input_dev->evbit);
-	input_set_abs_params(input_dev, ABS_MISC, 0,
-			gain_range[DEF_RANGE]*499/data->rext, 0, 0);
-
+	dev_info(&client->dev, "registering lightsensor-level input device\n");
 	err = input_register_device(input_dev);
-	if (err)
-		goto exit_free_input;
-
-	/* set irq type to edge falling */
-	irq_set_irq_type(client->irq, IRQF_TRIGGER_FALLING);
-	err = request_irq(client->irq, isl29023_irq_handler, 0,
-			  client->dev.driver->name, data);
 	if (err < 0) {
-		dev_err(&client->dev, "failed to register irq %d!\n",
-			client->irq);
-		goto exit_free_input;
+		pr_err("%s: could not register input device\n", __func__);
+		input_free_device(input_dev);
+		goto err_input_register_device_light;
+	}
+	data->light_input_dev = input_dev;
+	err = sysfs_create_group(&input_dev->dev.kobj,
+				 &isl29023_attr_group);
+	if (err) {
+		pr_err("%s: could not create sysfs group\n", __func__);
+		goto err_sysfs_create_group_light;
 	}
 
-	data->workqueue = create_singlethread_workqueue("isl29023");
-	INIT_WORK(&data->work, isl29023_work);
-	if (data->workqueue == NULL) {
-		dev_err(&client->dev, "couldn't create workqueue\n");
-		err = -ENOMEM;
-		goto exit_free_interrupt;
-	}
+	dev_info(&client->dev, "support ver. %s enabled\n", DRIVER_VERSION);
 
-	dev_info(&client->dev, "driver version %s enabled\n", DRIVER_VERSION);
+	isl29023_light_enable(data);
+
 	return 0;
-
-exit_free_interrupt:
-	free_irq(client->irq, data);
-exit_free_input:
-	input_free_device(input_dev);
+	/* error, unwind it all */
+err_sysfs_create_group_light:
+	input_unregister_device(data->light_input_dev);
+err_input_register_device_light:
+err_input_allocate_device_light:
+	destroy_workqueue(data->wq);
+err_create_workqueue:
+	mutex_destroy(&data->update_lock);
+	wake_lock_destroy(&data->prx_wake_lock);
 exit_kfree:
+	printk("%s: failed!!\n",__FUNCTION__);
 	kfree(data);
+exit:
 	return err;
 }
 
 static int __devexit isl29023_remove(struct i2c_client *client)
 {
 	struct isl29023_data *data = i2c_get_clientdata(client);
+	sysfs_remove_group(&data->light_input_dev->dev.kobj,
+			   &isl29023_attr_group);
 
-	cancel_work_sync(&data->work);
-	destroy_workqueue(data->workqueue);
-	free_irq(client->irq, data);
-	input_unregister_device(data->input);
-	input_free_device(data->input);
-	sysfs_remove_group(&client->dev.kobj, &isl29023_attr_group);
+	destroy_workqueue(data->wq);
+	input_unregister_device(data->light_input_dev);
+
+	/* Power down the device */
 	isl29023_set_power_state(client, 0);
+
+	mutex_destroy(&data->update_lock);
+	wake_lock_destroy(&data->prx_wake_lock);
+
 	kfree(i2c_get_clientdata(client));
 
 	return 0;
 }
 
 #ifdef CONFIG_PM
+
 static int isl29023_suspend(struct i2c_client *client, pm_message_t mesg)
 {
 	struct isl29023_data *data = i2c_get_clientdata(client);
 
-	data->mode_before_suspend = isl29023_get_mode(client);
-	return isl29023_set_power_state(client, ISL29023_PD_MODE);
+	if (data->enable)
+		isl29023_light_disable(data);
+
+	return isl29023_set_power_state(client, 0);
 }
 
 static int isl29023_resume(struct i2c_client *client)
 {
-	int i;
+	int ret;
 	struct isl29023_data *data = i2c_get_clientdata(client);
 
-	/* restore registers from cache */
-	for (i = 0; i < ARRAY_SIZE(data->reg_cache); i++)
-		if (i2c_smbus_write_byte_data(client, i, data->reg_cache[i]))
-			return -EIO;
+	ret = isl29023_set_power_state(client, 1);
+	if (ret) {
+		/* re-enable input events if required */
+		if(data->enable)
+			isl29023_light_enable(data);
+	}
 
-	return isl29023_set_mode(client, data->mode_before_suspend);
+	return ret;
 }
 
 #else
-#define isl29023_suspend	NULL
+
+#define isl29023_suspend		NULL
 #define isl29023_resume		NULL
+
 #endif /* CONFIG_PM */
 
 static const struct i2c_device_id isl29023_id[] = {
-	{ ISL29023_DRV_NAME, 0 },
-	{}
+	{ "isl29023", 0 },
+	{ }
 };
 MODULE_DEVICE_TABLE(i2c, isl29023_id);
 
@@ -1006,7 +761,7 @@ static void __exit isl29023_exit(void)
 	i2c_del_driver(&isl29023_driver);
 }
 
-MODULE_AUTHOR("Freescale Semiconductor, Inc.");
+MODULE_AUTHOR("Rodolfo Giometti <giometti@linux.it>");
 MODULE_DESCRIPTION("ISL29023 ambient light sensor driver");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(DRIVER_VERSION);
