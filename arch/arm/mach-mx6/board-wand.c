@@ -1017,6 +1017,9 @@ static void __init wand_init_edm(void) {
         
 	edm_ddc = 0;
 
+	edm_spi[0] = 0;
+	edm_spi[1] = 1;
+
 	edm_audio_data[0].enabled = true;
 	edm_audio_data[0].platform_data = &wand_audio_channel_data;
 }
