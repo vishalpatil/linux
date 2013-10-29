@@ -25,3 +25,4 @@ obj-$(CONFIG_PCI_MSI) += msi.o
 obj-$(CONFIG_FEC) += mx6_fec.o
 obj-$(CONFIG_PM) += pm.o
 obj-$(CONFIG_MACH_WANDBOARD) += board-wand.o
+obj-$(CONFIG_MACH_EDM_CF_IMX6) += board-edm_cf_imx6.o
