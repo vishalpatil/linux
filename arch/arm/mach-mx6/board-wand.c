@@ -771,6 +771,7 @@ static __init void wand_init_pm(void) {
 	imx6q_add_pm_imx(0, &wand_pm_data);
 	imx6q_add_dvfs_core(&wand_dvfscore_data);
 	imx6q_add_busfreq();
+	imx6q_add_imx2_wdt(0, NULL);
 }
 
 
