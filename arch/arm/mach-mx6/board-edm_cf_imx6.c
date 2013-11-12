@@ -1,6 +1,6 @@
 /*
     EDM-CF-iMX6 board file. 
-    Copyright (C) 2013 TechNexion Ltd.
+    Copyright (C) 2012,2013 TechNexion Ltd.
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@
 #include "devices-imx6q.h"
 #include "usb.h"
 
-#define EDM_MODULE edm_cf_imx6
+/* ------------------------------------------------------------------------ */
 
 #define EDM_CF_IMX6_BT_ON		IMX_GPIO_NR(5, 21)
 #define EDM_CF_IMX6_BT_WAKE		IMX_GPIO_NR(5, 30)
@@ -77,21 +77,7 @@
         else \
                 mxc_iomux_v3_setup_pad(MX6DL_##p)
 
-#define EDM_CF_IMX6_SETUP_PADS(p) \
-        if (cpu_is_mx6q()) \
-                mxc_iomux_v3_setup_multiple_pads((edm_cf_imx6q_##p), ARRAY_SIZE(edm_cf_imx6q_##p)); \
-        else \
-                mxc_iomux_v3_setup_multiple_pads((edm_cf_imx6_##p), ARRAY_SIZE(edm_cf_imx6_##p));
-
 /* See arch/arm/plat-mxc/include/mach/iomux-mx6q.h for definitions */
-
-
-/****************************************************************************
- *                                                                          
- * EDM connector
- *                                                                          
- ****************************************************************************/
-
 
 
 /****************************************************************************
@@ -142,7 +128,7 @@ static const struct esdhc_platform_data edm_cf_imx6_sd_data[3] = {
 static void edm_cf_imx6_init_sd(void) {
         int i;
         
-	/* Card Detect for SD1 + SD1 pads */
+	/* SD1 Card Detect for + SD1 pads */
         EDM_IMX6_SET_PAD( PAD_GPIO_2__GPIO_1_2 );
         EDM_IMX6_SET_PAD( PAD_SD1_CLK__USDHC1_CLK );
         EDM_IMX6_SET_PAD( PAD_SD1_CMD__USDHC1_CMD );
@@ -159,7 +145,7 @@ static void edm_cf_imx6_init_sd(void) {
         EDM_IMX6_SET_PAD( PAD_SD2_DAT2__USDHC2_DAT2 );
         EDM_IMX6_SET_PAD( PAD_SD2_DAT3__USDHC2_DAT3 );
         
-        /* Card Detect SD3 + SD3 pads (iNAND uses 8 data signals) */
+        /* SD3 Card Detect + SD3 pads (iNAND uses 8 data signals) */
         EDM_IMX6_SET_PAD( PAD_SD3_CLK__USDHC3_CLK_200MHZ );
         EDM_IMX6_SET_PAD( PAD_SD3_CMD__USDHC3_CMD_200MHZ );
         EDM_IMX6_SET_PAD( PAD_SD3_DAT0__USDHC3_DAT0_200MHZ );
@@ -172,7 +158,6 @@ static void edm_cf_imx6_init_sd(void) {
         EDM_IMX6_SET_PAD( PAD_SD3_DAT7__USDHC3_DAT7_200MHZ );
         
 	/* Add mmc devices in reverse order, so mmc0 always is boot sd (SD3) */
-
 	for (i=2; i>=0; i--) {
                 imx6q_add_sdhci_usdhc_imx(i, &edm_cf_imx6_sd_data[i]);
 	}
@@ -404,7 +389,6 @@ static struct fec_platform_data edm_cf_imx6_fec_data = {
 /* ------------------------------------------------------------------------ */
 
 static __init void edm_cf_imx6_init_ethernet(void) {
-
         EDM_IMX6_SET_PAD( PAD_ENET_MDIO__ENET_MDIO );
         EDM_IMX6_SET_PAD( PAD_ENET_MDC__ENET_MDC );
         EDM_IMX6_SET_PAD( PAD_ENET_REF_CLK__ENET_TX_CLK );
@@ -832,6 +816,8 @@ static struct ipuv3_fb_platform_data edm_cf_imx6_lcd_fb[] = {
         },
 };
 
+/* ------------------------------------------------------------------------ */
+
 static struct ipuv3_fb_platform_data edm_cf_imx6_lvds_fb[] = {
         {
 		.disp_dev = "ldb",
@@ -946,14 +932,20 @@ static const __initconst struct imx_viv_gpu_data edm_cf_imx6_gpu_data = {
 	.irq_vg = MXC_INT_OPENVG_XAQ2,
 };
 
+/* ------------------------------------------------------------------------ */
+
 static struct viv_gpu_platform_data edm_cf_imx6_gpu_pdata = {
 	.reserved_mem_size = SZ_64M,
 };
+
+/* ------------------------------------------------------------------------ */
 
 struct edm_cf_imx6_vout_mem_data {
 	resource_size_t res_mbase;
 	resource_size_t res_msize;
 };
+
+/* ------------------------------------------------------------------------ */
 
 static struct edm_cf_imx6_vout_mem_data edm_cf_imx6_vout_mem __initdata = {
 	.res_msize = 48 * SZ_1M,
@@ -1050,8 +1042,7 @@ static void __init edm_cf_imx6_init_pcie(void) {
 static struct clk *edm_cf_imx6_sata_clk;
 
 /* HW Initialization, if return 0, initialization is successful. */
-static int edm_cf_imx6_sata_init(struct device *dev, void __iomem *addr)
-{
+static int edm_cf_imx6_sata_init(struct device *dev, void __iomem *addr) {
 	u32 tmpdata;
 	int ret = 0;
 	struct clk *clk;
@@ -1067,20 +1058,6 @@ static int edm_cf_imx6_sata_init(struct device *dev, void __iomem *addr)
 		goto put_sata_clk;
 	}
 
-	/* Set PHY Paremeters, two steps to configure the GPR13,
-	 * one write for rest of parameters, mask of first write is 0x07FFFFFD,
-	 * and the other one write for setting the mpll_clk_off_b
-	 *.rx_eq_val_0(iomuxc_gpr13[26:24]),
-	 *.los_lvl(iomuxc_gpr13[23:19]),
-	 *.rx_dpll_mode_0(iomuxc_gpr13[18:16]),
-	 *.sata_speed(iomuxc_gpr13[15]),
-	 *.mpll_ss_en(iomuxc_gpr13[14]),
-	 *.tx_atten_0(iomuxc_gpr13[13:11]),
-	 *.tx_boost_0(iomuxc_gpr13[10:7]),
-	 *.tx_lvl(iomuxc_gpr13[6:2]),
-	 *.mpll_ck_off(iomuxc_gpr13[1]),
-	 *.tx_edgerate_0(iomuxc_gpr13[0]),
-	 */
 	tmpdata = readl(IOMUXC_GPR13);
 	writel(((tmpdata & ~0x07FFFFFD) | 0x0593A044), IOMUXC_GPR13);
 
@@ -1112,16 +1089,22 @@ put_sata_clk:
 	return ret;
 }
 
+/* ------------------------------------------------------------------------ */
+
 static void edm_cf_imx6_sata_exit(struct device *dev) {
 	clk_disable(edm_cf_imx6_sata_clk);
 	clk_put(edm_cf_imx6_sata_clk);
 }
+
+/* ------------------------------------------------------------------------ */
 
 static struct ahci_platform_data edm_cf_imx6_sata_data = {
 	.init = edm_cf_imx6_sata_init,
 	.exit = edm_cf_imx6_sata_exit,
 };
 
+
+/* ------------------------------------------------------------------------ */
 
 static __init void edm_cf_imx6_init_sata(void) {
         imx6q_add_ahci(0, &edm_cf_imx6_sata_data);
@@ -1235,7 +1218,6 @@ static void __init edm_cf_imx6_board_init(void) {
         edm_cf_imx6_init_can();
         edm_cf_imx6_init_pcie();
 }
-#undef EDM_MODULE
 
 /* ------------------------------------------------------------------------ */
         
