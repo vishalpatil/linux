@@ -948,7 +948,7 @@ struct edm_cf_imx6_vout_mem_data {
 /* ------------------------------------------------------------------------ */
 
 static struct edm_cf_imx6_vout_mem_data edm_cf_imx6_vout_mem __initdata = {
-	.res_msize = 48 * SZ_1M,
+	.res_msize = 96 * SZ_1M,
 };
 
 /* ------------------------------------------------------------------------ */
