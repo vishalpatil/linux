@@ -105,6 +105,32 @@ static int g_ldb_mode;
 
 static struct fb_videomode ldb_modedb[] = {
 	{
+	/* 800x480 @ 60 Hz , pixel clk @ 32MHz */
+	 "LDB-WVGA", 60, 800, 480, 29850,
+	 89, 164,
+	 23, 10,
+	 10, 10,
+	 FB_SYNC_CLK_LAT_FALL,
+	 FB_VMODE_NONINTERLACED,
+	 0,},
+	{
+	/* 1024x600 @ 60 Hz , pixel clk @ 51MHz */
+	 "LDB-WSVGA", 60, 1024, 600, 19417,
+         90, 120,
+	 1, 1,
+         100, 33,
+	 FB_SYNC_HOR_HIGH_ACT,
+	 FB_VMODE_NONINTERLACED,
+         FB_MODE_IS_DETAILED,},
+	{
+	 "LDB-720P", 60, 1280, 720, 15577,
+	 40, 40,
+	 10, 3,
+	 80, 10,
+	 0,
+	 FB_VMODE_NONINTERLACED,
+	 FB_MODE_IS_DETAILED,},
+	{
 	 "LDB-WXGA", 60, 1280, 800, 14065,
 	 40, 40,
 	 10, 3,
