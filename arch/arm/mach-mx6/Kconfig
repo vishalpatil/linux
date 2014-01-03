@@ -320,7 +320,7 @@ config MACH_WANDBOARD
 	  Include support for the WandBoard SoM.
 
 config MACH_EDM_CF_IMX6
-	bool "Support for TechNexion EDM-CD-iMX6 CPU module"
+	bool "Support for TechNexion EDM-CF-iMX6 CPU module"
 	select ARCH_MX6Q
 	select SOC_IMX6Q
 	select EDM
