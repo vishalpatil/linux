@@ -20,6 +20,7 @@
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/time.h>
+#include <asm/setup.h>
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -907,8 +908,8 @@ static void __init edm_cf_imx6_init_lcd(void) {
         imx6q_add_ldb(&edm_cf_imx6_ldb_data);
         imx6q_add_lcdif(&edm_cf_imx6_lcdif_data);        
 
-//	imx6q_add_ipuv3fb(0, &edm_cf_imx6_lvds_fb[0]);
-        imx6q_add_ipuv3fb(1, &edm_cf_imx6_lcd_fb[0]);
+	imx6q_add_ipuv3fb(1, &edm_cf_imx6_lvds_fb[0]);
+        imx6q_add_ipuv3fb(2, &edm_cf_imx6_lcd_fb[0]);
 /*
       imx6q_add_ipuv3fb(2, &edm_cf_imx6_lvds_fb[0]);
       imx6q_add_ipuv3fb(3, &edm_cf_imx6_lvds_fb[1]);
@@ -1168,15 +1169,21 @@ static struct sys_timer edm_cf_imx6_timer = {
 
 static void __init edm_cf_imx6_reserve(void) {
 	phys_addr_t phys;
-    
+	phys_addr_t total_mem = 0;
+	struct meminfo *mi = &meminfo;
+	int i;
+
+	for (i=0; i<mi->nr_banks; i++)
+		total_mem += mi->bank[i].size;
+
 	if (edm_cf_imx6_gpu_pdata.reserved_mem_size) {
-		phys = memblock_alloc_base(edm_cf_imx6_gpu_pdata.reserved_mem_size, SZ_4K, SZ_512M);
+		phys = memblock_alloc_base(edm_cf_imx6_gpu_pdata.reserved_mem_size, SZ_4K, total_mem);
 		memblock_remove(phys, edm_cf_imx6_gpu_pdata.reserved_mem_size);
 		edm_cf_imx6_gpu_pdata.reserved_mem_base = phys;
 	}
 
 	if (edm_cf_imx6_vout_mem.res_msize) {
-		phys = memblock_alloc_base(edm_cf_imx6_vout_mem.res_msize, SZ_4K, SZ_1G);
+		phys = memblock_alloc_base(edm_cf_imx6_vout_mem.res_msize, SZ_4K, total_mem);
 		memblock_remove(phys, edm_cf_imx6_vout_mem.res_msize);
                 edm_cf_imx6_vout_mem.res_mbase = phys;
 	}
