@@ -214,6 +214,19 @@ struct fsl_spi_platform_data {
 	u32	sysclk;
 };
 
+struct fsl_video_timing {
+	u32 pixclock;
+	u16 hres;
+	u16 hfp;
+	u16 hbp;
+	u16 hsw;
+	u16 vres;
+	u16 vfp;
+	u16 vbp;
+	u16 vsw;
+};
+
+
 struct fsl_mxc_tve_platform_data {
 	char *dac_reg;
 	char *dig_reg;
@@ -242,6 +255,8 @@ struct fsl_mxc_ldb_platform_data {
 	/*only work for separate mode*/
 	int sec_ipu_id;
 	int sec_disp_id;
+	struct fsl_video_timing *lvds0_timing;
+	struct fsl_video_timing *lvds1_timing;
 };
 
 struct mxc_fb_platform_data {
@@ -263,6 +278,8 @@ struct fsl_mxc_lcd_platform_data {
 	int default_ifmt;
 	int ipu_id;
 	int disp_id;
+	struct fsl_video_timing *lcd0_timing;
+	struct fsl_video_timing *lcd1_timing;
 };
 
 struct fsl_mxc_tvout_platform_data {
@@ -294,6 +311,7 @@ struct fsl_mxc_hdmi_platform_data {
 struct fsl_mxc_hdmi_core_platform_data {
 	int ipu_id;
 	int disp_id;
+	struct fsl_video_timing *hdmi_timing;
 };
 
 struct fsl_mxc_capture_platform_data {

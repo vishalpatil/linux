@@ -732,6 +732,8 @@ struct ipuv3_fb_platform_data {
 	char				disp_dev[32];
 	u32				interface_pix_fmt;
 	char				*mode_str;
+	int				disp_ch;
+	char				*timing_str;
 	int				default_bpp;
 	bool				int_clk;
 
