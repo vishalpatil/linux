@@ -28,6 +28,18 @@ struct mxc_lcdif_data {
 
 static struct fb_videomode lcdif_modedb[] = {
 	{
+	/* 800x480 @ 60 Hz , pixel clk @ 32MHz */
+	"LCD-CUSTOM", 60, 800, 480, 29850, 89, 164, 23, 10, 10, 10,
+	FB_SYNC_CLK_LAT_FALL,
+	FB_VMODE_NONINTERLACED,
+	0,},
+	{
+	/* 800x480 @ 60 Hz , pixel clk @ 32MHz */
+	"LCD-CUSTOM2", 60, 800, 480, 29850, 89, 164, 23, 10, 10, 10,
+	FB_SYNC_CLK_LAT_FALL,
+	FB_VMODE_NONINTERLACED,
+	0,},
+	{
 	/* 800x480 @ 57 Hz , pixel clk @ 27MHz */
 	"CLAA-WVGA", 57, 800, 480, 37037, 40, 60, 10, 10, 20, 10,
 	FB_SYNC_CLK_LAT_FALL,
@@ -51,10 +63,55 @@ static int lcdif_init(struct mxc_dispdrv_handle *disp,
 			= lcdif->pdev->dev.platform_data;
 	struct fb_videomode *modedb = lcdif_modedb;
 	int modedb_sz = lcdif_modedb_sz;
+	struct fsl_video_timing *custom_timing;
 
 	/* use platform defined ipu/di */
 	setting->dev_id = plat_data->ipu_id;
 	setting->disp_id = plat_data->disp_id;
+
+	if (plat_data->lcd0_timing != NULL) {
+		custom_timing = plat_data->lcd0_timing;
+		lcdif_modedb[0].pixclock =
+			PICOS2KHZ(custom_timing->pixclock);
+		lcdif_modedb[0].xres =
+			custom_timing->hres;
+		lcdif_modedb[0].left_margin = 
+			custom_timing->hfp;
+		lcdif_modedb[0].right_margin =
+			custom_timing->hbp;
+		lcdif_modedb[0].hsync_len =
+			custom_timing->hsw;
+		lcdif_modedb[0].yres =
+			custom_timing->vres;
+		lcdif_modedb[0].upper_margin =
+			custom_timing->vfp;
+		lcdif_modedb[0].lower_margin =
+			custom_timing->vbp;
+		lcdif_modedb[0].vsync_len =
+			custom_timing->vsw;
+	}
+
+	if (plat_data->lcd1_timing != NULL) {
+		custom_timing = plat_data->lcd1_timing;
+		lcdif_modedb[1].pixclock =
+		        PICOS2KHZ(custom_timing->pixclock);
+		lcdif_modedb[1].xres =
+		        custom_timing->hres;
+		lcdif_modedb[1].left_margin =
+		        custom_timing->hfp;
+		lcdif_modedb[1].right_margin =
+		        custom_timing->hbp;
+		lcdif_modedb[1].hsync_len =
+		        custom_timing->hsw;
+		lcdif_modedb[1].yres =
+		        custom_timing->vres;
+		lcdif_modedb[1].upper_margin =
+		        custom_timing->vfp;
+		lcdif_modedb[1].lower_margin =
+		        custom_timing->vbp;
+		lcdif_modedb[1].vsync_len =
+		        custom_timing->vsw;
+	}
 
 	ret = fb_find_mode(&setting->fbi->var, setting->fbi, setting->dft_mode_str,
 				modedb, modedb_sz, NULL, setting->default_bpp);
