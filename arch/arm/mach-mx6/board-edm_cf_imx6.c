@@ -481,60 +481,167 @@ static __init void edm_cf_imx6_init_ipu(void) {
 
 /****************************************************************************
  *                                                                          
- * HDMI
+ * MX6 DISPLAY CONTROL FRAMEWORK
  *                                                                          
  ****************************************************************************/
 
-static struct ipuv3_fb_platform_data edm_cf_imx6_hdmi_fb[] = {
-	{ /* hdmi framebuffer */
-		.disp_dev		= "hdmi",
-		.interface_pix_fmt	= IPU_PIX_FMT_RGB32,
-		.mode_str		= "1920x1080@60",
-		.default_bpp		= 32,
-		.int_clk		= false,
+#include "mx6_display.h"
+
+static void edm_cf_imx6_display0_control(int onoff)
+{
+	if (onoff) {
+		gpio_direction_output(IMX_GPIO_NR(2, 8), 1);
+		gpio_direction_output(IMX_GPIO_NR(2, 9), 1);
+	} else {
+		gpio_direction_output(IMX_GPIO_NR(2, 8), 0);
+		gpio_direction_output(IMX_GPIO_NR(2, 9), 0);
 	}
-};
 
-/* ------------------------------------------------------------------------ */
-
-static void edm_cf_imx6_hdmi_init(int ipu_id, int disp_id) {
-	if ((unsigned)ipu_id > 1) ipu_id = 0;
-	if ((unsigned)disp_id > 1) disp_id = 0;
-
-	mxc_iomux_set_gpr_register(3, 2, 2, 2*ipu_id + disp_id);
+}
+static void edm_cf_imx6_display1_control(int onoff)
+{
+	if (onoff) {
+		gpio_direction_output(IMX_GPIO_NR(2, 10), 1);
+		gpio_direction_output(IMX_GPIO_NR(2, 11), 1);
+	} else {
+		gpio_direction_output(IMX_GPIO_NR(2, 10), 0);
+		gpio_direction_output(IMX_GPIO_NR(2, 11), 0);
+	}
 }
 
-/* ------------------------------------------------------------------------ */
+static void __init edm_cf_imx6_pads_lvds(void)
+{
+	/* LVDS 0 */
+	EDM_IMX6_SET_PAD( PAD_LVDS0_CLK_P__LDB_LVDS0_CLK );
+	EDM_IMX6_SET_PAD( PAD_LVDS0_TX0_P__LDB_LVDS0_TX0 );
+	EDM_IMX6_SET_PAD( PAD_LVDS0_TX1_P__LDB_LVDS0_TX1 );
+	EDM_IMX6_SET_PAD( PAD_LVDS0_TX2_P__LDB_LVDS0_TX2 );
+	EDM_IMX6_SET_PAD( PAD_LVDS0_TX3_P__LDB_LVDS0_TX3 );
+	/* LVDS 1 */
+	EDM_IMX6_SET_PAD( PAD_LVDS1_CLK_P__LDB_LVDS1_CLK );
+	EDM_IMX6_SET_PAD( PAD_LVDS1_TX0_P__LDB_LVDS1_TX0 );
+	EDM_IMX6_SET_PAD( PAD_LVDS1_TX1_P__LDB_LVDS1_TX1 );
+	EDM_IMX6_SET_PAD( PAD_LVDS1_TX2_P__LDB_LVDS1_TX2 );
+	EDM_IMX6_SET_PAD( PAD_LVDS1_TX3_P__LDB_LVDS1_TX3 );
+}
 
-static struct fsl_mxc_hdmi_platform_data edm_cf_imx6_hdmi_data = {
-	.init = edm_cf_imx6_hdmi_init,
-};
+static void __init edm_cf_imx6_pads_ipu1_lcd(void)
+{
+	/* LCD0 on IPU1 */
+	EDM_IMX6_SET_PAD( PAD_DI0_DISP_CLK__IPU1_DI0_DISP_CLK );
+	EDM_IMX6_SET_PAD( PAD_DI0_PIN2__IPU1_DI0_PIN2 );		/* HSync */
+	EDM_IMX6_SET_PAD( PAD_DI0_PIN3__IPU1_DI0_PIN3 );		/* VSync */
+	EDM_IMX6_SET_PAD( PAD_DI0_PIN4__IPU1_DI0_PIN4 );		/* Contrast */
+	EDM_IMX6_SET_PAD( PAD_DI0_PIN15__IPU1_DI0_PIN15);		/* DISP0_DRDY */
+	EDM_IMX6_SET_PAD( PAD_DISP0_DAT0__IPU1_DISP0_DAT_0 );
+	EDM_IMX6_SET_PAD( PAD_DISP0_DAT1__IPU1_DISP0_DAT_1 );
+	EDM_IMX6_SET_PAD( PAD_DISP0_DAT2__IPU1_DISP0_DAT_2 );
+	EDM_IMX6_SET_PAD( PAD_DISP0_DAT3__IPU1_DISP0_DAT_3 );
+	EDM_IMX6_SET_PAD( PAD_DISP0_DAT4__IPU1_DISP0_DAT_4 );
+	EDM_IMX6_SET_PAD( PAD_DISP0_DAT5__IPU1_DISP0_DAT_5 );
+	EDM_IMX6_SET_PAD( PAD_DISP0_DAT6__IPU1_DISP0_DAT_6 );
+	EDM_IMX6_SET_PAD( PAD_DISP0_DAT7__IPU1_DISP0_DAT_7 );
+	EDM_IMX6_SET_PAD( PAD_DISP0_DAT8__IPU1_DISP0_DAT_8 );
+	EDM_IMX6_SET_PAD( PAD_DISP0_DAT9__IPU1_DISP0_DAT_9 );
+	EDM_IMX6_SET_PAD( PAD_DISP0_DAT10__IPU1_DISP0_DAT_10 );
+	EDM_IMX6_SET_PAD( PAD_DISP0_DAT11__IPU1_DISP0_DAT_11 );
+	EDM_IMX6_SET_PAD( PAD_DISP0_DAT12__IPU1_DISP0_DAT_12 );
+	EDM_IMX6_SET_PAD( PAD_DISP0_DAT13__IPU1_DISP0_DAT_13 );
+	EDM_IMX6_SET_PAD( PAD_DISP0_DAT14__IPU1_DISP0_DAT_14 );
+	EDM_IMX6_SET_PAD( PAD_DISP0_DAT15__IPU1_DISP0_DAT_15 );
+	EDM_IMX6_SET_PAD( PAD_DISP0_DAT16__IPU1_DISP0_DAT_16 );
+	EDM_IMX6_SET_PAD( PAD_DISP0_DAT17__IPU1_DISP0_DAT_17 );
+	EDM_IMX6_SET_PAD( PAD_DISP0_DAT18__IPU1_DISP0_DAT_18 );
+	EDM_IMX6_SET_PAD( PAD_DISP0_DAT19__IPU1_DISP0_DAT_19 );
+	EDM_IMX6_SET_PAD( PAD_DISP0_DAT20__IPU1_DISP0_DAT_20 );
+	EDM_IMX6_SET_PAD( PAD_DISP0_DAT21__IPU1_DISP0_DAT_21 );
+	EDM_IMX6_SET_PAD( PAD_DISP0_DAT22__IPU1_DISP0_DAT_22 );
+	EDM_IMX6_SET_PAD( PAD_DISP0_DAT23__IPU1_DISP0_DAT_23 );
+}
 
-/* ------------------------------------------------------------------------ */
+static void __init edm_cf_imx6_pads_ipu2_lcd(void)
+{
+	if (!cpu_is_mx6q())
+		return;
+	/* LCD0 on IPU2 */
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DI0_DISP_CLK__IPU2_DI0_DISP_CLK);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DI0_PIN2__IPU2_DI0_PIN2);		// HSync 
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DI0_PIN3__IPU2_DI0_PIN3);		// VSync 
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DI0_PIN4__IPU2_DI0_PIN4);		// Contrast 
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DI0_PIN15__IPU2_DI0_PIN15);		// DISP0_DRDY 
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT0__IPU2_DISP0_DAT_0);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT1__IPU2_DISP0_DAT_1);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT2__IPU2_DISP0_DAT_2);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT3__IPU2_DISP0_DAT_3);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT4__IPU2_DISP0_DAT_4);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT5__IPU2_DISP0_DAT_5);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT6__IPU2_DISP0_DAT_6);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT7__IPU2_DISP0_DAT_7);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT8__IPU2_DISP0_DAT_8);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT9__IPU2_DISP0_DAT_9);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT10__IPU2_DISP0_DAT_10);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT11__IPU2_DISP0_DAT_11);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT12__IPU2_DISP0_DAT_12);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT13__IPU2_DISP0_DAT_13);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT14__IPU2_DISP0_DAT_14);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT15__IPU2_DISP0_DAT_15);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT16__IPU2_DISP0_DAT_16);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT17__IPU2_DISP0_DAT_17);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT18__IPU2_DISP0_DAT_18);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT19__IPU2_DISP0_DAT_19);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT20__IPU2_DISP0_DAT_20);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT21__IPU2_DISP0_DAT_21);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT22__IPU2_DISP0_DAT_22);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT23__IPU2_DISP0_DAT_23);
+}
 
-static struct fsl_mxc_hdmi_core_platform_data edm_cf_imx6_hdmi_core_data = {
-	.ipu_id		= 0,
-	.disp_id	= 1,
-};
+static void edm_cf_imx6_init_display(void)
+{
+	EDM_IMX6_SET_PAD( PAD_SD4_DAT0__GPIO_2_8 );
+	EDM_IMX6_SET_PAD( PAD_SD4_DAT1__GPIO_2_9 );
+	EDM_IMX6_SET_PAD( PAD_SD4_DAT2__GPIO_2_10 );
+	EDM_IMX6_SET_PAD( PAD_SD4_DAT3__GPIO_2_11 );
 
-/* ------------------------------------------------------------------------ */
+	gpio_request(IMX_GPIO_NR(2, 8), "lvds0_en");
+	gpio_request(IMX_GPIO_NR(2, 9), "lvds0_blt_ctrl");
 
-static const struct i2c_board_info edm_cf_imx6_hdmi_i2c_info = {
-	I2C_BOARD_INFO("mxc_hdmi_i2c", 0x50),
-};
+	gpio_request(IMX_GPIO_NR(2, 10), "disp0_bklen");
+	gpio_request(IMX_GPIO_NR(2, 11), "disp0_vdden");
 
-/* ------------------------------------------------------------------------ */
+	mx6_disp_ctrls = kmalloc(sizeof(struct mx6_display_controls), GFP_KERNEL);
+	if (mx6_disp_ctrls != NULL) {
+		mx6_disp_ctrls->hdmi_enable 	= NULL;
+		mx6_disp_ctrls->lvds0_enable 	= edm_cf_imx6_display0_control;
+		mx6_disp_ctrls->lvds1_enable 	= edm_cf_imx6_display1_control;
+		mx6_disp_ctrls->lcd0_enable 	= edm_cf_imx6_display1_control;
+		mx6_disp_ctrls->lcd1_enable 	= NULL;
+		mx6_disp_ctrls->dsi_enable 	= NULL;
+		mx6_disp_ctrls->hdmi_pads 	= NULL;
+		mx6_disp_ctrls->lvds0_pads 	= edm_cf_imx6_pads_lvds;
+		mx6_disp_ctrls->lvds1_pads 	= edm_cf_imx6_pads_lvds;
+		mx6_disp_ctrls->lcd0_ipu1_pads 	= edm_cf_imx6_pads_ipu1_lcd;
+		mx6_disp_ctrls->lcd0_ipu2_pads 	= edm_cf_imx6_pads_ipu2_lcd;
+		mx6_disp_ctrls->lcd1_ipu1_pads 	= NULL;
+		mx6_disp_ctrls->lcd1_ipu2_pads 	= NULL;
+		mx6_disp_ctrls->dsi_pads 	= NULL;
+		mx6_disp_ctrls->hdmi_ddc_pads_enable 	= NULL;
+		mx6_disp_ctrls->hdmi_ddc_pads_disable 	= NULL;
+		mx6_disp_ctrls->hdmi_i2c	= edm_ddc;
+		mx6_disp_ctrls->hdcp_enable	= 0;
+		mx6_disp_ctrls->lvds0_i2c	= -EINVAL;
+		mx6_disp_ctrls->lvds1_i2c	= -EINVAL;
+		mx6_disp_ctrls->lcd0_i2c	= -EINVAL;
+		mx6_disp_ctrls->lcd1_i2c	= -EINVAL;
+		mx6_disp_ctrls->dsi_i2c		= -EINVAL;
+	}
 
-static void edm_cf_imx6_init_hdmi(void) {
-	i2c_register_board_info(0, &edm_cf_imx6_hdmi_i2c_info, 1);
-	imx6q_add_mxc_hdmi_core(&edm_cf_imx6_hdmi_core_data);
-	imx6q_add_mxc_hdmi(&edm_cf_imx6_hdmi_data);
-	imx6q_add_ipuv3fb(0, edm_cf_imx6_hdmi_fb);
-        
-        /* Enable HDMI audio */
-	imx6q_add_hdmi_soc();
-	imx6q_add_hdmi_soc_dai();        
-	mxc_iomux_set_gpr_register(0, 0, 1, 1);
+	/* For EDM1 , the following are supported: lcd0, hdmi0, lvds0, dsi */
+	mx6_display_ch_capability_setup(1, 0, 1, 1, 0, 0, 1);
+#if 0
+	/* For EDM2 , the following are supported: hdmi0, lvds0, lvds1, lvdsd, dsi */
+	mx6_display_ch_capability_setup(0, 0, 1, 1, 1, 1, 1);
+#endif
+	mx6_init_display();
 }
 
 
@@ -780,142 +887,6 @@ static void __init edm_cf_imx6_init_spi(void) {
 	imx6q_add_ecspi(0, &edm_cf_imx6_spi1_data);
 	imx6q_add_ecspi(1, &edm_cf_imx6_spi2_data);
 }
-
-
-/****************************************************************************
- *                                                                          
- * LCD/LVDS/TTL
- *                                                                          
- ****************************************************************************/
-
-static struct fsl_mxc_lcd_platform_data edm_cf_imx6_lcdif_data = {
-	.ipu_id = 0,
-	.disp_id = 0,
-	.default_ifmt = IPU_PIX_FMT_RGB24,
-};
-
-/* ------------------------------------------------------------------------ */
-
-static struct fsl_mxc_ldb_platform_data edm_cf_imx6_ldb_data = {
-	.ipu_id = 0,
-	.disp_id = 0,
-	.ext_ref = 1,
-	.mode = LDB_SEP0,
-	.sec_ipu_id = 0,
-	.sec_disp_id = 1,
-};
-
-/* ------------------------------------------------------------------------ */
-
-static struct ipuv3_fb_platform_data edm_cf_imx6_lcd_fb[] = {
-        {
-		.disp_dev = "lcd",
-		.interface_pix_fmt = IPU_PIX_FMT_RGB24,
-		.mode_str = "SEIKO-WVGA",
-		.default_bpp = 24,
-		.int_clk = false,
-        },
-};
-
-/* ------------------------------------------------------------------------ */
-
-static struct ipuv3_fb_platform_data edm_cf_imx6_lvds_fb[] = {
-        {
-		.disp_dev = "ldb",
-		.interface_pix_fmt = IPU_PIX_FMT_RGB24,
-		.mode_str = "LDB-WVGA",
-		.default_bpp = 24,
-		.int_clk = false,
-        }, {
-		.disp_dev = "ldb",
-		.interface_pix_fmt = IPU_PIX_FMT_RGB24,
-		.mode_str = "LDB-WVGA",
-		.default_bpp = 24,
-		.int_clk = false,
-        },
-};
-
-/* ------------------------------------------------------------------------ */
-
-static void __init edm_cf_imx6_init_lcd(void) {
-        /* TTL / LVDS */
-	EDM_IMX6_SET_PAD( PAD_DI0_DISP_CLK__IPU1_DI0_DISP_CLK );
-	EDM_IMX6_SET_PAD( PAD_DI0_PIN2__IPU1_DI0_PIN2 );		/* HSync */
-	EDM_IMX6_SET_PAD( PAD_DI0_PIN3__IPU1_DI0_PIN3 );		/* VSync */
-	EDM_IMX6_SET_PAD( PAD_DI0_PIN4__IPU1_DI0_PIN4 );		/* Contrast */
-	EDM_IMX6_SET_PAD( PAD_DI0_PIN15__IPU1_DI0_PIN15);		/* DISP0_DRDY */
-	EDM_IMX6_SET_PAD( PAD_DISP0_DAT0__IPU1_DISP0_DAT_0 );
-	EDM_IMX6_SET_PAD( PAD_DISP0_DAT1__IPU1_DISP0_DAT_1 );
-	EDM_IMX6_SET_PAD( PAD_DISP0_DAT2__IPU1_DISP0_DAT_2 );
-	EDM_IMX6_SET_PAD( PAD_DISP0_DAT3__IPU1_DISP0_DAT_3 );
-	EDM_IMX6_SET_PAD( PAD_DISP0_DAT4__IPU1_DISP0_DAT_4 );
-	EDM_IMX6_SET_PAD( PAD_DISP0_DAT5__IPU1_DISP0_DAT_5 );
-	EDM_IMX6_SET_PAD( PAD_DISP0_DAT6__IPU1_DISP0_DAT_6 );
-	EDM_IMX6_SET_PAD( PAD_DISP0_DAT7__IPU1_DISP0_DAT_7 );
-	EDM_IMX6_SET_PAD( PAD_DISP0_DAT8__IPU1_DISP0_DAT_8 );
-	EDM_IMX6_SET_PAD( PAD_DISP0_DAT9__IPU1_DISP0_DAT_9 );
-	EDM_IMX6_SET_PAD( PAD_DISP0_DAT10__IPU1_DISP0_DAT_10 );
-	EDM_IMX6_SET_PAD( PAD_DISP0_DAT11__IPU1_DISP0_DAT_11 );
-	EDM_IMX6_SET_PAD( PAD_DISP0_DAT12__IPU1_DISP0_DAT_12 );
-	EDM_IMX6_SET_PAD( PAD_DISP0_DAT13__IPU1_DISP0_DAT_13 );
-	EDM_IMX6_SET_PAD( PAD_DISP0_DAT14__IPU1_DISP0_DAT_14 );
-	EDM_IMX6_SET_PAD( PAD_DISP0_DAT15__IPU1_DISP0_DAT_15 );
-	EDM_IMX6_SET_PAD( PAD_DISP0_DAT16__IPU1_DISP0_DAT_16 );
-	EDM_IMX6_SET_PAD( PAD_DISP0_DAT17__IPU1_DISP0_DAT_17 );
-	EDM_IMX6_SET_PAD( PAD_DISP0_DAT18__IPU1_DISP0_DAT_18 );
-	EDM_IMX6_SET_PAD( PAD_DISP0_DAT19__IPU1_DISP0_DAT_19 );
-	EDM_IMX6_SET_PAD( PAD_DISP0_DAT20__IPU1_DISP0_DAT_20 );
-	EDM_IMX6_SET_PAD( PAD_DISP0_DAT21__IPU1_DISP0_DAT_21 );
-	EDM_IMX6_SET_PAD( PAD_DISP0_DAT22__IPU1_DISP0_DAT_22 );
-	EDM_IMX6_SET_PAD( PAD_DISP0_DAT23__IPU1_DISP0_DAT_23 );
-
-        /* LVDS */
-        EDM_IMX6_SET_PAD( PAD_SD4_DAT0__GPIO_2_8 ); /* lvds0 en */
-        EDM_IMX6_SET_PAD( PAD_SD4_DAT1__GPIO_2_9 );
-        
-        EDM_IMX6_SET_PAD( PAD_LVDS0_CLK_P__LDB_LVDS0_CLK );
-        EDM_IMX6_SET_PAD( PAD_LVDS0_TX0_P__LDB_LVDS0_TX0 );
-        EDM_IMX6_SET_PAD( PAD_LVDS0_TX1_P__LDB_LVDS0_TX1 );
-        EDM_IMX6_SET_PAD( PAD_LVDS0_TX2_P__LDB_LVDS0_TX2 );
-        EDM_IMX6_SET_PAD( PAD_LVDS0_TX3_P__LDB_LVDS0_TX3 );
-
-        EDM_IMX6_SET_PAD( PAD_SD4_DAT2__GPIO_2_10 );
-        EDM_IMX6_SET_PAD( PAD_SD4_DAT3__GPIO_2_11 ); /* lvds1 en */
-        EDM_IMX6_SET_PAD( PAD_LVDS1_CLK_P__LDB_LVDS1_CLK );
-        EDM_IMX6_SET_PAD( PAD_LVDS1_TX0_P__LDB_LVDS1_TX0 );
-        EDM_IMX6_SET_PAD( PAD_LVDS1_TX1_P__LDB_LVDS1_TX1 );
-        EDM_IMX6_SET_PAD( PAD_LVDS1_TX2_P__LDB_LVDS1_TX2 );
-        EDM_IMX6_SET_PAD( PAD_LVDS1_TX3_P__LDB_LVDS1_TX3 );
-
-        gpio_request(IMX_GPIO_NR(2, 8), "lvds0_en");
-        gpio_direction_output(IMX_GPIO_NR(2, 8), 1);
-        
-        gpio_request(IMX_GPIO_NR(2, 9), "lvds0_blt_ctrl");
-        gpio_direction_output(IMX_GPIO_NR(2, 9), 1);
-
-        gpio_request(IMX_GPIO_NR(2, 10), "lvds1_blt_ctrl");
-        gpio_direction_output(IMX_GPIO_NR(2, 10), 1);
-
-        gpio_request(IMX_GPIO_NR(2, 11), "lvds1_en");
-        gpio_direction_output(IMX_GPIO_NR(2, 11), 1);
-
-	imx6q_add_vdoa();
-/*
-	if (cpu_is_mx6q()) {
-		edm_cf_imx6_ldb_data.ipu_id = 1;
-	}
-*/
-        imx6q_add_ldb(&edm_cf_imx6_ldb_data);
-        imx6q_add_lcdif(&edm_cf_imx6_lcdif_data);        
-
-	imx6q_add_ipuv3fb(1, &edm_cf_imx6_lvds_fb[0]);
-        imx6q_add_ipuv3fb(2, &edm_cf_imx6_lcd_fb[0]);
-/*
-      imx6q_add_ipuv3fb(2, &edm_cf_imx6_lvds_fb[0]);
-      imx6q_add_ipuv3fb(3, &edm_cf_imx6_lvds_fb[1]);
-*/
-}
-
 
 /****************************************************************************
  *                                                                          
@@ -1209,8 +1180,7 @@ static void __init edm_cf_imx6_board_init(void) {
 	edm_cf_imx6_init_ethernet();
 
 	edm_cf_imx6_init_ipu();
-	edm_cf_imx6_init_hdmi();
-	edm_cf_imx6_init_lcd();
+	edm_cf_imx6_init_display();
 
 	edm_cf_imx6_init_wifi();
 	edm_cf_imx6_init_bluetooth();
