@@ -106,6 +106,21 @@ static int g_ldb_mode;
 static struct fb_videomode ldb_modedb[] = {
 	{
 	/* 800x480 @ 60 Hz , pixel clk @ 32MHz */
+	 "LDB-CUSTOM", 60, 800, 480, 29850,
+	 89, 164,
+	 23, 10,
+	 10, 10,
+	 FB_SYNC_CLK_LAT_FALL,
+	 FB_VMODE_NONINTERLACED,
+	 0,},
+	/* 800x480 @ 60 Hz , pixel clk @ 32MHz */
+	 "LDB-CUSTOM2", 60, 800, 480, 29850,
+	 89, 164,
+	 23, 10,
+	 10, 10,
+	 FB_SYNC_CLK_LAT_FALL,
+	 FB_VMODE_NONINTERLACED,
+	 0,},
 	 "LDB-WVGA", 60, 800, 480, 29850,
 	 89, 164,
 	 23, 10,
@@ -443,6 +458,7 @@ static int ldb_disp_init(struct mxc_dispdrv_handle *disp,
 	uint32_t reg, setting_idx;
 	uint32_t ch_mask = 0, ch_val = 0;
 	uint32_t ipu_id, disp_id;
+	struct fsl_video_timing *custom_timing;
 
 	/* if input format not valid, make RGB666 as default*/
 	if (!valid_mode(setting->if_fmt)) {
@@ -742,6 +758,50 @@ static int ldb_disp_init(struct mxc_dispdrv_handle *disp,
 	 */
 	clk_set_parent(ldb->setting[setting_idx].di_clk,
 			ldb->setting[setting_idx].ldb_di_clk);
+
+	if (plat_data->lvds0_timing != NULL) {
+		custom_timing = plat_data->lvds0_timing;
+		ldb_modedb[0].pixclock =
+			PICOS2KHZ(custom_timing->pixclock);
+		ldb_modedb[0].xres =
+			custom_timing->hres;
+		ldb_modedb[0].left_margin =
+			custom_timing->hfp;
+		ldb_modedb[0].right_margin =
+			custom_timing->hbp;
+		ldb_modedb[0].hsync_len =
+			custom_timing->hsw;
+		ldb_modedb[0].yres =
+			custom_timing->vres;
+		ldb_modedb[0].upper_margin =
+			custom_timing->vfp;
+		ldb_modedb[0].lower_margin =
+			custom_timing->vbp;
+		ldb_modedb[0].vsync_len =
+			custom_timing->vsw;
+	}
+
+	if (plat_data->lvds1_timing != NULL) {
+		custom_timing = plat_data->lvds1_timing;
+		ldb_modedb[1].pixclock =
+			PICOS2KHZ(custom_timing->pixclock);
+		ldb_modedb[1].xres =
+			custom_timing->hres;
+		ldb_modedb[1].left_margin =
+			custom_timing->hfp;
+		ldb_modedb[1].right_margin =
+			custom_timing->hbp;
+		ldb_modedb[1].hsync_len =
+			custom_timing->hsw;
+		ldb_modedb[1].yres =
+			custom_timing->vres;
+		ldb_modedb[1].upper_margin =
+			custom_timing->vfp;
+		ldb_modedb[1].lower_margin =
+			custom_timing->vbp;
+		ldb_modedb[1].vsync_len =
+			custom_timing->vsw;
+	}
 
 	/* must use spec video mode defined by driver */
 	ret = fb_find_mode(&setting->fbi->var, setting->fbi, setting->dft_mode_str,
