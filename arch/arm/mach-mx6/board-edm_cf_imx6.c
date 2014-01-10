@@ -53,6 +53,8 @@
 #define EDM_CF_IMX6_CAN1_STBY		IMX_GPIO_NR(7, 13)
 #define EDM_CF_IMX6_CAN2_STBY		IMX_GPIO_NR(1, 7)
 
+#define EDM_CF_IMX6_EDM_VERSION		IMX_GPIO_NR(2, 28)
+
 #define EDM_CF_IMX6_PCIE_NRST		IMX_GPIO_NR(3, 31)
 
 #define EDM_CF_IMX6_RGMII_INT		IMX_GPIO_NR(1, 28)
@@ -79,7 +81,6 @@
                 mxc_iomux_v3_setup_pad(MX6DL_##p)
 
 /* See arch/arm/plat-mxc/include/mach/iomux-mx6q.h for definitions */
-
 
 /****************************************************************************
  *                                                                          
@@ -635,12 +636,13 @@ static void edm_cf_imx6_init_display(void)
 		mx6_disp_ctrls->dsi_i2c		= -EINVAL;
 	}
 
-	/* For EDM1 , the following are supported: lcd0, hdmi0, lvds0, dsi */
-	mx6_display_ch_capability_setup(1, 0, 1, 1, 0, 0, 1);
-#if 0
-	/* For EDM2 , the following are supported: hdmi0, lvds0, lvds1, lvdsd, dsi */
-	mx6_display_ch_capability_setup(0, 0, 1, 1, 1, 1, 1);
-#endif
+/* For EDM2 , the following are supported: hdmi0, lvds0, lvds1, lvdsd, dsi */
+	if (edm_version == 2)
+		mx6_display_ch_capability_setup(0, 0, 1, 1, 1, 1, 1);
+	else
+/* For EDM1 , the following are supported: lcd0, hdmi0, lvds0, dsi */
+		mx6_display_ch_capability_setup(1, 0, 1, 1, 0, 0, 1);
+
 	mx6_init_display();
 }
 
@@ -1089,7 +1091,24 @@ static __init void edm_cf_imx6_init_sata(void) {
  *                                                                            
  *****************************************************************************/
 
+int edm_cf_imx6_detect_edm_version(void) {
+	int ret;
+	EDM_IMX6_SET_PAD( PAD_EIM_EB0__GPIO_2_28 );
+
+	ret = gpio_request(EDM_CF_IMX6_EDM_VERSION, "edm_version" );
+	if ( !ret ) {
+		gpio_direction_input(EDM_CF_IMX6_EDM_VERSION);
+                ret = gpio_get_value(EDM_CF_IMX6_EDM_VERSION);
+		gpio_free(EDM_CF_IMX6_EDM_VERSION);
+	}
+	return ret;
+}
+
+/* ------------------------------------------------------------------------ */
+
 static void __init edm_cf_imx6_init_edm(void) {
+	edm_version = 1 + edm_cf_imx6_detect_edm_version();
+
 	edm_external_gpio[0] = IMX_GPIO_NR(6, 5); /* P255 */
 	edm_external_gpio[1] = IMX_GPIO_NR(6, 2); /* P256 */
 	edm_external_gpio[2] = IMX_GPIO_NR(6, 4); /* P257 */
@@ -1109,6 +1128,7 @@ static void __init edm_cf_imx6_init_edm(void) {
 	edm_audio_data[0].enabled = true;
 	edm_audio_data[0].platform_data = &edm_cf_imx6_audio_channel_data;
 }
+
 
 
 /*****************************************************************************
