@@ -29,13 +29,13 @@ struct mxc_lcdif_data {
 static struct fb_videomode lcdif_modedb[] = {
 	{
 	/* 800x480 @ 60 Hz , pixel clk @ 32MHz */
-	"LCD-CUSTOM", 60, 800, 480, 29850, 89, 164, 23, 10, 10, 10,
+	"LCD-USER1", 60, 800, 480, 29850, 89, 164, 23, 10, 10, 10,
 	FB_SYNC_CLK_LAT_FALL,
 	FB_VMODE_NONINTERLACED,
 	0,},
 	{
 	/* 800x480 @ 60 Hz , pixel clk @ 32MHz */
-	"LCD-CUSTOM2", 60, 800, 480, 29850, 89, 164, 23, 10, 10, 10,
+	"LCD-USER2", 60, 800, 480, 29850, 89, 164, 23, 10, 10, 10,
 	FB_SYNC_CLK_LAT_FALL,
 	FB_VMODE_NONINTERLACED,
 	0,},
