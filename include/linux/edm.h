@@ -31,6 +31,9 @@ extern int edm_spi[EDM_NOF_SPI];
 /* Pointer to a audio structure needed by some boards */
 extern void *edm_audio_platform_data;
 
+/* EDM version of module, filled in by module */
+extern int edm_version;
+
 /* Audio interface abstraction
 	Index 0 corresponds to primary I2S, pins 187--195 / 2
 	Index 1 corrseponds to secondary I2S, pins 186--194 / 2

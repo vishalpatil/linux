@@ -33,6 +33,9 @@ EXPORT_SYMBOL_GPL(edm_spi);
 struct edm_audio_data_t edm_audio_data[EDM_NOF_I2S];
 EXPORT_SYMBOL_GPL(edm_audio_data);
 
+int edm_version = 0;
+EXPORT_SYMBOL_GPL(edm_version);
+
 const char *edm_gpio_pin_name[] = {
 	"pin255", "pin256", "pin257", "pin258", "pin259", 
 	"pin260", "pin261", "pin262", "pin263", "pin264"	
