@@ -1045,6 +1045,8 @@ static __init void wand_init_sata(void) {
  *****************************************************************************/
 
 static void __init wand_init_edm(void) {
+	edm_version = 1;
+        
 	edm_external_gpio[0] = IMX_GPIO_NR(3, 12);        
 	edm_external_gpio[1] = IMX_GPIO_NR(3, 11);
 	edm_external_gpio[2] = IMX_GPIO_NR(4, 10);
