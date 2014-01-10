@@ -106,21 +106,23 @@ static int g_ldb_mode;
 static struct fb_videomode ldb_modedb[] = {
 	{
 	/* 800x480 @ 60 Hz , pixel clk @ 32MHz */
-	 "LDB-CUSTOM", 60, 800, 480, 29850,
+	 "LDB-USER", 60, 800, 480, 29850,
 	 89, 164,
 	 23, 10,
 	 10, 10,
 	 FB_SYNC_CLK_LAT_FALL,
 	 FB_VMODE_NONINTERLACED,
 	 0,},
+        {
 	/* 800x480 @ 60 Hz , pixel clk @ 32MHz */
-	 "LDB-CUSTOM2", 60, 800, 480, 29850,
+	 "LDB-USER2", 60, 800, 480, 29850,
 	 89, 164,
 	 23, 10,
 	 10, 10,
 	 FB_SYNC_CLK_LAT_FALL,
 	 FB_VMODE_NONINTERLACED,
-	 0,},
+	 0,}, 
+        {
 	 "LDB-WVGA", 60, 800, 480, 29850,
 	 89, 164,
 	 23, 10,
