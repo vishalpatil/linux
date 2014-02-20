@@ -147,7 +147,7 @@ static struct ads7846_platform_data fairy_tsc2046_config = {
 	.get_pendown_state      = fairy_get_tsc2046_pendown_state,
 	.keep_vref_on           = 1,
 	.wakeup			= true,
-	.model                  = 7845,
+	.model                  = 7846,
 
 	.x_plate_ohms  = 90,
 	.y_plate_ohms  = 90,
