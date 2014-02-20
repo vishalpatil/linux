@@ -134,7 +134,7 @@ static __init int fairy_init_sgtl5000(void) {
 #include <linux/spi/ads7846.h>
 #include <linux/spi/spi.h>
 
-static int fairy_tsc2046_gpio_index = 4;
+static int fairy_tsc2046_gpio_index = 8;
 
 int fairy_get_tsc2046_pendown_state(void) {
 	return !gpio_get_value(edm_external_gpio[fairy_tsc2046_gpio_index]);
