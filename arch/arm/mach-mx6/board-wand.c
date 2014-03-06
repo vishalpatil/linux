@@ -200,8 +200,8 @@ static void __init wand_init_i2c(void) {
  ****************************************************************************/
  
 static __init void wand_init_uart(void) {
-        IMX6_SETUP_PAD( CSI0_DAT10__UART1_TXD );
-        IMX6_SETUP_PAD( CSI0_DAT11__UART1_RXD );
+	IMX6_SETUP_PAD( CSI0_DAT10__UART1_TXD );
+	IMX6_SETUP_PAD( CSI0_DAT11__UART1_RXD );
         IMX6_SETUP_PAD( EIM_D19__UART1_CTS );
         IMX6_SETUP_PAD( EIM_D20__UART1_RTS );
 
@@ -405,22 +405,23 @@ static __init void wand_init_ethernet(void) {
  *                                                                          
  ****************************************************************************/
 
-static void wand_usbotg_vbus(bool on) { }
+static void wand_usbotg_vbus(bool on) {
+	gpio_set_value_cansleep(WAND_USB_HOST_PWR_EN, !on);
+}
 
 /* ------------------------------------------------------------------------ */
 
 static __init void wand_init_usb(void) {
-        IMX6_SETUP_PAD( GPIO_9__GPIO_1_9 );
-        IMX6_SETUP_PAD( GPIO_1__USBOTG_ID );
-        IMX6_SETUP_PAD( EIM_D22__GPIO_3_22 );
-        IMX6_SETUP_PAD( EIM_D30__GPIO_3_30 );
+	IMX6_SETUP_PAD( GPIO_9__GPIO_1_9 );
+	IMX6_SETUP_PAD( GPIO_1__USBOTG_ID );
+	IMX6_SETUP_PAD( EIM_D22__GPIO_3_22 );
+	IMX6_SETUP_PAD( EIM_D30__GPIO_3_30 );
         
-        gpio_request(WAND_USB_OTG_OC, "otg oc");
+	gpio_request(WAND_USB_OTG_OC, "otg oc");
 	gpio_direction_input(WAND_USB_OTG_OC);
 
-	/* USB host power is n.c on Wand baseboard */
 	gpio_request(WAND_USB_HOST_PWR_EN, "host pwr");
-	gpio_direction_output(WAND_USB_HOST_PWR_EN, 1);
+	gpio_direction_output(WAND_USB_HOST_PWR_EN, 0);
 
 	imx_otg_base = MX6_IO_ADDRESS(MX6Q_USB_OTG_BASE_ADDR);
 	/* GPR1: bit 13 == 1 means GPIO1 is OTG_ID pin */
@@ -428,7 +429,7 @@ static __init void wand_init_usb(void) {
 
 	mx6_set_otghost_vbus_func(wand_usbotg_vbus);
 
-        gpio_request(WAND_USB_HOST_OC, "usbh1 oc");
+	gpio_request(WAND_USB_HOST_OC, "usbh1 oc");
 	gpio_direction_input(WAND_USB_HOST_OC);
 }
 
