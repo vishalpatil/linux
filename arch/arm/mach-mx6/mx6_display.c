@@ -1,7 +1,8 @@
 
 /*
     MX6 DISPLAY CONTROL FRAMEWORK.
-    Copyright (C) 2012,2013 TechNexion Ltd.
+    Copyright (C) 2012,2013,2014 TechNexion Ltd.
+    Edward.lin <edward.lin@technexion.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -27,6 +28,7 @@
 #include "devices-imx6q.h"
 #include "mx6_display.h"
 
+#define MX6_DISPLAY_DEBUG_ON	1
 
 /****************************************************************************
  *
@@ -194,8 +196,8 @@ struct mx6_display_array mx6_4_disp_ref_setting[] = {
 {    -1, {    1,     1,     1,     1,     1,     1,     1},                "  Stop condition ", {0, 0}, {0, 0}, {0, 0}, {0, 0, SIN0, 0, 0}, {0, 0} },
 };
 
-#ifdef MX6_DISPLAY_DEBUG_ON
-static void mx6_display_ch_avaiability_list(struct mx6_display_array * ary_lst, char * tags)
+#if MX6_DISPLAY_DEBUG_ON
+static void mx6_display_ch_avaiability_list(struct mx6_display_array *ary_lst, char *tags)
 {
 	int count, i;
 	i = 0;
@@ -215,7 +217,7 @@ static void mx6_display_ch_avaiability_list(struct mx6_display_array * ary_lst, 
 }
 #endif
 
-static void mx6_display_ch_avaiability_enable_list(struct mx6_display_array * ary_lst, int *ch_status)
+static void mx6_display_ch_avaiability_enable_list(struct mx6_display_array *ary_lst, int *ch_status)
 {
 	int i, j;
 	i = 0;
@@ -232,7 +234,7 @@ static void mx6_display_ch_avaiability_enable_list(struct mx6_display_array * ar
 	}
 }
 
-static struct mx6_display_array * mx6_display_find_match_ref_settings(struct mx6_display_array * ary_lst, int * ch_status)
+static struct mx6_display_array *mx6_display_find_match_ref_settings(struct mx6_display_array *ary_lst, int *ch_status)
 {
 	int i = 0;
 	while (ary_lst[i].avaiable >= 0) {
@@ -298,8 +300,10 @@ static __init void mx6_init_ipu(void)
 
 static void mx6_hdmi_init(int ipu_id, int disp_id)
 {
-	if ((unsigned)ipu_id > 1) ipu_id = 0;
-	if ((unsigned)disp_id > 1) disp_id = 0;
+	if ((unsigned)ipu_id > 1)
+		ipu_id = 0;
+	if ((unsigned)disp_id > 1)
+		disp_id = 0;
 
 	mxc_iomux_set_gpr_register(3, 2, 2, 2*ipu_id + disp_id);
 }
@@ -315,7 +319,7 @@ static struct fsl_mxc_hdmi_platform_data mx6_hdmi_data = {
 static struct fsl_mxc_hdmi_core_platform_data mx6_hdmi_core_data = {
 	.ipu_id		= 0,
 	.disp_id	= 1,
-	.hdmi_timing	= NULL,
+	.hdmi_timing 	= NULL,
 };
 
 /* ------------------------------------------------------------------------ */
@@ -506,21 +510,21 @@ void mx6_display_ch_capability_setup(int lcd0, int lcd1, int hdmi, int lvds0,
 	if ((total_ch <= 0) || (total_ch >= MX6_DISPCH_INVALID))
 		return;
 
-	if (total_ch > 0 )
+	if (total_ch > 0)
 		mx6_display_ch_avaiability_enable_list(mx6_1_disp_ref_setting, ch_status);
 
-	if (total_ch > 1 ) {
+	if (total_ch > 1) {
 		mx6_display_ch_avaiability_enable_list(mx6_2_disp_1ipu_ref_setting, ch_status);
 		mx6_display_ch_avaiability_enable_list(mx6_2_disp_2ipu_ref_setting, ch_status);
 	}
 
-	if (total_ch > 2 )
+	if (total_ch > 2)
 		mx6_display_ch_avaiability_enable_list(mx6_3_disp_ref_setting, ch_status);
 
 	if (total_ch > 3)
 		mx6_display_ch_avaiability_enable_list(mx6_4_disp_ref_setting, ch_status);
 
-#ifdef MX6_DISPLAY_DEBUG_ON
+#if MX6_DISPLAY_DEBUG_ON
 	mx6_display_ch_avaiability_list(mx6_1_disp_ref_setting, "mx6_1_disp_ref_setting");
 	if (cpu_is_mx6dl()) {
 		mx6_display_ch_avaiability_list(mx6_2_disp_1ipu_ref_setting, "mx6_2_disp_1ipu_ref_setting");
@@ -540,25 +544,25 @@ EXPORT_SYMBOL(mx6_display_ch_capability_setup);
  *
  ****************************************************************************/
 
-static struct fsl_video_timing * timing_str_to_fsl_timing(char *timing_str)
+static struct fsl_video_timing *timing_str_to_fsl_timing(char *timing_str)
 {
 #if defined(CONFIG_EDM)
-	struct fsl_video_timing * fsl_timing;
+	struct fsl_video_timing *fsl_timing;
 	struct edm_video_timing edm_timing;
 	if ((timing_str == NULL) || (strlen(timing_str) == 0))
 		return NULL;
 
 	fsl_timing = kmalloc(sizeof(struct fsl_video_timing), GFP_KERNEL);
 	edm_disp_str_to_timing(&edm_timing, timing_str);
-	fsl_timing->pixclock	= edm_timing.pixclock;
-	fsl_timing->hres	= edm_timing.hres;
-	fsl_timing->hfp		= edm_timing.hfp;
-	fsl_timing->hbp		= edm_timing.hbp;
-	fsl_timing->hsw		= edm_timing.hsw;
-	fsl_timing->vres	= edm_timing.vres;
-	fsl_timing->vfp		= edm_timing.vfp;
-	fsl_timing->vbp		= edm_timing.vbp;
-	fsl_timing->vsw		= edm_timing.vsw;
+	fsl_timing->pixclock 	= edm_timing.pixclock;
+	fsl_timing->hres 	= edm_timing.hres;
+	fsl_timing->hfp 	= edm_timing.hfp;
+	fsl_timing->hbp 	= edm_timing.hbp;
+	fsl_timing->hsw 	= edm_timing.hsw;
+	fsl_timing->vres 	= edm_timing.vres;
+	fsl_timing->vfp 	= edm_timing.vfp;
+	fsl_timing->vbp 	= edm_timing.vbp;
+	fsl_timing->vsw 	= edm_timing.vsw;
 	if ((fsl_timing->pixclock == 0) ||
 		(fsl_timing->hres == 0) ||
 		(fsl_timing->vres == 0))
@@ -570,13 +574,13 @@ static struct fsl_video_timing * timing_str_to_fsl_timing(char *timing_str)
 #endif
 }
 
-struct mx6_display_controls * mx6_disp_ctrls = NULL;
+struct mx6_display_controls *mx6_disp_ctrls = NULL;
 
 static void __init mx6_init_display_transmitter(struct ipuv3_fb_platform_data *ipufbs)
 {
 	int i;
 	int disp_ch[MX6_DISPCH_INVALID] = {0};
-	struct mx6_display_array * ref_setting = NULL;
+	struct mx6_display_array *ref_setting = NULL;
 	char *string = NULL;
 	int first_lvds = -1;
 
@@ -588,68 +592,68 @@ static void __init mx6_init_display_transmitter(struct ipuv3_fb_platform_data *i
 		char *str = NULL;
 		ipufb = &ipufbs[i];
 		str = ipufb->timing_str;
-		switch(ipufb->disp_ch) {
-			case MX6_HDMI:
-				if (mx6_disp_ch_status[MX6_HDMI] == 1) {
-					disp_ch[MX6_HDMI] = 1;
-					mx6_hdmi_core_data.ipu_id = 0;
-					mx6_hdmi_core_data.disp_id = 0;
-					mx6_hdmi_core_data.hdmi_timing =
-						timing_str_to_fsl_timing(str);
-				}
-				break;
-			case MX6_LVDS0:
-				if (mx6_disp_ch_status[MX6_LVDS0] == 1) {
-					disp_ch[MX6_LVDS0] = 1;
-					mx6_ldb_data.ipu_id = 0;
-					mx6_ldb_data.disp_id = 0;
-					mx6_ldb_data.mode = LDB_SIN0;
-					mx6_ldb_data.lvds0_timing =
-						timing_str_to_fsl_timing(str);
-					if (first_lvds < 0)
-						first_lvds = 0;
-				}
-				break;
-			case MX6_LVDS1:
-				if (mx6_disp_ch_status[MX6_LVDS1] == 1) {
-					disp_ch[MX6_LVDS1] = 1;
-					mx6_ldb_data.ipu_id = 0;
-					mx6_ldb_data.disp_id = 1;
-					mx6_ldb_data.mode = LDB_SIN1;
-					mx6_ldb_data.lvds1_timing =
-						timing_str_to_fsl_timing(str);
-					if (first_lvds < 0)
-						first_lvds = 1;
-				}
-				break;
-			case MX6_LVDSD:
-				if (mx6_disp_ch_status[MX6_LVDSD] == 1) {
-					disp_ch[MX6_LVDSD] = 1;
-					mx6_ldb_data.ipu_id = 0;
-					mx6_ldb_data.disp_id = 0;
-					mx6_ldb_data.mode = LDB_SPL_DI0;
-					mx6_ldb_data.lvds0_timing =
-						timing_str_to_fsl_timing(str);
-				}
-				break;
-			case MX6_LCD0:
-				if (mx6_disp_ch_status[MX6_LCD0] == 1) {
-					disp_ch[MX6_LCD0] = 1;
-					mx6_lcdif_data.ipu_id = 0;
-					mx6_lcdif_data.disp_id = 0;
-					mx6_lcdif_data.lcd0_timing =
-						timing_str_to_fsl_timing(str);
-				}
-				break;
-			case MX6_DSI0:
-				if (mx6_disp_ch_status[MX6_DSI0] == 1) {
-					disp_ch[MX6_DSI0] = 1;
-					mx6_dsi_pdata.ipu_id = 0;
-					mx6_dsi_pdata.disp_id = 0;
-				}
-				break;
-			default:
-				break;
+		switch (ipufb->disp_ch) {
+		case MX6_HDMI:
+			if (mx6_disp_ch_status[MX6_HDMI] == 1) {
+				disp_ch[MX6_HDMI] = 1;
+				mx6_hdmi_core_data.ipu_id = 0;
+				mx6_hdmi_core_data.disp_id = 0;
+				mx6_hdmi_core_data.hdmi_timing =
+					timing_str_to_fsl_timing(str);
+			}
+			break;
+		case MX6_LVDS0:
+			if (mx6_disp_ch_status[MX6_LVDS0] == 1) {
+				disp_ch[MX6_LVDS0] = 1;
+				mx6_ldb_data.ipu_id = 0;
+				mx6_ldb_data.disp_id = 0;
+				mx6_ldb_data.mode = LDB_SIN0;
+				mx6_ldb_data.lvds0_timing =
+					timing_str_to_fsl_timing(str);
+				if (first_lvds < 0)
+					first_lvds = 0;
+			}
+			break;
+		case MX6_LVDS1:
+			if (mx6_disp_ch_status[MX6_LVDS1] == 1) {
+				disp_ch[MX6_LVDS1] = 1;
+				mx6_ldb_data.ipu_id = 0;
+				mx6_ldb_data.disp_id = 1;
+				mx6_ldb_data.mode = LDB_SIN1;
+				mx6_ldb_data.lvds1_timing =
+					timing_str_to_fsl_timing(str);
+				if (first_lvds < 0)
+					first_lvds = 1;
+			}
+			break;
+		case MX6_LVDSD:
+			if (mx6_disp_ch_status[MX6_LVDSD] == 1) {
+				disp_ch[MX6_LVDSD] = 1;
+				mx6_ldb_data.ipu_id = 0;
+				mx6_ldb_data.disp_id = 0;
+				mx6_ldb_data.mode = LDB_SPL_DI0;
+				mx6_ldb_data.lvds0_timing =
+					timing_str_to_fsl_timing(str);
+			}
+			break;
+		case MX6_LCD0:
+			if (mx6_disp_ch_status[MX6_LCD0] == 1) {
+				disp_ch[MX6_LCD0] = 1;
+				mx6_lcdif_data.ipu_id = 0;
+				mx6_lcdif_data.disp_id = 0;
+				mx6_lcdif_data.lcd0_timing =
+					timing_str_to_fsl_timing(str);
+			}
+			break;
+		case MX6_DSI0:
+			if (mx6_disp_ch_status[MX6_DSI0] == 1) {
+				disp_ch[MX6_DSI0] = 1;
+				mx6_dsi_pdata.ipu_id = 0;
+				mx6_dsi_pdata.disp_id = 0;
+			}
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -673,19 +677,19 @@ static void __init mx6_init_display_transmitter(struct ipuv3_fb_platform_data *i
 	}
 
 	if (ref_setting != NULL) {
-	#ifdef MX6_DISPLAY_DEBUG_ON
+	#if MX6_DISPLAY_DEBUG_ON
 		printk("\n%s : %s from %s\n\n", __FUNCTION__, ref_setting->desc, string);
 	#endif
-		mx6_hdmi_core_data.ipu_id	= ref_setting->s_hdmi.ipu_id;
-		mx6_hdmi_core_data.disp_id	= ref_setting->s_hdmi.disp_id;
-		mx6_ldb_data.ipu_id		= ref_setting->s_ldb.ipu_id;
-		mx6_ldb_data.disp_id		= ref_setting->s_ldb.disp_id;
-		mx6_ldb_data.mode		= ref_setting->s_ldb.mode;
-		mx6_ldb_data.sec_ipu_id		= ref_setting->s_ldb.sec_ipu_id;
-		mx6_ldb_data.sec_disp_id	= ref_setting->s_ldb.sec_disp_id;
-		mx6_lcdif_data.ipu_id		= ref_setting->s_lcd0.ipu_id;
-		mx6_lcdif_data.disp_id		= ref_setting->s_lcd0.disp_id;
-		mx6_dsi_pdata.ipu_id		= ref_setting->s_dsi0.ipu_id;
+		mx6_hdmi_core_data.ipu_id 	= ref_setting->s_hdmi.ipu_id;
+		mx6_hdmi_core_data.disp_id 	= ref_setting->s_hdmi.disp_id;
+		mx6_ldb_data.ipu_id 		= ref_setting->s_ldb.ipu_id;
+		mx6_ldb_data.disp_id 		= ref_setting->s_ldb.disp_id;
+		mx6_ldb_data.mode 		= ref_setting->s_ldb.mode;
+		mx6_ldb_data.sec_ipu_id 	= ref_setting->s_ldb.sec_ipu_id;
+		mx6_ldb_data.sec_disp_id 	= ref_setting->s_ldb.sec_disp_id;
+		mx6_lcdif_data.ipu_id 		= ref_setting->s_lcd0.ipu_id;
+		mx6_lcdif_data.disp_id 		= ref_setting->s_lcd0.disp_id;
+		mx6_dsi_pdata.ipu_id 		= ref_setting->s_dsi0.ipu_id;
 		mx6_dsi_pdata.disp_id		= ref_setting->s_dsi0.disp_id;
 		if ((mx6_ldb_data.mode == SEP0) || (mx6_ldb_data.mode == SEP1)) {
 			if ((first_lvds >= 0) && (first_lvds == 0))
@@ -737,7 +741,7 @@ enable_transmitter:
 			mx6_disp_ctrls->hdmi_enable(1);
 	}
 
-#ifdef MX6_DISPLAY_DEBUG_ON
+#if MX6_DISPLAY_DEBUG_ON
 	printk("\nList of Transmitter IPU Setting:\n");
 	if (disp_ch[MX6_HDMI] == 1)
 		printk("HDMI : IPU %d, DI %d\n", mx6_hdmi_core_data.ipu_id, mx6_hdmi_core_data.disp_id);
@@ -746,34 +750,34 @@ enable_transmitter:
 		char string[200];
 		int i;
 		printk("LVDS Mode : ");
-		switch(mx6_ldb_data.mode) {
-			case LDB_SIN0:
-				printk("LDB_SIN0\n");
-				break;
-			case LDB_SIN1:
-				printk("LDB_SIN1\n");
-				break;
-			case LDB_SEP0:
-				printk("LDB_SEP0\n");
-				break;
-			case LDB_SEP1:
-				printk("LDB_SEP1\n");
-				break;
-			case LDB_DUL_DI0:
-				printk("LDB_DUL_DI0\n");
-				break;
-			case LDB_DUL_DI1:
-				printk("LDB_DUL_DI1\n");
-				break;
-			case LDB_SPL_DI0:
-				printk("LDB_SPL_DI0\n");
-				break;
-			case LDB_SPL_DI1:
-				printk("LDB_SPL_DI1\n");
-				break;
-			default:
-				printk("Unknown\n");
-				break;
+		switch (mx6_ldb_data.mode) {
+		case LDB_SIN0:
+			printk("LDB_SIN0\n");
+			break;
+		case LDB_SIN1:
+			printk("LDB_SIN1\n");
+			break;
+		case LDB_SEP0:
+			printk("LDB_SEP0\n");
+			break;
+		case LDB_SEP1:
+			printk("LDB_SEP1\n");
+			break;
+		case LDB_DUL_DI0:
+			printk("LDB_DUL_DI0\n");
+			break;
+		case LDB_DUL_DI1:
+			printk("LDB_DUL_DI1\n");
+			break;
+		case LDB_SPL_DI0:
+			printk("LDB_SPL_DI0\n");
+			break;
+		case LDB_SPL_DI1:
+			printk("LDB_SPL_DI1\n");
+			break;
+		default:
+			printk("Unknown\n");
+			break;
 		}
 		printk("LVDS 1st : IPU %d, DI %d\n", mx6_ldb_data.ipu_id, mx6_ldb_data.disp_id);
 		for (i = 0; i < 200; i++)
@@ -855,7 +859,7 @@ static struct ipuv3_fb_platform_data mx6_preset_fb_data[] = {
 };
 
 
-struct edm_display_device *edm_display_devices = NULL;
+static struct edm_display_device edm_display_devices[MX6_MAX_DISPLAYS];
 
 static void __init mx6_init_ipuv3_fb(void)
 {
@@ -868,45 +872,45 @@ static void __init mx6_init_ipuv3_fb(void)
 		struct edm_display_device *dev;
 		struct ipuv3_fb_platform_data *ipufb;
 		ipufb = &mx6_ipuv3_fb_pdata[i];
-		dev = &edm_display_devices[i];
+		dev = edm_display_devices + i;
 
 		if (dev->disp_dev == EDM_DEV_INVALID)
 			break;
 
 		switch (dev->disp_dev) {
-			case EDM_HDMI0:
-				strncpy(ipufb->disp_dev, "hdmi", 5);
-				ipufb->disp_ch = MX6_HDMI;
-				break;
-			case EDM_HDMI1:
-				strncpy(ipufb->disp_dev, "sii902x_hdmi", 13);
-				ipufb->disp_ch = MX6_LCD0;
-				break;
-			case EDM_LVDS0:
-				strncpy(ipufb->disp_dev, "ldb", 4);
-				ipufb->disp_ch = MX6_LVDS0;
-				break;
-			case EDM_LVDSD_0_1:
-				strncpy(ipufb->disp_dev, "ldb", 4);
-				ipufb->disp_ch = MX6_LVDSD;
-				break;
-			case EDM_LVDS1:
-				strncpy(ipufb->disp_dev, "ldb", 4);
-				ipufb->disp_ch = MX6_LVDS1;
-				break;
-			case EDM_LCD0:
-				strncpy(ipufb->disp_dev, "lcd", 4);
-				ipufb->disp_ch = MX6_LCD0;
-				break;
-			case EDM_DSI0:
-				strncpy(ipufb->disp_dev, "mipi_dsi", 9);
-				ipufb->disp_ch = MX6_DSI0;
-				break;
-			case EDM_DSI1:
-			case EDM_LCD1:
-			default:
-				printk("Unsupport Transmitter type!!\n");
-				break;
+		case EDM_HDMI0:
+			strncpy(ipufb->disp_dev, "hdmi", 5);
+			ipufb->disp_ch = MX6_HDMI;
+			break;
+		case EDM_HDMI1:
+			strncpy(ipufb->disp_dev, "sii902x_hdmi", 13);
+			ipufb->disp_ch = MX6_LCD0;
+			break;
+		case EDM_LVDS0:
+			strncpy(ipufb->disp_dev, "ldb", 4);
+			ipufb->disp_ch = MX6_LVDS0;
+			break;
+		case EDM_LVDSD_0_1:
+			strncpy(ipufb->disp_dev, "ldb", 4);
+			ipufb->disp_ch = MX6_LVDSD;
+			break;
+		case EDM_LVDS1:
+			strncpy(ipufb->disp_dev, "ldb", 4);
+			ipufb->disp_ch = MX6_LVDS1;
+			break;
+		case EDM_LCD0:
+			strncpy(ipufb->disp_dev, "lcd", 4);
+			ipufb->disp_ch = MX6_LCD0;
+			break;
+		case EDM_DSI0:
+			strncpy(ipufb->disp_dev, "mipi_dsi", 9);
+			ipufb->disp_ch = MX6_DSI0;
+			break;
+		case EDM_DSI1:
+		case EDM_LCD1:
+		default:
+			printk("Unsupport Transmitter type!!\n");
+			break;
 		}
 		if (!strncmp(dev->if_fmt, "RGB24", 5))
 			ipufb->interface_pix_fmt = IPU_PIX_FMT_RGB24;
@@ -995,16 +999,16 @@ static void __init mx6_init_ipuv3_fb(void)
 fallback_preset_ipufb_init:
 
 	if (cpu_is_mx6q()) {
-		mx6_hdmi_core_data.ipu_id	= 0;
-		mx6_hdmi_core_data.disp_id	= 1;
-		mx6_ldb_data.ipu_id		= 1;
-		mx6_ldb_data.disp_id		= 0;
-		mx6_ldb_data.mode		= SIN0;
-		mx6_ldb_data.sec_ipu_id		= 0;
-		mx6_ldb_data.sec_disp_id	= 0;
-		mx6_lcdif_data.ipu_id		= 0;
-		mx6_lcdif_data.disp_id		= 0;
-		mx6_dsi_pdata.ipu_id		= 1;
+		mx6_hdmi_core_data.ipu_id 	= 0;
+		mx6_hdmi_core_data.disp_id 	= 1;
+		mx6_ldb_data.ipu_id 		= 1;
+		mx6_ldb_data.disp_id 		= 0;
+		mx6_ldb_data.mode 		= SIN0;
+		mx6_ldb_data.sec_ipu_id 	= 0;
+		mx6_ldb_data.sec_disp_id 	= 0;
+		mx6_lcdif_data.ipu_id 		= 0;
+		mx6_lcdif_data.disp_id 		= 0;
+		mx6_dsi_pdata.ipu_id 		= 1;
 		mx6_dsi_pdata.disp_id		= 1;
 
 	} else {
@@ -1014,16 +1018,16 @@ fallback_preset_ipufb_init:
 		 * lvds + hdmi
 		 * dsi + hdmi
 		 */
-		mx6_hdmi_core_data.ipu_id	= 0;
-		mx6_hdmi_core_data.disp_id	= 1;
-		mx6_ldb_data.ipu_id		= 0;
-		mx6_ldb_data.disp_id		= 0;
-		mx6_ldb_data.mode		= SIN0;
-		mx6_ldb_data.sec_ipu_id		= 0;
-		mx6_ldb_data.sec_disp_id	= 0;
-		mx6_lcdif_data.ipu_id		= 0;
-		mx6_lcdif_data.disp_id		= 0;
-		mx6_dsi_pdata.ipu_id		= 0;
+		mx6_hdmi_core_data.ipu_id 	= 0;
+		mx6_hdmi_core_data.disp_id 	= 1;
+		mx6_ldb_data.ipu_id 		= 0;
+		mx6_ldb_data.disp_id 		= 0;
+		mx6_ldb_data.mode 		= SIN0;
+		mx6_ldb_data.sec_ipu_id 	= 0;
+		mx6_ldb_data.sec_disp_id 	= 0;
+		mx6_lcdif_data.ipu_id 		= 0;
+		mx6_lcdif_data.disp_id 		= 0;
+		mx6_dsi_pdata.ipu_id 		= 0;
 		mx6_dsi_pdata.disp_id		= 0;
 	}
 
@@ -1040,7 +1044,7 @@ void mx6_init_display(void)
 	if (cpu_is_mx6q())
 		mx6_max_displays = 4;
 
-	for (i = 0; i< MX6_MAX_DISPLAYS; i++) {
+	for (i = 0; i < MX6_MAX_DISPLAYS; i++) {
 		mx6_ipuv3_fb_pdata[i].disp_dev[0] = '\0';
 		mx6_ipuv3_fb_pdata[i].mode_str = NULL;
 		mx6_ipuv3_fb_pdata[i].timing_str = NULL;
@@ -1050,9 +1054,7 @@ void mx6_init_display(void)
 	mx6_display_ch_capability_setup(1, 0, 1, 1, 0, 0, 1);
 
 #if defined(CONFIG_EDM)
-	edm_display_devices = kmalloc(mx6_max_displays * sizeof(struct edm_display_device), GFP_KERNEL);
-	if (edm_display_devices != NULL)
-		edm_display_init(saved_command_line, edm_display_devices, mx6_max_displays);
+	edm_display_init(saved_command_line, edm_display_devices, mx6_max_displays);
 #endif
 	mx6_init_ipuv3_fb();
 

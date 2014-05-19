@@ -3,14 +3,14 @@
 #define _MX6_DISPLAY_H_
 
 enum {
-        MX6_LCD0 = 0,
-        MX6_LCD1,
-        MX6_HDMI,
-        MX6_LVDS0,
-        MX6_LVDS1,
-        MX6_LVDSD,
-        MX6_DSI0,
-        MX6_DISPCH_INVALID
+	MX6_LCD0 = 0,
+	MX6_LCD1,
+	MX6_HDMI,
+	MX6_LVDS0,
+	MX6_LVDS1,
+	MX6_LVDSD,
+	MX6_DSI0,
+	MX6_DISPCH_INVALID
 };
 
 struct mx6_display_controls {
@@ -39,7 +39,7 @@ struct mx6_display_controls {
 	int dsi_i2c;
 };
 
-extern struct mx6_display_controls * mx6_disp_ctrls;
+extern struct mx6_display_controls *mx6_disp_ctrls;
 
 void mx6_init_display(void);
 void mx6_display_ch_capability_setup(int lcd0, int lcd1, int hdmi, int lvds0,
