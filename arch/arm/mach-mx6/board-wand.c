@@ -44,11 +44,16 @@
 #include "devices-imx6q.h"
 #include "usb.h"
 
-#define WAND_BT_ON		IMX_GPIO_NR(3, 13)
-#define WAND_BT_WAKE		IMX_GPIO_NR(3, 14)
-#define WAND_BT_HOST_WAKE	IMX_GPIO_NR(3, 15)
+#define WAND_BT_ON_AB		IMX_GPIO_NR(3, 13)
+#define WAND_BT_ON_C1		IMX_GPIO_NR(5, 21)
+#define WAND_BT_WAKE_AB		IMX_GPIO_NR(3, 14)
+#define WAND_BT_WAKE_C1		IMX_GPIO_NR(5, 30)
+#define WAND_BT_HOST_WAKE_AB	IMX_GPIO_NR(3, 15)
+#define WAND_BT_HOST_WAKE_C1	IMX_GPIO_NR(5, 20)
 
 #define WAND_PCIE_NRST		IMX_GPIO_NR(3, 31)
+
+#define WAND_REV_DETECT_C1	IMX_GPIO_NR(2, 28)
 
 #define WAND_RGMII_INT		IMX_GPIO_NR(1, 28)
 #define WAND_RGMII_RST		IMX_GPIO_NR(3, 29)
@@ -61,7 +66,8 @@
 #define WAND_USB_HOST_PWR_EN	IMX_GPIO_NR(3, 22)
 #define WAND_USB_HOST_OC	IMX_GPIO_NR(3, 30)
 
-#define WAND_WL_REF_ON		IMX_GPIO_NR(2, 29)
+#define WAND_WL_REF_ON_AB	IMX_GPIO_NR(2, 29)
+#define WAND_WL_REF_ON_C1	IMX_GPIO_NR(5, 31)
 #define WAND_WL_RST_N		IMX_GPIO_NR(5, 2)
 #define WAND_WL_REG_ON		IMX_GPIO_NR(1, 26)
 #define WAND_WL_HOST_WAKE	IMX_GPIO_NR(1, 29)
@@ -76,6 +82,15 @@
 
 /* See arch/arm/plat-mxc/include/mach/iomux-mx6dl.h for definitions */
 
+enum {
+	WAND_REV_UNKNOWN = 0, /* assume rev A/B */
+	WAND_REV_AB = 0,
+	WAND_REV_C1 /* changed WiFi chip */
+};
+
+static int caam_enabled;
+static int wand_revision = WAND_REV_UNKNOWN; /**/
+
 /****************************************************************************
  *                                                                          
  * DMA controller init
@@ -85,8 +100,6 @@
 static __init void wand_init_dma(void) {
         imx6q_add_dma();        
 }
-
-static int caam_enabled;
 
 /****************************************************************************
  *                                                                          
@@ -628,29 +641,41 @@ static void __init wand_init_lcd(void) {
 
 /* assumes SD/MMC pins are set; call after wand_init_sd() */
 static __init void wand_init_wifi(void) {
-        /* ref_on, enable 32k clock */
-        IMX6_SETUP_PAD( EIM_EB1__GPIO_2_29 );
-        /* Wifi reset (resets when low!) */
-        IMX6_SETUP_PAD( EIM_A25__GPIO_5_2 );
-        /* reg on, signal to FDC6331L */
-        IMX6_SETUP_PAD( ENET_RXD1__GPIO_1_26 );
-        /* host wake */
-        IMX6_SETUP_PAD( ENET_TXD1__GPIO_1_29 );
-        /* wl wake - nc */
-        IMX6_SETUP_PAD( ENET_TXD0__GPIO_1_30 );
-                
+	/* Wifi reset (resets when low!) */
+	IMX6_SETUP_PAD( EIM_A25__GPIO_5_2 );
+	/* reg on, signal to FDC6331L */
+	IMX6_SETUP_PAD( ENET_RXD1__GPIO_1_26 );
+	/* host wake */
+	IMX6_SETUP_PAD( ENET_TXD1__GPIO_1_29 );
+	/* wl wake - nc */
+	IMX6_SETUP_PAD( ENET_TXD0__GPIO_1_30 );
+
+	if (wand_revision == WAND_REV_C1) {
+		IMX6_SETUP_PAD( CSI0_DAT13__GPIO_5_31 );
+
+		gpio_request(WAND_WL_REF_ON_C1, "wl_ref_on");
+		gpio_direction_output(WAND_WL_REF_ON_C1, 1);
+		gpio_export(WAND_WL_REF_ON_C1, 0);
+	} else {
+		/* ref_on, enable 32k clock */
+		IMX6_SETUP_PAD( EIM_EB1__GPIO_2_29 );
+
+		gpio_request(WAND_WL_REF_ON_AB, "wl_ref_on");
+		gpio_direction_output(WAND_WL_REF_ON_AB, 1);
+		gpio_export(WAND_WL_REF_ON_AB, 0);
+        }
+
 	gpio_request(WAND_WL_RST_N, "wl_rst_n");
 	gpio_direction_output(WAND_WL_RST_N, 0);
 	msleep(11);
 	gpio_set_value(WAND_WL_RST_N, 1);
-
-	gpio_request(WAND_WL_REF_ON, "wl_ref_on");
-	gpio_direction_output(WAND_WL_REF_ON, 1);
+	gpio_export(WAND_WL_RST_N, 0);
 
 	gpio_request(WAND_WL_REG_ON, "wl_reg_on");
 	gpio_direction_output(WAND_WL_REG_ON, 1);
-        
-	gpio_request(WAND_WL_WAKE, "wl_wake");
+	gpio_export(WAND_WL_REG_ON, 0);
+
+        gpio_request(WAND_WL_WAKE, "wl_wake");
 	gpio_direction_output(WAND_WL_WAKE, 1);
 
 	gpio_request(WAND_WL_HOST_WAKE, "wl_host_wake");
@@ -674,10 +699,43 @@ static const struct imxuart_platform_data wand_bt_uart_data = {
 
 /* This assumes wifi is initialized (chip has power) */
 static __init void wand_init_bluetooth(void) {
-        /* BT_ON, BT_WAKE and BT_HOST_WAKE */
-        IMX6_SETUP_PAD( EIM_DA13__GPIO_3_13 );
-        IMX6_SETUP_PAD( EIM_DA14__GPIO_3_14 );
-        IMX6_SETUP_PAD( EIM_DA15__GPIO_3_15 );
+
+	if (wand_revision == WAND_REV_C1) {
+		/* BT_ON, BT_WAKE and BT_HOST_WAKE */
+		IMX6_SETUP_PAD( CSI0_DATA_EN__GPIO_5_20 );
+                IMX6_SETUP_PAD( CSI0_DAT12__GPIO_5_30 );
+		IMX6_SETUP_PAD( CSI0_VSYNC__GPIO_5_21 );
+
+		gpio_request(WAND_BT_ON_C1, "bt_on");
+		gpio_direction_output(WAND_BT_ON_C1, 0);
+		msleep(11);
+		gpio_set_value(WAND_BT_ON_C1, 1);
+		gpio_export(WAND_BT_ON_C1, 0);
+
+		gpio_request(WAND_BT_WAKE_C1, "bt_wake");
+		gpio_direction_output(WAND_BT_WAKE_C1, 1);
+
+		gpio_request(WAND_BT_HOST_WAKE_C1, "bt_host_wake");
+		gpio_direction_input(WAND_BT_HOST_WAKE_C1);
+
+	} else {
+		/* BT_ON, BT_WAKE and BT_HOST_WAKE */
+		IMX6_SETUP_PAD( EIM_DA13__GPIO_3_13 );
+		IMX6_SETUP_PAD( EIM_DA14__GPIO_3_14 );
+		IMX6_SETUP_PAD( EIM_DA15__GPIO_3_15 );
+
+		gpio_request(WAND_BT_ON_AB, "bt_on");
+		gpio_direction_output(WAND_BT_ON_AB, 0);
+		msleep(11);
+		gpio_set_value(WAND_BT_ON_AB, 1);
+		gpio_export(WAND_BT_ON_AB, 0);
+
+		gpio_request(WAND_BT_WAKE_AB, "bt_wake");
+		gpio_direction_output(WAND_BT_WAKE_AB, 1);
+
+		gpio_request(WAND_BT_HOST_WAKE_AB, "bt_host_wake");
+		gpio_direction_input(WAND_BT_HOST_WAKE_AB);
+        }
 
         /* AUD5 channel goes to BT */
         IMX6_SETUP_PAD( KEY_COL0__AUDMUX_AUD5_TXC );
@@ -692,17 +750,6 @@ static __init void wand_init_bluetooth(void) {
         IMX6_SETUP_PAD( EIM_EB3__UART3_RTS );
         
 	imx6q_add_imx_uart(2, &wand_bt_uart_data);
-
-	gpio_request(WAND_BT_ON, "bt_on");
-	gpio_direction_output(WAND_BT_ON, 0);
-	msleep(11);
-	gpio_set_value(WAND_BT_ON, 1);
-
-	gpio_request(WAND_BT_WAKE, "bt_wake");
-	gpio_direction_output(WAND_BT_WAKE, 1);
-
-	gpio_request(WAND_BT_HOST_WAKE, "bt_host_wake");
-	gpio_direction_input(WAND_BT_WAKE);
 }
 
 
@@ -724,11 +771,16 @@ static const struct anatop_thermal_platform_data wand_thermal = {
 static void wand_suspend_enter(void) {
 	gpio_set_value(WAND_USB_HOST_PWR_EN, 0);
 
-	gpio_set_value(WAND_WL_WAKE, 0);
-	gpio_set_value(WAND_BT_WAKE, 0);
+	if (wand_revision == WAND_REV_C1) {
+		gpio_direction_output(WAND_WL_REF_ON_C1, 0);
+		gpio_set_value(WAND_BT_WAKE_C1, 0);
+        } else {
+		gpio_direction_output(WAND_WL_REF_ON_AB, 0);
+		gpio_set_value(WAND_BT_WAKE_AB, 0);
+        }
+        gpio_set_value(WAND_WL_WAKE, 0);
 
 	gpio_direction_output(WAND_WL_RST_N, 0);
-	gpio_direction_output(WAND_WL_REF_ON, 0);
 	gpio_direction_output(WAND_WL_REG_ON, 0);
 
 	gpio_direction_output(IMX_GPIO_NR(2, 8), 0);
@@ -746,11 +798,16 @@ static void wand_suspend_exit(void) {
 	gpio_direction_output(IMX_GPIO_NR(2, 11), 1);
 
 	gpio_direction_output(WAND_WL_RST_N, 1);
-	gpio_direction_output(WAND_WL_REF_ON, 1);
+	if (wand_revision == WAND_REV_C1) {
+		gpio_set_value(WAND_BT_WAKE_C1, 1);
+		gpio_direction_output(WAND_WL_REF_ON_C1, 1);
+	} else {
+		gpio_direction_output(WAND_WL_REF_ON_AB, 1);
+		gpio_set_value(WAND_BT_WAKE_AB, 1);
+        }
 	gpio_direction_output(WAND_WL_REG_ON, 1);
 
 	gpio_set_value(WAND_WL_WAKE, 1);
-	gpio_set_value(WAND_BT_WAKE, 1);
 
 	gpio_set_value(WAND_USB_HOST_PWR_EN, 1);
 }
@@ -1075,6 +1132,22 @@ static void __init wand_init_edm(void) {
 
 /*****************************************************************************
  *                                                                           
+ * Revision detection
+ *
+ *****************************************************************************/
+
+static void __init wand_detect_revision(void) {
+	IMX6_SETUP_PAD( EIM_EB0__GPIO_2_28 ); /* boot cfg 4_3 */
+
+	gpio_request(WAND_REV_DETECT_C1, "wand_rev_check");
+	gpio_direction_input(WAND_REV_DETECT_C1);
+	gpio_export(WAND_REV_DETECT_C1, 0);
+
+	wand_revision = gpio_get_value(WAND_REV_DETECT_C1);
+}
+
+/*****************************************************************************
+ *
  * Init clocks and early boot console                                      
  *                                                                            
  *****************************************************************************/
@@ -1130,6 +1203,7 @@ static void __init wand_reserve(void) {
  *****************************************************************************/
 
 static void __init wand_board_init(void) {
+	wand_detect_revision();
 	wand_init_edm();
 	wand_init_dma();
 	wand_init_uart();
