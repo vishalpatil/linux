@@ -674,7 +674,7 @@ static void flexcan_set_bittiming(struct net_device *dev)
 	if (priv->can.ctrlmode & CAN_CTRLMODE_3_SAMPLES)
 		reg |= FLEXCAN_CTRL_SMP;
 
-	dev_info(dev->dev.parent, "writing ctrl=0x%08x\n", reg);
+//	dev_info(dev->dev.parent, "writing ctrl=0x%08x\n", reg);
 	writel(reg, &regs->ctrl);
 
 	/* print chip status */
@@ -732,7 +732,7 @@ static int flexcan_chip_start(struct net_device *dev)
 		FLEXCAN_MCR_SUPV | FLEXCAN_MCR_WRN_EN |
 		FLEXCAN_MCR_IDAM_C | FLEXCAN_MCR_WAK_MSK |
 		FLEXCAN_MCR_SLF_WAK | FLEXCAN_MCR_SRX_DIS;
-	dev_dbg(dev->dev.parent, "%s: writing mcr=0x%08x", __func__, reg_mcr);
+//	dev_dbg(dev->dev.parent, "%s: writing mcr=0x%08x", __func__, reg_mcr);
 	writel(reg_mcr, &regs->mcr);
 
 	/*
@@ -758,7 +758,7 @@ static int flexcan_chip_start(struct net_device *dev)
 
 	/* save for later use */
 	priv->reg_ctrl_default = reg_ctrl;
-	dev_dbg(dev->dev.parent, "%s: writing ctrl=0x%08x", __func__, reg_ctrl);
+//	dev_dbg(dev->dev.parent, "%s: writing ctrl=0x%08x", __func__, reg_ctrl);
 	writel(reg_ctrl, &regs->ctrl);
 
 	for (i = 0; i < ARRAY_SIZE(regs->cantxfg); i++) {
