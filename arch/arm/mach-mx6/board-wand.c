@@ -1107,7 +1107,7 @@ static void __init wand_init_edm(void) {
         
 	edm_external_gpio[0] = IMX_GPIO_NR(3, 12);        
 	edm_external_gpio[1] = IMX_GPIO_NR(3, 11);
-	edm_external_gpio[2] = IMX_GPIO_NR(4, 10);
+	edm_external_gpio[2] = IMX_GPIO_NR(3, 10);
 	edm_external_gpio[3] = IMX_GPIO_NR(3, 27);
 	edm_external_gpio[4] = IMX_GPIO_NR(3, 26);
 	edm_external_gpio[5] = IMX_GPIO_NR(6, 31);
