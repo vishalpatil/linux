@@ -148,17 +148,15 @@
 		late_init = <0>;
 		status = "disabled";
 	};
-#if 0
+
 	lcd@0 {
 		compatible = "fsl,lcd";
 		ipu_id = <0>;
 		disp_id = <0>;
 		default_ifmt = "RGB565";
 		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_ipu1_4>;
-#if 0
+		pinctrl-0 = <&pinctrl_ipu1_1>;
 		status = "okay";
-#endif
 	};
 
 	backlight_lcd {
@@ -174,7 +172,7 @@
 		brightness-levels = <0 4 8 16 32 64 128 255>;
 		default-brightness-level = <7>;
 	};
-#endif
+
 	v4l2_cap_0 {
 		compatible = "fsl,imx6q-v4l2-capture";
 		ipu_id = <0>;
