@@ -34,6 +34,12 @@ struct wand_rfkill_data {
 	const char *shutdown_name;
 };
 
+/*struct wand_rfkill_data {
+	struct rfkill *wifi_rfkill_dev, *bt_rfkill_dev;
+	int wifi_shutdown_gpio, bt_shutdown_gpio;
+	const char *wifi_shutdown_name, bt_shutdown_name;
+};*/
+
 static int wand_rfkill_set_block(void *data, bool blocked)
 {
 	struct wand_rfkill_data *rfkill = data;
@@ -191,6 +197,8 @@ static int wand_rfkill_probe(struct platform_device *pdev)
 	struct wand_rfkill_data *rfkill;
 	struct pinctrl *pinctrl;
 	int ret;
+	int wand_rev_gpio;
+	int wand_rev;
 
 	dev_info(&pdev->dev, "Wandboard rfkill initialization\n");
 
@@ -209,6 +217,27 @@ static int wand_rfkill_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "failed to get default pinctrl: %d\n", ret);
 		return ret;
 	}
+
+	/* GPIO for detecting C1 revision of Wandboard */
+	wand_rev_gpio = of_get_named_gpio(pdev->dev.of_node, "wand-rev-gpio", 0);
+	if (!gpio_is_valid(wand_rev_gpio)) {
+
+		dev_err(&pdev->dev, "incorrect Wandboard revision check gpio (%d)\n",
+				wand_rev_gpio);
+		return -EINVAL;
+	}
+
+	gpio_request(wand_rev_gpio, "wand-rev-gpio");
+	dev_info(&pdev->dev, "initialized Wandboard revision check gpio (%d)\n",
+			wand_rev_gpio);
+	gpio_direction_input(wand_rev_gpio);
+
+	/* Check Wandboard revision */
+	wand_rev = gpio_get_value(wand_rev_gpio);
+	if(wand_rev)
+		dev_info(&pdev->dev,"wandboard is rev C1\n");
+	else
+		dev_info(&pdev->dev,"wandboard is rev B0\n");
 
 	/* setup WiFi */
 	ret = wand_rfkill_wifi_probe(&pdev->dev, pdev->dev.of_node, &rfkill[0]);

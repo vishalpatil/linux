@@ -103,6 +103,8 @@
                 wifi-reg-on = <&gpio1 26 0>;
                 wifi-host-wake = <&gpio1 29 0>;
                 wifi-wake = <&gpio1 30 0>;
+
+		wand-rev-gpio = <&gpio2 28 0>;
         };
 
 	mxcfb1: fb@0 {
@@ -354,6 +356,7 @@ reference manual.
                                 MX6QDL_PAD_EIM_DA13__GPIO3_IO13  	0x80000000 	/* BT_ON */
                                 MX6QDL_PAD_EIM_DA14__GPIO3_IO14  	0x80000000 	/* BT_WAKE */
                                 MX6QDL_PAD_EIM_DA15__GPIO3_IO15  	0x80000000 	/* BT_HOST_WAKE */
+				MX6QDL_PAD_EIM_EB0__GPIO2_IO28		0x1B880         /* Wandboard C1 Revision check */
 			>;
 		};
 
