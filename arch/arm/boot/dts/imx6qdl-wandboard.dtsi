@@ -104,6 +104,15 @@
                 wifi-host-wake = <&gpio1 29 0>;
                 wifi-wake = <&gpio1 30 0>;
 
+		/* Rev C1 gpio definitions */
+                bluetooth-on-revc1 = <&gpio5 21 0>;
+                bluetooth-wake-revc1 = <&gpio5 30 0>;
+                bluetooth-host-wake-revc1 = <&gpio5 20 0>;
+
+                wifi-ref-on-revc1 = <&gpio5 31 0>;
+                wifi-rst-n-revc1 = <&gpio6 0 0>;
+
+		/* Rev B/C probe gpio */
 		wand-rev-gpio = <&gpio2 28 0>;
         };
 
@@ -357,6 +366,12 @@ reference manual.
                                 MX6QDL_PAD_EIM_DA14__GPIO3_IO14  	0x80000000 	/* BT_WAKE */
                                 MX6QDL_PAD_EIM_DA15__GPIO3_IO15  	0x80000000 	/* BT_HOST_WAKE */
 				MX6QDL_PAD_EIM_EB0__GPIO2_IO28		0x1B880         /* Wandboard C1 Revision check */
+				/* GPIO used in Wandboard rev C1 */
+				MX6QDL_PAD_CSI0_DAT14__GPIO6_IO00	0x0f0b0		/* WIFI_ON (reset, active low) */
+				MX6QDL_PAD_CSI0_DAT13__GPIO5_IO31	0x0f0b0		/* GPIO5_IO31 (Wifi Power Enable) */
+				MX6QDL_PAD_CSI0_VSYNC__GPIO5_IO21	0x80000000	/* BT_ON */
+				MX6QDL_PAD_CSI0_DAT12__GPIO5_IO30	0x80000000	/* BT_WAKE */
+				MX6QDL_PAD_CSI0_DATA_EN__GPIO5_IO20     0x80000000	/*BT_HOST_WAKE */
 			>;
 		};
 
