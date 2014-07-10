@@ -34,12 +34,6 @@ struct wand_rfkill_data {
 	const char *shutdown_name;
 };
 
-/*struct wand_rfkill_data {
-	struct rfkill *wifi_rfkill_dev, *bt_rfkill_dev;
-	int wifi_shutdown_gpio, bt_shutdown_gpio;
-	const char *wifi_shutdown_name, bt_shutdown_name;
-};*/
-
 static int wand_rfkill_set_block(void *data, bool blocked)
 {
 	struct wand_rfkill_data *rfkill = data;
@@ -63,13 +57,21 @@ static const struct rfkill_ops wand_rfkill_ops = {
 
 static int wand_rfkill_wifi_probe(struct device *dev,
 		struct device_node *np,
-		struct wand_rfkill_data *rfkill)
+		struct wand_rfkill_data *rfkill,
+		int wand_rev)
 {
 	int ret;
 	int wl_ref_on, wl_rst_n, wl_reg_on, wl_wake, wl_host_wake;
 
-	wl_ref_on = of_get_named_gpio(np, "wifi-ref-on", 0);
-	wl_rst_n = of_get_named_gpio(np, "wifi-rst-n", 0);
+	if(wand_rev){
+	    wl_ref_on = of_get_named_gpio(np, "wifi-ref-on-revc1", 0);
+	    wl_rst_n = of_get_named_gpio(np, "wifi-rst-n-revc1", 0);
+	}
+	else {
+	    wl_ref_on = of_get_named_gpio(np, "wifi-ref-on", 0);
+	    wl_rst_n = of_get_named_gpio(np, "wifi-rst-n", 0);
+	}
+
 	wl_reg_on = of_get_named_gpio(np, "wifi-reg-on", 0);
 	wl_wake = of_get_named_gpio(np, "wifi-wake", 0);
 	wl_host_wake = of_get_named_gpio(np, "wifi-host-wake", 0);
@@ -134,14 +136,22 @@ wifi_fail_free_gpio:
 
 static int wand_rfkill_bt_probe(struct device *dev,
 		struct device_node *np,
-		struct wand_rfkill_data *rfkill)
+		struct wand_rfkill_data *rfkill,
+		int wand_rev)
 {
 	int ret;
 	int bt_on, bt_wake, bt_host_wake;
 
-	bt_on = of_get_named_gpio(np, "bluetooth-on", 0);
-	bt_wake = of_get_named_gpio(np, "bluetooth-wake", 0);
-	bt_host_wake = of_get_named_gpio(np, "bluetooth-host-wake", 0);
+	if(wand_rev) {
+	    bt_on = of_get_named_gpio(np, "bluetooth-on-revc1", 0);
+	    bt_wake = of_get_named_gpio(np, "bluetooth-wake-revc1", 0);
+	    bt_host_wake = of_get_named_gpio(np, "bluetooth-host-wake-revc1", 0);
+	}
+	else{
+	    bt_on = of_get_named_gpio(np, "bluetooth-on", 0);
+	    bt_wake = of_get_named_gpio(np, "bluetooth-wake", 0);
+	    bt_host_wake = of_get_named_gpio(np, "bluetooth-host-wake", 0);
+	}
 
 	if (!gpio_is_valid(bt_on) || !gpio_is_valid(bt_wake) ||
 			!gpio_is_valid(bt_host_wake)) {
@@ -240,12 +250,12 @@ static int wand_rfkill_probe(struct platform_device *pdev)
 		dev_info(&pdev->dev,"wandboard is rev B0\n");
 
 	/* setup WiFi */
-	ret = wand_rfkill_wifi_probe(&pdev->dev, pdev->dev.of_node, &rfkill[0]);
+	ret = wand_rfkill_wifi_probe(&pdev->dev, pdev->dev.of_node, &rfkill[0], wand_rev);
 	if (ret < 0)
 		goto fail_free_rfkill;
 
 	/* setup bluetooth */
-	ret = wand_rfkill_bt_probe(&pdev->dev, pdev->dev.of_node, &rfkill[1]);
+	ret = wand_rfkill_bt_probe(&pdev->dev, pdev->dev.of_node, &rfkill[1], wand_rev);
 	if (ret < 0)
 		goto fail_unregister_wifi;
 
