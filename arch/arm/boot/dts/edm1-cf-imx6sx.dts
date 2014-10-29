@@ -336,16 +336,12 @@
 &flexcan1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_flexcan1_1>;
-	trx-en-gpio = <&gpio4 25 GPIO_ACTIVE_HIGH>;
-	trx-stby-gpio = <&gpio4 27 GPIO_ACTIVE_HIGH>;
 	status = "okay";
 };
 
 &flexcan2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_flexcan2_1>;
-	trx-en-gpio = <&gpio4 25 GPIO_ACTIVE_HIGH>;
-	trx-stby-gpio = <&gpio4 27 GPIO_ACTIVE_HIGH>;
 	status = "okay";
 };
 
@@ -454,6 +450,28 @@
 			>;
 		};
 	};
+
+	flexcan1 {
+		pinctrl_flexcan1_1: flexcan1grp-1 {
+			fsl,pins = <
+				MX6SX_PAD_QSPI1B_DQS__CAN1_TX	0x1b0b0
+				MX6SX_PAD_QSPI1A_SS1_B__CAN1_RX	0x1b0b0
+				MX6SX_PAD_KEY_COL2__CAN1_TX	0x1b0b0
+				MX6SX_PAD_KEY_ROW2__CAN1_RX	0x1b0b0
+			>;
+		};
+	};
+
+	flexcan2 {
+		pinctrl_flexcan2_1: flexcan2grp-1 {
+			fsl,pins = <
+				MX6SX_PAD_QSPI1B_SS1_B__CAN2_RX 0x1b0b0
+				MX6SX_PAD_QSPI1A_DQS__CAN2_TX	0x1b0b0
+				MX6SX_PAD_KEY_COL3__CAN2_TX 0x1b0b0
+				MX6SX_PAD_KEY_ROW3__CAN2_RX	0x1b0b0
+			>;
+		};
+	};
 };
 
 &pcie {
@@ -487,13 +505,6 @@
 &uart2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart2_1>;
-	status = "okay";
-};
-
-&uart5 { /* for bluetooth */
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_uart5_1>;
-	fsl,uart-has-rtscts;
 	status = "okay";
 };
 
