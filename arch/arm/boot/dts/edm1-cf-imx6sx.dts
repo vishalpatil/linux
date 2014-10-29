@@ -527,8 +527,8 @@
 	pinctrl-1 = <&pinctrl_usdhc3_1_100mhz>;
 	pinctrl-2 = <&pinctrl_usdhc3_1_200mhz>;
 	bus-width = <8>;
-	cd-gpios = <&gpio2 10 0>;
-	wp-gpios = <&gpio2 15 0>;
+	cd-gpios = <&gpio6 00 0>;
+//	wp-gpios = <&gpio6 01 0>;
 	keep-power-in-suspend;
 	enable-sdio-wakeup;
 	vmmc-supply = <&reg_sd3_vmmc>;
