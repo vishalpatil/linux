@@ -1838,6 +1838,19 @@
 			fsl,pins = <
 				MX6SX_PAD_SD1_DATA0__UART2_RX 0x1b0b1
 				MX6SX_PAD_SD1_DATA1__UART2_TX 0x1b0b1
+				MX6SX_PAD_SD1_DATA2__UART2_CTS_B 0x1b0b1
+				MX6SX_PAD_SD1_DATA3__UART2_RTS_B 0x1b0b1
+			>;
+		};
+	};
+
+	uart3 {
+		pinctrl_uart3_1: uart3grp-1 {
+			fsl,pins = <
+				MX6SX_PAD_QSPI1B_SCLK__UART3_RX    0x1b0b1
+				MX6SX_PAD_QSPI1B_SS0_B__UART3_TX    0x1b0b1
+				MX6SX_PAD_QSPI1B_DATA0__UART3_CTS_B 0x1b0b1
+				MX6SX_PAD_QSPI1B_DATA1__UART3_RTS_B 0x1b0b1
 			>;
 		};
 	};
