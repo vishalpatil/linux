@@ -99,6 +99,21 @@
 			enable-active-high;
 		};
 
+		reg_2p5v: 2p5v {
+			compatible = "regulator-fixed";
+			regulator-name = "2P5V";
+			regulator-min-microvolt = <2500000>;
+			regulator-max-microvolt = <2500000>;
+			regulator-always-on;
+		};
+
+		reg_3p3v: 3p3v {
+			compatible = "regulator-fixed";
+			regulator-name = "3P3V";
+			regulator-min-microvolt = <3300000>;
+			regulator-max-microvolt = <3300000>;
+			regulator-always-on;
+		};
 	};
 
 	gpio-keys {
@@ -118,21 +133,18 @@
 	};
 
 	sound {
-		compatible = "fsl,imx6q-sabresd-wm8962",
-			   "fsl,imx-audio-wm8962";
-		model = "wm8962-audio";
-		cpu-dai = <&ssi2>;
+		compatible = "fsl,edm1-cf-imx6sx-sgtl5000",
+			   "fsl,imx-audio-sgtl5000";
+		model = "edm1-cf-imx6sx-sgtl5000";
+		cpu-dai = <&ssi1>;
 		audio-codec = <&codec>;
 		audio-routing =
-			"Headphone Jack", "HPOUTL",
-			"Headphone Jack", "HPOUTR",
-			"Ext Spk", "SPKOUTL",
-			"Ext Spk", "SPKOUTR",
-			"AMIC", "MICBIAS",
-			"IN3R", "AMIC";
-		mux-int-port = <2>;
+			"LINE_IN", "Line In Jack",
+			"MIC_IN", "Mic Jack",
+			"Mic Jack", "Mic Bias",
+			"Headphone Jack", "HP_OUT";
+		mux-int-port = <1>;
 		mux-ext-port = <6>;
-		hp-det-gpios = <&gpio1 17 1>;
 	};
 
 	sound-spdif {
@@ -388,6 +400,14 @@
 		#interrupt-cells = <2>;
 		reg = <0x23>;
 	};
+
+	codec: sgtl5000@0a {
+		compatible = "fsl,sgtl5000";
+		reg = <0x0a>;
+		clocks = <&clks IMX6SX_CLK_AUDIO>;
+		VDDA-supply = <&reg_2p5v>;
+		VDDIO-supply = <&reg_3p3v>;
+	};
 };
 
 
@@ -430,21 +450,6 @@
         pinctrl-names = "default";
         pinctrl-0 = <&pinctrl_i2c4_1>;
         status = "disabled";
-
-	codec: wm8962@1a {
-		compatible = "wlf,wm8962";
-		reg = <0x1a>;
-		clocks = <&clks IMX6SX_CLK_AUDIO>;
-		DCVDD-supply = <&vgen4_reg>;
-		DBVDD-supply = <&vgen4_reg>;
-		AVDD-supply = <&vgen4_reg>;
-		CPVDD-supply = <&vgen4_reg>;
-		MICVDD-supply = <&vgen3_reg>;
-		PLLVDD-supply = <&vgen4_reg>;
-		SPKVDD1-supply = <&reg_psu_5v>;
-		SPKVDD2-supply = <&reg_psu_5v>;
-		amic-mono;
-	};
 };
 
 &iomuxc {
@@ -526,7 +531,7 @@
 };
 
 
-&ssi2 {
+&ssi1 {
 	status = "okay";
 };
 
