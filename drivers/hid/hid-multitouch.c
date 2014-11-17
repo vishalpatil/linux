@@ -408,6 +408,8 @@ static void mt_emit_event(struct mt_device *td, struct input_dev *input)
 			int major = max(s->w, s->h) >> 1;
 			int minor = min(s->w, s->h) >> 1;
 
+                        input_dev_calibrate(input, &s->x, &s->y, 32760, 32760);
+
 			input_event(input, EV_ABS, ABS_MT_POSITION_X, s->x);
 			input_event(input, EV_ABS, ABS_MT_POSITION_Y, s->y);
 			input_event(input, EV_ABS, ABS_MT_ORIENTATION, wide);
