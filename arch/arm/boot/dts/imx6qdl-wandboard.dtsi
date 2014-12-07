@@ -78,7 +78,7 @@
         sound-spdif {
                 compatible = "fsl,imx-audio-spdif";
                 model = "imx-spdif";
-                cpu-dai = <&ssi1>;
+                spdif-controller = <&spdif>;
                 spdif-out;
         };
 
