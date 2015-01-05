@@ -1,4 +1,4 @@
-# bcmdhd
+# bcmdhddhd_gpio.o
 # 1. WL_IFACE_COMB_NUM_CHANNELS must be added if Android version is 4.4 with Kernel version 3.0~3.4,
 #    otherwise please remove it.
 DHDCFLAGS = -Wall -Wstrict-prototypes -Dlinux -DBCMDRIVER                \
@@ -28,6 +28,9 @@ DHDOFILES = aiutils.o siutils.o sbutils.o bcmutils.o bcmwifi_channels.o \
 
 DHDOFILES += bcmsdh.o bcmsdh_linux.o bcmsdh_sdmmc.o bcmsdh_sdmmc_linux.o \
 	dhd_sdio.o dhd_cdc.o dhd_wlfc.o
+
+DHDOFILES += dhd_gpio.o
+DHDCFLAGS += -DCUSTOMER_HW
 
 obj-$(CONFIG_BCMDHD) += bcmdhd.o
 bcmdhd-objs += $(DHDOFILES)

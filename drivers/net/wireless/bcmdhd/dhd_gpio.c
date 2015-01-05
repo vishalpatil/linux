@@ -14,6 +14,10 @@
 #define	sdmmc_channel	s3c_device_hsmmc0
 #endif
 
+#include <linux/gpio.h>
+#include <linux/of_gpio.h>
+#include <linux/of_device.h>
+
 struct wifi_platform_data {
 	int (*set_power)(bool val);
 	int (*set_carddetect)(bool val);
@@ -28,7 +32,20 @@ struct wifi_platform_data dhd_wlan_control = {0};
 #ifdef CUSTOMER_OOB
 uint bcm_wlan_get_oob_irq(void)
 {
-	uint host_oob_irq = 0;
+	uint host_oob_irq;
+	int wl_host_wake;
+	struct device_node *wifi_np;
+
+	wifi_np = of_find_compatible_node(NULL, NULL, "bcmdhd,wifi-gpio");
+	wl_host_wake = of_get_named_gpio(wifi_np, "wl-host-wake", 0);
+
+	if (gpio_is_valid(wl_host_wake)) {
+		gpio_request(wl_host_wake, "wl-host-wake");
+		gpio_direction_input(wl_host_wake);
+		host_oob_irq = gpio_to_irq(wl_host_wake);
+	} else {
+		printk("incorrect wl_host_wake gpios (%d)\n", wl_host_wake);
+	}
 
 #ifdef CONFIG_MACH_ODROID_4210
 	printk("GPIO(WL_HOST_WAKE) = EXYNOS4_GPX0(7) = %d\n", EXYNOS4_GPX0(7));
@@ -44,6 +61,8 @@ uint bcm_wlan_get_oob_irq_flags(void)
 {
 	uint host_oob_irq_flags = 0;
 
+	host_oob_irq_flags = (IORESOURCE_IRQ | IORESOURCE_IRQ_HIGHLEVEL | IORESOURCE_IRQ_SHAREABLE) & IRQF_TRIGGER_MASK;
+
 #ifdef CONFIG_MACH_ODROID_4210
 	host_oob_irq_flags = (IORESOURCE_IRQ | IORESOURCE_IRQ_HIGHLEVEL | IORESOURCE_IRQ_SHAREABLE) & IRQF_TRIGGER_MASK;
 #endif
@@ -56,9 +75,21 @@ uint bcm_wlan_get_oob_irq_flags(void)
 int bcm_wlan_set_power(bool on)
 {
 	int err = 0;
+	struct device_node *wifi_np;
+	int wl_reg_on;
+
+	wifi_np = of_find_compatible_node(NULL, NULL, "bcmdhd,wifi-gpio");
+	wl_reg_on = of_get_named_gpio(wifi_np, "wl-reg-on", 0);
+
+	if (gpio_is_valid(wl_reg_on)) {
+		gpio_request(wl_reg_on, "wl-reg-on");
+	} else {
+		printk("incorrect wl_reg_on gpios (%d)\n", wl_reg_on);
+	}
 
 	if (on) {
 		printk("======== PULL WL_REG_ON HIGH! ========\n");
+		gpio_direction_output(wl_reg_on, 1);
 #ifdef CONFIG_MACH_ODROID_4210
 		err = gpio_set_value(EXYNOS4_GPK1(0), 1);
 #endif
@@ -66,6 +97,7 @@ int bcm_wlan_set_power(bool on)
 		mdelay(100);
 	} else {
 		printk("======== PULL WL_REG_ON LOW! ========\n");
+		gpio_direction_output(wl_reg_on, 0);
 #ifdef CONFIG_MACH_ODROID_4210
 		err = gpio_set_value(EXYNOS4_GPK1(0), 0);
 #endif
