@@ -128,6 +128,10 @@ const static char *bcm4356a2_ag_fw_name[] = {
 	"fw_bcm4356a2_ag_mfg.bin"
 };
 
+const static char *bcm43362a2_nv_name = "nvram_ap6181.txt";
+const static char *bcm4339a0_nv_name = "nvram_ap6335.txt";
+const static char *bcm43341b0_nv_name = "nvram_ap6441.txt";
+
 #define htod32(i) i
 #define htod16(i) i
 #define dtoh32(i) i
@@ -431,6 +435,40 @@ dhd_conf_set_fw_name_by_chip(dhd_pub_t *dhd, char *fw_path)
 	}
 
 	printf("%s: firmware_path=%s\n", __FUNCTION__, fw_path);
+}
+
+void
+dhd_conf_set_nv_name_by_chip(dhd_pub_t *dhd, char *nv_path)
+{
+	uint chip, chiprev;
+	int i;
+
+	chip = dhd->conf->chip;
+	chiprev = dhd->conf->chiprev;
+
+	/* find out the last '/' */
+	i = strlen(nv_path);
+	while (i>0){
+		if (nv_path[i] == '/') break;
+		i--;
+	}
+
+	switch (chip) {
+		case BCM43362_CHIP_ID:
+			if (chiprev != BCM43362A0_CHIP_REV)
+				strcpy(&nv_path[i+1], bcm43362a2_nv_name);
+			break;
+		case BCM43341_CHIP_ID:
+			if (chiprev == BCM43341B0_CHIP_REV)
+				strcpy(&nv_path[i+1], bcm43341b0_nv_name);
+			break;
+		case BCM4339_CHIP_ID:
+			if (chiprev == BCM4339A0_CHIP_REV)
+				strcpy(&nv_path[i+1], bcm4339a0_nv_name);
+			break;
+	}
+
+	printf("%s: nvram_path=%s\n", __FUNCTION__, nv_path);
 }
 
 #if defined(HW_OOB)

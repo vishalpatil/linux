@@ -105,6 +105,7 @@ typedef struct dhd_conf {
 void dhd_conf_set_fw_name_by_mac(dhd_pub_t *dhd, bcmsdh_info_t *sdh, char *fw_path);
 void dhd_conf_set_nv_name_by_mac(dhd_pub_t *dhd, bcmsdh_info_t *sdh, char *nv_path);
 void dhd_conf_set_fw_name_by_chip(dhd_pub_t *dhd, char *fw_path);
+void dhd_conf_set_nv_name_by_chip(dhd_pub_t *dhd, char *nv_path);
 #if defined(HW_OOB)
 void dhd_conf_set_hw_oob_intr(bcmsdh_info_t *sdh, uint chip);
 #endif
