@@ -31,3 +31,4 @@ obj-$(CONFIG_IMX_HAVE_PLATFORM_SDHCI_ESDHC_IMX) += platform-sdhci-esdhc-imx.o
 obj-$(CONFIG_IMX_HAVE_PLATFORM_SPI_IMX) +=  platform-spi_imx.o
 obj-$(CONFIG_IMX_HAVE_PLATFORM_MX2_EMMA) += platform-mx2-emma.o
 obj-$(CONFIG_WAND_RFKILL) += wand-rfkill.o
+obj-$(CONFIG_BCM43XX_RFKILL) += rfkill-bcm43xx.o

@@ -147,6 +147,21 @@
 		csi_id = <1>;
 		status = "okay";
 	};
+
+	rfkill {
+		compatible = "bcm,bcm43xx_rfkill";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_bt_ctrl &pinctrl_wifi_ctrl>;
+		bluetooth-on = <&gpio1 13 0>;
+		bluetooth-reg-on = <&pca9555 3 0>;
+		bluetooth-wake = <&pca9555 4 0>;
+		bluetooth-host-wake = <&gpio2 1 0>;
+
+		wifi-ref-on = <&gpio1 16 0>;
+		wifi-rst-n = <&gpio4 27 0>;
+		wifi-reg-on = <&gpio1 17 0>;
+		wifi-host-wake = <&gpio4 26 0>;
+	};
 };
 
 &csi1 {
@@ -344,11 +359,11 @@
 
 	pca9555: pca9555@23 {
 		compatible = "nxp,pca9555";
-		interrupt-parent = <&gpio1>;
-		interrupts = <23 0x2>;
+//		interrupt-parent = <&gpio1>;
+//		interrupts = <23 0x2>;
 		gpio-controller;
 		#gpio-cells = <2>;
-		interrupt-controller;
+//		interrupt-controller;
 		#interrupt-cells = <2>;
 		reg = <0x23>;
 	};
@@ -424,9 +439,6 @@
 				MX6SX_PAD_KEY_COL0__GPIO2_IO_10	0x17059
 				MX6SX_PAD_KEY_ROW0__GPIO2_IO_15	0x17059
 				MX6SX_PAD_KEY_COL1__GPIO2_IO_11	0x17059
-				MX6SX_PAD_QSPI1B_DATA2__GPIO4_IO_26 0x17059
-				MX6SX_PAD_QSPI1B_DATA3__GPIO4_IO_27 0x17059
-				MX6SX_PAD_CSI_DATA03__GPIO1_IO_17 0x17059
 				MX6SX_PAD_CSI_DATA04__GPIO1_IO_18 0x17059
 				MX6SX_PAD_CSI_DATA05__GPIO1_IO_19 0x17059
 			>;
@@ -454,6 +466,26 @@
 			>;
 		};
 	};
+
+	bluetooth_ctrl {
+		pinctrl_bt_ctrl: bt_ctrlgrp {
+			fsl,pins = <
+				MX6SX_PAD_GPIO1_IO13__GPIO1_IO_13 0x80000000 /* bluetooth-host-wake */
+				MX6SX_PAD_ENET1_CRS__GPIO2_IO_1	  0x80000000 /* bluetooth-reg-on */
+			>;
+		};
+	};
+
+	wifi_ctrl {
+		pinctrl_wifi_ctrl: wifi_ctrlgrp {
+			fsl,pins = <
+				MX6SX_PAD_CSI_DATA02__GPIO1_IO_16   0x80000000 /* wifi-host-wake */
+				MX6SX_PAD_QSPI1B_DATA3__GPIO4_IO_27 0x80000000 /* wifi-ref-on */
+				MX6SX_PAD_CSI_DATA03__GPIO1_IO_17   0x80000000 /* wifi-rst-n */
+				MX6SX_PAD_QSPI1B_DATA2__GPIO4_IO_26 0x80000000 /* wifi-reg-on */
+			>;
+		};
+	};
 };
 
 &pcie {
@@ -468,11 +500,13 @@
 	status = "disabled";
 };
 
+
 &spdif {
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_spdif_2>;
+	pinctrl-0 = <&pinctrl_spdif_4>;
 	status = "okay";
 };
+
 
 &ssi2 {
 	status = "okay";
@@ -512,13 +546,13 @@
 	status = "okay";
 };
 
+/* Broadcom Wifi */
 &usdhc2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc2_1>;
-	non-removable;
-	no-1-8-v;
+	bus-width = <4>;
+	//non-removable;
 	keep-power-in-suspend;
-	enable-sdio-wakeup;
 	status = "okay";
 };
 
