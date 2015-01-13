@@ -1315,8 +1315,8 @@
 				interrupts = <0 17 0x04>;
 				clocks = <&clks IMX6SX_CLK_UART_IPG>, <&clks IMX6SX_CLK_UART_SERIAL>;
 				clock-names = "ipg", "per";
-				dmas = <&sdma 0 4 0>, <&sdma 47 4 0>;
-				dma-names = "rx", "tx";
+				dmas = <&sdma 47 4 0>;
+				dma-names = "tx";
 				status = "disabled";
 			};
 
@@ -1877,6 +1877,17 @@
 				MX6SX_PAD_KEY_COL3__UART5_RX    0x1b0b1
 				MX6SX_PAD_KEY_ROW2__UART5_RTS_B	0x1b0b1
 				MX6SX_PAD_KEY_COL2__UART5_CTS_B	0x1b0b1
+			>;
+		};
+	};
+
+	uart6 {
+		pinctrl_uart6_1: uart6grp-1 {
+			fsl,pins = <
+				MX6SX_PAD_CSI_DATA04__UART6_RX    0x1b0b1
+				MX6SX_PAD_CSI_DATA05__UART6_TX    0x1b0b1
+				MX6SX_PAD_CSI_DATA07__UART6_CTS_B 0x1b0b1
+				MX6SX_PAD_CSI_DATA06__UART6_RTS_B 0x1b0b1
 			>;
 		};
 	};
