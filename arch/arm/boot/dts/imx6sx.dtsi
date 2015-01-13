@@ -1686,6 +1686,14 @@
 		};
 	};
 
+	pwm2 {
+		pinctrl_pwm2_0: pwm2grp-0 {
+			fsl,pins = <
+				MX6SX_PAD_GPIO1_IO11__PWM2_OUT 0x110b0
+			>;
+		};
+	};
+
 	pwm3 {
 		pinctrl_pwm3_0: pwm3grp-0 {
 			fsl,pins = <
