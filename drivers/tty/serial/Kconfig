@@ -823,6 +823,13 @@ config SERIAL_IMX
 	  If you have a machine based on a Motorola IMX CPU you
 	  can enable its onboard serial port by enabling this option.
 
+config NO_CONSOLE
+	bool "Technexion disable debug console!!"
+	depends on SERIAL_IMX
+	default N
+	help
+	  you can disable the debug console by this setting
+
 config SERIAL_IMX_CONSOLE
 	bool "Console on IMX serial port"
 	depends on SERIAL_IMX

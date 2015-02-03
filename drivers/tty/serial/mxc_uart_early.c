@@ -165,15 +165,33 @@ static struct console mxc_early_uart_console __initdata = {
 	.flags = CON_PRINTBUFFER | CON_BOOT,
 	.index = -1,
 };
-
+#if defined(CONFIG_NO_CONSOLE)
+#	define TN_NO_CONSOLE (0x01 << 0)
+int g_nIgnoreStatus=0;
+#endif
 int __init mxc_early_serial_console_init(unsigned long base, struct clk *clk)
 {
+#if defined(CONFIG_NO_CONSOLE)
+	if (!(g_nIgnoreStatus & TN_NO_CONSOLE)) {
+		mxc_early_device.clk = clk;
+		mxc_early_device.port.mapbase = base;
+		register_console(&mxc_early_uart_console);
+	}
+#else
 	mxc_early_device.clk = clk;
 	mxc_early_device.port.mapbase = base;
-
 	register_console(&mxc_early_uart_console);
+#endif
 	return 0;
 }
+#if defined(CONFIG_NO_CONSOLE)
+int __init  tn_noconsole(char *p) {
+	g_nIgnoreStatus |= TN_NO_CONSOLE;
+	return 0;
+}
+
+early_param("noconsole", tn_noconsole);
+#endif
 
 int __init mxc_early_uart_console_disable(void)
 {
