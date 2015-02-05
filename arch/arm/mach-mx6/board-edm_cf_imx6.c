@@ -655,28 +655,31 @@ static void edm_cf_imx6_init_display(void)
 
 /* assumes SD/MMC pins are set; call after edm_cf_imx6_init_sd() */
 static __init void edm_cf_imx6_init_wifi(void) {
-        /* wifi on*/
-        EDM_IMX6_SET_PAD( PAD_EIM_A25__GPIO_5_2 );
-        /* reg on, signal to FDC6331L */
-        EDM_IMX6_SET_PAD( PAD_ENET_RXD1__GPIO_1_26 );        
-        /* ref_on, enable 32k clock */
-        EDM_IMX6_SET_PAD( PAD_CSI0_DAT13__GPIO_5_31 );
-        /* host wake */
-        EDM_IMX6_SET_PAD( PAD_ENET_TXD1__GPIO_1_29 );
-        /* wl wake - nc */
-        EDM_IMX6_SET_PAD( PAD_ENET_TXD0__GPIO_1_30 );
+	/* wifi on*/
+	EDM_IMX6_SET_PAD( PAD_EIM_A25__GPIO_5_2 );
+	/* reg on, signal to FDC6331L */
+	EDM_IMX6_SET_PAD( PAD_ENET_RXD1__GPIO_1_26 );
+	/* ref_on, enable 32k clock */
+	EDM_IMX6_SET_PAD( PAD_CSI0_DAT13__GPIO_5_31 );
+	/* host wake */
+	EDM_IMX6_SET_PAD( PAD_ENET_TXD1__GPIO_1_29 );
+	/* wl wake - nc */
+	EDM_IMX6_SET_PAD( PAD_ENET_TXD0__GPIO_1_30 );
 
         
 	gpio_request(EDM_CF_IMX6_WL_RST_N, "wl_rst_n");
 	gpio_direction_output(EDM_CF_IMX6_WL_RST_N, 0);
-	msleep(11);
-	gpio_set_value(EDM_CF_IMX6_WL_RST_N, 1);
 
 	gpio_request(EDM_CF_IMX6_WL_REF_ON, "wl_ref_on");
-	gpio_direction_output(EDM_CF_IMX6_WL_REF_ON, 1);
+	gpio_direction_output(EDM_CF_IMX6_WL_REF_ON, 0);
 
 	gpio_request(EDM_CF_IMX6_WL_REG_ON, "wl_reg_on");
-	gpio_direction_output(EDM_CF_IMX6_WL_REG_ON, 1);
+	gpio_direction_output(EDM_CF_IMX6_WL_REG_ON, 0);
+
+	msleep(11);
+	gpio_set_value(EDM_CF_IMX6_WL_REG_ON, 1);
+	gpio_set_value(EDM_CF_IMX6_WL_REF_ON, 1);
+	gpio_set_value(EDM_CF_IMX6_WL_RST_N, 1);
         
 	gpio_request(EDM_CF_IMX6_WL_WAKE, "wl_wake");
 	gpio_direction_output(EDM_CF_IMX6_WL_WAKE, 1);
