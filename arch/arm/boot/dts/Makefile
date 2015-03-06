@@ -124,6 +124,7 @@ dtb-$(CONFIG_ARCH_MXC) += \
 	imx6dl-sabresd-pf200.dtb \
 	imx6dl-wandboard.dtb \
 	imx6q-wandboard.dtb \
+	imx6dl-edm1-cf.dtb \
 	imx6q-arm2.dtb \
 	imx6q-sabreauto.dtb \
 	imx6q-sabreauto-ecspi.dtb \
@@ -136,6 +137,7 @@ dtb-$(CONFIG_ARCH_MXC) += \
 	imx6q-sabresd-hdcp.dtb \
 	imx6q-sabresd-ldo.dtb \
 	imx6q-sbc6x.dtb \
+	imx6q-edm1-cf.dtb \
 	imx6sl-evk.dtb \
 	imx6sl-evk-csi.dtb \
 	imx6sl-evk-ldo.dtb \
