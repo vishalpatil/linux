@@ -395,6 +395,14 @@ reference manual.
 			>;
 		};
 	};
+
+	pcie-reset {
+		pinctrl_pcie_reset: pciegrp {
+			fsl,pins = <
+				MX6QDL_PAD_EIM_D31__GPIO3_IO31 0x130b0			/* PCIE_nRST */
+			>;
+		};
+	};
 };
 
 &ldb {
@@ -432,6 +440,8 @@ reference manual.
 };
 
 &pcie {
+	pinctrl-0 = <&pinctrl_pcie_reset>;
+	reset-gpio = <&gpio3 31 0>;
 	status = "okay";
 };
 
