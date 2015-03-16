@@ -395,6 +395,28 @@ reference manual.
 		};
 	};
 
+	uart1 {
+		pinctrl_uart1_2: uart1grp-2 {
+			fsl,pins = <
+				MX6QDL_PAD_CSI0_DAT10__UART1_TX_DATA 0x1b0b1
+				MX6QDL_PAD_CSI0_DAT11__UART1_RX_DATA 0x1b0b1
+				MX6QDL_PAD_EIM_D19__UART1_CTS_B 0x1b0b1
+				MX6QDL_PAD_EIM_D20__UART1_RTS_B 0x1b0b1
+			>;
+		};
+	};
+
+	uart2 {
+		pinctrl_uart2_2: uart2grp-2 {
+			fsl,pins = <
+				MX6QDL_PAD_SD4_DAT4__UART2_RX_DATA 0x1b0b1
+				MX6QDL_PAD_SD4_DAT5__UART2_RTS_B 0x1b0b1
+				MX6QDL_PAD_SD4_DAT6__UART2_CTS_B 0x1b0b1
+				MX6QDL_PAD_SD4_DAT7__UART2_TX_DATA 0x1b0b1
+			>;
+		};
+	};
+
 	pcie-reset {
 		pinctrl_pcie_reset: pciegrp {
 			fsl,pins = <
@@ -483,7 +505,15 @@ reference manual.
 
 &uart1 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_uart1_1>;
+	pinctrl-0 = <&pinctrl_uart1_2>;
+	fsl,uart-has-rtscts;
+	status = "okay";
+};
+
+&uart2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart2_2>;
+	fsl,uart-has-rtscts;
 	status = "okay";
 };
 
