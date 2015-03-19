@@ -125,6 +125,7 @@ dtb-$(CONFIG_ARCH_MXC) += \
 	imx6dl-wandboard.dtb \
 	imx6q-wandboard.dtb \
 	imx6dl-edm1-cf.dtb \
+	imx6dl-picosom.dtb \
 	imx6q-arm2.dtb \
 	imx6q-sabreauto.dtb \
 	imx6q-sabreauto-ecspi.dtb \
