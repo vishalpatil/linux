@@ -37,7 +37,7 @@
 #define MAG3110_ID		0xC4
 #define MAG3110_XYZ_DATA_LEN	6
 #define MAG3110_STATUS_ZYXDR	0x08
-#define MAG3110_IRQ_USED        1
+#define MAG3110_IRQ_USED        0
 #define MAG3110_AC_MASK         (0x01)
 #define MAG3110_AC_OFFSET       0
 #define MAG3110_DR_MODE_MASK    (0x7 << 5)
