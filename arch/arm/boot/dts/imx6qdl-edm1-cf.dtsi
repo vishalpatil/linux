@@ -288,6 +288,14 @@
         pinctrl-names = "default";
         pinctrl-0 = <&pinctrl_i2c3_3>;
         status = "okay";
+
+	mag3110@0e {
+		compatible = "fsl,mag3110";
+		reg = <0x0e>;
+		position = <2>;
+		vdd-supply = <&reg_3v3on>;
+		vddio-supply = <&reg_3v3on>;
+	};
 };
 
 /*
