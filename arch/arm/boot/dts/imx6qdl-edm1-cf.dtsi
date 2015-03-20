@@ -324,6 +324,11 @@
 		st,max-limit-y = <550>;
 		st,max-limit-z = <750>;
 	};
+
+	ds1337: rtc@68 {
+		compatible = "mxim,ds1337";
+		reg = <0x68>;
+	};
 };
 
 /*
