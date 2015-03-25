@@ -1212,11 +1212,12 @@ static void __init edm_cf_imx6_board_init(void) {
 	edm_cf_imx6_init_spi();
 	edm_cf_imx6_init_gpu();
 
-        if (cpu_is_mx6q())
-                edm_cf_imx6_init_sata();
+	if (cpu_is_mx6q())
+		edm_cf_imx6_init_sata();
 
-        edm_cf_imx6_init_can();
-        edm_cf_imx6_init_pcie();
+	edm_cf_imx6_init_can();
+	edm_cf_imx6_init_pcie();
+	imx6q_add_imx_snvs_rtc();
 }
 
 /* ------------------------------------------------------------------------ */
