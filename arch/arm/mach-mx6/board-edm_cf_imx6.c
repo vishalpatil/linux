@@ -127,7 +127,7 @@ static const struct esdhc_platform_data edm_cf_imx6_sd_data[3] = {
 
 /* ------------------------------------------------------------------------ */
 
-static void edm_cf_imx6_init_sd(void) {
+static __init void edm_cf_imx6_init_sd(void) {
         int i;
         
 	/* SD1 Card Detect for + SD1 pads */
@@ -596,7 +596,7 @@ static void __init edm_cf_imx6_pads_ipu2_lcd(void)
 	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT23__IPU2_DISP0_DAT_23);
 }
 
-static void edm_cf_imx6_init_display(void)
+static __init void edm_cf_imx6_init_display(void)
 {
 	EDM_IMX6_SET_PAD( PAD_SD4_DAT0__GPIO_2_8 );
 	EDM_IMX6_SET_PAD( PAD_SD4_DAT1__GPIO_2_9 );
@@ -1094,7 +1094,7 @@ static __init void edm_cf_imx6_init_sata(void) {
  *                                                                            
  *****************************************************************************/
 
-int edm_cf_imx6_detect_edm_version(void) {
+__init int edm_cf_imx6_detect_edm_version(void) {
 	int ret;
 	EDM_IMX6_SET_PAD( PAD_EIM_EB0__GPIO_2_28 );
 
