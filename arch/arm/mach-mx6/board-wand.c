@@ -139,7 +139,7 @@ static const struct esdhc_platform_data wand_sd_data[3] = {
 
 /* ------------------------------------------------------------------------ */
 
-static void wand_init_sd(void) {
+static __init void wand_init_sd(void) {
 	int i;
 
 	IMX6_SETUP_PAD( SD1_CLK__USDHC1_CLK_50MHZ_40OHM );
@@ -517,7 +517,7 @@ static const struct i2c_board_info wand_hdmi_i2c_info = {
 
 /* ------------------------------------------------------------------------ */
 
-static void wand_init_hdmi(void) {
+static __init void wand_init_hdmi(void) {
 	i2c_register_board_info(edm_ddc, &wand_hdmi_i2c_info, 1);
 	imx6q_add_mxc_hdmi_core(&wand_hdmi_core_data);
 	imx6q_add_mxc_hdmi(&wand_hdmi_data);
