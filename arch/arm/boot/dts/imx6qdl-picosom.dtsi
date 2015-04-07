@@ -88,6 +88,13 @@
 		hdmi-controller = <&hdmi_audio>;
 	};
 
+	wifi {
+		compatible = "bcmdhd,wifi-gpio";
+		pinctrl-0 = <&pinctrl_wifi_ctrl>;
+		wl-reg-on = <&gpio1 7 0>;
+		wl-host-wake = <&gpio7 11 0>;
+	};
+
 	mxcfb1: fb@0 {
 		compatible = "fsl,mxc_sdc_fb";
 		disp_dev = "hdmi";
@@ -262,7 +269,7 @@
 &i2c3 {
         clock-frequency = <100000>;
         pinctrl-names = "default";
-        pinctrl-0 = <&pinctrl_i2c3_3>;
+        pinctrl-0 = <&pinctrl_i2c3_1>;
         status = "okay";
 };
 
@@ -326,14 +333,9 @@ reference manual.
 				MX6QDL_PAD_GPIO_6__GPIO1_IO06		0x0b0b0		/* ov5640 mipi powerdown */
 				MX6QDL_PAD_GPIO_3__CCM_CLKO2		0x000b0		/* ov5640 mclk */
 				MX6QDL_PAD_EIM_D29__GPIO3_IO29   	0x80000000
+				MX6QDL_PAD_ENET_RXD0__XTALOSC_REF_CLK_32K      0x000b0  /* wifi LPO 32K Hz clock */
 			>;
 		};
-
-	        pinctrl_spdif: spdifgrp {
-	                fsl,pins = <
-				MX6QDL_PAD_ENET_RXD0__SPDIF_OUT                 0x1b0b0
-			>;
-	        };
 	};
 	gpio {
 		pinctrl_gpio: gpiogrp {
@@ -351,23 +353,12 @@ reference manual.
 			>;
 		};
 	};
-	bluetooth_ctrl {
-		pinctrl_bt_ctrl: bt_ctrlgrp {
-			fsl,pins = <
-				MX6QDL_PAD_CSI0_VSYNC__GPIO5_IO21	0x80000000	/* bluetooth-on */
-				MX6QDL_PAD_CSI0_DAT12__GPIO5_IO30	0x80000000	/* bluetooth-reg-on */
-				MX6QDL_PAD_ENET_TXD0__GPIO1_IO30	0x80000000	/* bluetooth-wake */
-				MX6QDL_PAD_CSI0_DATA_EN__GPIO5_IO20     0x80000000	/* bluetooth-host-wake */
-			>;
-		};
-	};
+
 	wifi_ctrl {
 		pinctrl_wifi_ctrl: wifi_ctrlgrp {
 			fsl,pins = <
-				MX6QDL_PAD_CSI0_DAT13__GPIO5_IO31	0x0f0b0		/* wifi-ref-on */
-				MX6QDL_PAD_CSI0_DAT14__GPIO6_IO00	0x0f0b0		/* wifi-rst-n */
-				MX6QDL_PAD_ENET_RXD1__GPIO1_IO26	0x000b0		/* wifi-reg-on */
-				MX6QDL_PAD_ENET_TXD1__GPIO1_IO29	0x80000000	/* wifi-host-wake */
+				MX6QDL_PAD_GPIO_7__GPIO1_IO07     0x000b0    /* wifi-reg-on */
+				MX6QDL_PAD_GPIO_16__GPIO7_IO11    0x80000000 /* wifi-host-wake */
 			>;
 		};
 	};
@@ -463,12 +454,6 @@ reference manual.
 	status = "okay";
 };
 
-&spdif {
-        pinctrl-names = "default";
-        pinctrl-0 = <&pinctrl_spdif>;
-        status = "okay";
-};
-
 &ssi1 {
 	fsl,mode = "i2s-slave";
 	status = "okay";
@@ -521,7 +506,7 @@ reference manual.
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc2_2>;
 	bus-width = <4>;
-	//non-removable;
+	non-removable;
 	vmmc-supply = <&reg_3p3v>;
 	keep-power-in-suspend;
 	status = "okay";
