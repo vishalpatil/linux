@@ -411,10 +411,13 @@ reference manual.
 		};
 	};
 
-	pcie-reset {
-		pinctrl_pcie_reset: pciegrp {
+	uart3 {
+		pinctrl_uart3_3: uart3grp-3 {
 			fsl,pins = <
-				MX6QDL_PAD_EIM_D31__GPIO3_IO31 0x130b0			/* PCIE_nRST */
+				MX6QDL_PAD_EIM_D24__UART3_TX_DATA 0x1b0b1
+				MX6QDL_PAD_EIM_D25__UART3_RX_DATA 0x1b0b1
+				MX6QDL_PAD_EIM_D23__UART3_CTS_B   0x1b0b1
+				MX6QDL_PAD_EIM_D31__UART3_RTS_B   0x1b0b1
 			>;
 		};
 	};
@@ -454,12 +457,6 @@ reference manual.
 	status = "okay";
 };
 
-&pcie {
-	pinctrl-0 = <&pinctrl_pcie_reset>;
-	reset-gpio = <&gpio3 31 0>;
-	status = "okay";
-};
-
 &pwm3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pwm3_1>;
@@ -493,7 +490,7 @@ reference manual.
 
 &uart3 {
         pinctrl-names = "default";
-        pinctrl-0 = <&pinctrl_uart3_2>;
+        pinctrl-0 = <&pinctrl_uart3_3>;
         fsl,uart-has-rtscts;
         status = "okay";
 };
