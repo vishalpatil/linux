@@ -95,6 +95,15 @@
 		wl-host-wake = <&gpio7 11 0>;
 	};
 
+	rfkill {
+		compatible = "bcm,bcm43xx_rfkill";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_bt_ctrl>;
+		bluetooth-on = <&gpio7 12 0>;
+		bluetooth-reg-on = <&gpio7 12 0>;
+		bluetooth-wake = <&gpio1 4 0>;
+	};
+
 	mxcfb1: fb@0 {
 		compatible = "fsl,mxc_sdc_fb";
 		disp_dev = "hdmi";
@@ -359,6 +368,15 @@ reference manual.
 			fsl,pins = <
 				MX6QDL_PAD_GPIO_7__GPIO1_IO07     0x000b0    /* wifi-reg-on */
 				MX6QDL_PAD_GPIO_16__GPIO7_IO11    0x80000000 /* wifi-host-wake */
+			>;
+		};
+	};
+
+	bluetooth_ctrl {
+		pinctrl_bt_ctrl: bt_ctrlgrp {
+			fsl,pins = <
+				MX6QDL_PAD_GPIO_17__GPIO7_IO12	0x000b0		/* bluetooth-reg-on */
+				MX6QDL_PAD_GPIO_4__GPIO1_IO04	0x000b0		/* bluetooth-wake */
 			>;
 		};
 	};
