@@ -68,28 +68,29 @@ static int bcm43xx_rfkill_wifi_probe(struct device *dev,
 	wl_reg_on = of_get_named_gpio(np, "wifi-reg-on", 0);
 	wl_host_wake = of_get_named_gpio(np, "wifi-host-wake", 0);
 
-	if (!gpio_is_valid(wl_ref_on) || !gpio_is_valid(wl_rst_n) ||
-			!gpio_is_valid(wl_reg_on) || !gpio_is_valid(wl_host_wake)) {
-		dev_err(dev, "incorrect wifi gpios (%d %d %d %d)\n",
-				wl_ref_on, wl_rst_n, wl_reg_on, wl_host_wake);
-		return -EINVAL;
-	}
-
 	dev_info(dev, "initialize wifi chip\n");
 
-	gpio_request(wl_rst_n, "wl_rst_n");
-	gpio_direction_output(wl_rst_n, 0);
-	msleep(11);
-	gpio_set_value(wl_rst_n, 1);
+	if (gpio_is_valid(wl_rst_n)) {
+		gpio_request(wl_rst_n, "wl_rst_n");
+		gpio_direction_output(wl_rst_n, 0);
+		msleep(11);
+		gpio_set_value(wl_rst_n, 1);
+	}
 
-	gpio_request(wl_ref_on, "wl_ref_on");
-	gpio_direction_output(wl_ref_on, 1);
+	if (gpio_is_valid(wl_ref_on)) {
+		gpio_request(wl_ref_on, "wl_ref_on");
+		gpio_direction_output(wl_ref_on, 1);
+	}
 
-	gpio_request(wl_reg_on, "wl_reg_on");
-	gpio_direction_output(wl_reg_on, 1);
+	if (gpio_is_valid(wl_reg_on)) {
+		gpio_request(wl_reg_on, "wl_reg_on");
+		gpio_direction_output(wl_reg_on, 1);
+	}
 
-	gpio_request(wl_host_wake, "wl_host_wake");
-	gpio_direction_input(wl_host_wake);
+	if (gpio_is_valid(wl_host_wake)) {
+		gpio_request(wl_host_wake, "wl_host_wake");
+		gpio_direction_input(wl_host_wake);
+	}
 
 	rfkill->shutdown_name = "wifi_shutdown";
 	rfkill->shutdown_gpio = wl_reg_on;
@@ -133,29 +134,29 @@ static int bcm43xx_rfkill_bt_probe(struct device *dev,
 	bt_wake = of_get_named_gpio(np, "bluetooth-wake", 0);
 	bt_host_wake = of_get_named_gpio(np, "bluetooth-host-wake", 0);
 
-	if (!gpio_is_valid(bt_rst_n) || !gpio_is_valid(bt_reg_on) ||
-			!gpio_is_valid(bt_wake) || !gpio_is_valid(bt_host_wake)) {
-
-		dev_err(dev, "incorrect bt gpios (%d %d %d %d)\n",
-				bt_rst_n, bt_reg_on, bt_wake, bt_host_wake);
-		return -EINVAL;
-	}
-
 	dev_info(dev, "initialize bluetooth chip\n");
 
-	gpio_request(bt_rst_n, "bt_rst_n");
-	gpio_direction_output(bt_rst_n, 0);
-	msleep(11);
-	gpio_set_value(bt_rst_n, 1);
+	if (gpio_is_valid(bt_rst_n)) {
+		gpio_request(bt_rst_n, "bt_rst_n");
+		gpio_direction_output(bt_rst_n, 0);
+		msleep(11);
+		gpio_set_value(bt_rst_n, 1);
+	}
 
-	gpio_request(bt_reg_on, "bt_reg_on");
-	gpio_direction_output(bt_reg_on, 1);
+	if (gpio_is_valid(bt_reg_on)) {
+		gpio_request(bt_reg_on, "bt_reg_on");
+		gpio_direction_output(bt_reg_on, 1);
+	}
 
-	gpio_request(bt_wake, "bt_wake");
-	gpio_direction_output(bt_wake, 1);
+	if (gpio_is_valid(bt_wake)) {
+		gpio_request(bt_wake, "bt_wake");
+		gpio_direction_output(bt_wake, 1);
+	}
 
-	gpio_request(bt_host_wake, "bt_host_wake");
-	gpio_direction_input(bt_host_wake);
+	if (gpio_is_valid(bt_host_wake)) {
+		gpio_request(bt_host_wake, "bt_host_wake");
+		gpio_direction_input(bt_host_wake);
+	}
 
 	rfkill->shutdown_name = "bluetooth_shutdown";
 	rfkill->shutdown_gpio = bt_reg_on;
