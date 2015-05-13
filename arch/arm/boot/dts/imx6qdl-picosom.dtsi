@@ -247,7 +247,7 @@
 		AVDD-supply = <&reg_2p5v>;
 		DVDD-supply = <&reg_1p8v>;
 		pwn-gpios = <&gpio1 6 1>;
-		rst-gpios = <&gpio4 14 0>;
+		rst-gpios = <&gpio1 8 0>;
 		ipu_id = <0>;
 		csi_id = <0>;
 		mclk = <24000000>;
@@ -340,6 +340,7 @@ reference manual.
 				MX6QDL_PAD_EIM_DA9__GPIO3_IO09		0x80000000	/* USDHC1 CD */
 				MX6QDL_PAD_GPIO_0__CCM_CLKO1		0x000b0		/* SGTL5000 sys_mclk */
 				MX6QDL_PAD_GPIO_6__GPIO1_IO06		0x0b0b0		/* ov5640 mipi powerdown */
+				MX6QDL_PAD_GPIO_8__GPIO1_IO08		0x000b0		/* ov5640 mipi reset */
 				MX6QDL_PAD_GPIO_3__CCM_CLKO2		0x000b0		/* ov5640 mclk */
 				MX6QDL_PAD_EIM_D29__GPIO3_IO29   	0x80000000
 				MX6QDL_PAD_ENET_RXD0__XTALOSC_REF_CLK_32K      0x000b0  /* wifi LPO 32K Hz clock */
