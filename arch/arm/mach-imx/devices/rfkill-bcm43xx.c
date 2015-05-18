@@ -74,7 +74,7 @@ static int bcm43xx_rfkill_wifi_probe(struct device *dev,
 		gpio_request(wl_rst_n, "wl_rst_n");
 		gpio_direction_output(wl_rst_n, 0);
 		msleep(11);
-		gpio_set_value(wl_rst_n, 1);
+		gpio_set_value_cansleep(wl_rst_n, 1);
 	}
 
 	if (gpio_is_valid(wl_ref_on)) {
@@ -140,7 +140,7 @@ static int bcm43xx_rfkill_bt_probe(struct device *dev,
 		gpio_request(bt_rst_n, "bt_rst_n");
 		gpio_direction_output(bt_rst_n, 0);
 		msleep(11);
-		gpio_set_value(bt_rst_n, 1);
+		gpio_set_value_cansleep(bt_rst_n, 1);
 	}
 
 	if (gpio_is_valid(bt_reg_on)) {
