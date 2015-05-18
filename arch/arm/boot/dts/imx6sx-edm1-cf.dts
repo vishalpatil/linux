@@ -170,16 +170,16 @@
 	rfkill {
 		compatible = "bcm,bcm43xx_rfkill";
 		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_bt_ctrl &pinctrl_wifi_ctrl>;
-		bluetooth-on = <&gpio1 13 0>;
+		pinctrl-0 = <>;
+		bluetooth-on = <&pca9555 12 0>;
 		bluetooth-reg-on = <&pca9555 3 0>;
 		bluetooth-wake = <&pca9555 4 0>;
-		bluetooth-host-wake = <&gpio2 1 0>;
+		bluetooth-host-wake = <&pca9555 13 0>;
 
-		wifi-ref-on = <&gpio1 16 0>;
-		wifi-rst-n = <&gpio4 27 0>;
-		wifi-reg-on = <&gpio1 17 0>;
-		wifi-host-wake = <&gpio4 26 0>;
+		wifi-ref-on = <&pca9555 10 0>;
+		wifi-rst-n = <&pca9555 9 0>;
+		wifi-reg-on = <&pca9555 11 0>;
+		wifi-host-wake = <&pca9555 8 0>;
 	};
 };
 
@@ -486,26 +486,6 @@
 				MX6SX_PAD_QSPI1A_DQS__CAN2_TX	0x1b0b0
 				MX6SX_PAD_KEY_COL3__CAN2_TX 0x1b0b0
 				MX6SX_PAD_KEY_ROW3__CAN2_RX	0x1b0b0
-			>;
-		};
-	};
-
-	bluetooth_ctrl {
-		pinctrl_bt_ctrl: bt_ctrlgrp {
-			fsl,pins = <
-				MX6SX_PAD_GPIO1_IO13__GPIO1_IO_13 0x80000000 /* bluetooth-host-wake */
-				MX6SX_PAD_ENET1_CRS__GPIO2_IO_1	  0x80000000 /* bluetooth-reg-on */
-			>;
-		};
-	};
-
-	wifi_ctrl {
-		pinctrl_wifi_ctrl: wifi_ctrlgrp {
-			fsl,pins = <
-				MX6SX_PAD_CSI_DATA02__GPIO1_IO_16   0x80000000 /* wifi-host-wake */
-				MX6SX_PAD_QSPI1B_DATA3__GPIO4_IO_27 0x80000000 /* wifi-ref-on */
-				MX6SX_PAD_CSI_DATA03__GPIO1_IO_17   0x80000000 /* wifi-rst-n */
-				MX6SX_PAD_QSPI1B_DATA2__GPIO4_IO_26 0x80000000 /* wifi-reg-on */
 			>;
 		};
 	};
