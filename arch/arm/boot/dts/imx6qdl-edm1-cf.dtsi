@@ -629,11 +629,16 @@ reference manual.
 		vcc-supply = <&reg_3v3on>;
 
 		ti,x-min = /bits/ 16 <0>;
-		ti,x-max = /bits/ 16 <8000>;
+		ti,x-max = /bits/ 16 <4095>;
 		ti,y-min = /bits/ 16 <0>;
-		ti,y-max = /bits/ 16 <4800>;
-		ti,x-plate-ohms = /bits/ 16 <40>;
-		ti,pressure-max = /bits/ 16 <255>;
+		ti,y-max = /bits/ 16 <4095>;
+		ti,pressure-max = /bits/ 16 <1024>;
+		ti,x-plate-ohms = /bits/ 16 <90>;
+		ti,y-plate-ohms = /bits/ 16 <90>;
+		ti,debounce-max = /bits/ 16 <70>;
+		ti,debounce-tol = /bits/ 16 <3>;
+		ti,debounce-rep = /bits/ 16 <2>;
+		ti,settle-delay-usec = /bits/ 16 <150>;
 
 		linux,wakeup;
 	};
