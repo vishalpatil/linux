@@ -214,10 +214,30 @@
 	pinctrl-0 = <&pinctrl_ecspi1_1 &pinctrl_ecspi1_cs_1>;
 	status = "okay";
 
-	spidev@0 {
-		compatible = "linux,spidev";
-		spi-max-frequency = <10000000>;
-		reg = <0>;
+	ads7846@0 {
+		reg = <0>;	/* CS0 */
+		compatible = "ti,ads7846";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_ads7846_irq>;
+		interrupt-parent = <&gpio1>;
+		interrupts = <13 0>;
+		spi-max-frequency = <1000000>;
+		pendown-gpio = <&gpio1 13 0>;
+		vcc-supply = <&reg_3p3v>;
+
+		ti,x-min = /bits/ 16 <0>;
+		ti,x-max = /bits/ 16 <4095>;
+		ti,y-min = /bits/ 16 <0>;
+		ti,y-max = /bits/ 16 <4095>;
+		ti,pressure-max = /bits/ 16 <1024>;
+		ti,x-plate-ohms = /bits/ 16 <90>;
+		ti,y-plate-ohms = /bits/ 16 <90>;
+		ti,debounce-max = /bits/ 16 <70>;
+		ti,debounce-tol = /bits/ 16 <3>;
+		ti,debounce-rep = /bits/ 16 <2>;
+		ti,settle-delay-usec = /bits/ 16 <150>;
+
+		linux,wakeup;
 	};
 };
 
@@ -486,6 +506,14 @@
 				MX6SX_PAD_QSPI1A_DQS__CAN2_TX	0x1b0b0
 				MX6SX_PAD_KEY_COL3__CAN2_TX 0x1b0b0
 				MX6SX_PAD_KEY_ROW3__CAN2_RX	0x1b0b0
+			>;
+		};
+	};
+
+	ads7846_irq {
+		pinctrl_ads7846_irq: ads7846_irq_ctrlgrp {
+			fsl,pins = <
+				MX6SX_PAD_GPIO1_IO13__GPIO1_IO_13     0x1f059
 			>;
 		};
 	};
