@@ -253,8 +253,6 @@
 					clocks = <&clks IMX6SX_CLK_ECSPI1>,
 					       <&clks IMX6SX_CLK_ECSPI1>;
 					clock-names = "ipg", "per";
-					dmas = <&sdma 3 7 1>, <&sdma 4 7 2>;
-					dma-names = "rx", "tx";
 					status = "disabled";
 				};
 
