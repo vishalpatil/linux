@@ -68,6 +68,50 @@
 		};
 	};
 
+    gpio-edm {
+        compatible = "gpio-edm";
+        gpio_p255 {
+            label = "GPIO_P255";
+            gpios = <&gpio6 5 1>;
+            dir   = "out";
+        };
+        gpio_p256 {
+            label = "GPIO_P256";
+            gpios = <&gpio6 2 1>;
+            dir   = "out";
+        };
+        gpio_p257 {
+            label = "GPIO_P257";
+            gpios = <&gpio6 4 1>;
+            dir   = "out";
+        };
+        gpio_p258 {
+            label = "GPIO_P258";
+            gpios = <&gpio3 27 1>;
+            dir   = "out";
+        };
+        gpio_p259 {
+            label = "GPIO_P259";
+            gpios = <&gpio3 26 1>;
+            dir   = "out";
+        };
+        gpio_p260 {
+            label = "GPIO_P260";
+            gpios = <&gpio6 31 1>;
+            dir   = "out";
+        };
+        gpio_p261 {
+            label = "GPIO_P261";
+            gpios = <&gpio6 3 1>;
+            dir   = "out";
+        };
+        gpio_p262 {
+            label = "GPIO_P262";
+            gpios = <&gpio1 24 1>;
+            dir   = "out";
+        };
+    };
+
 	sound {
 		compatible = "fsl,edm1-cf-imx6-sgtl5000",
                              "fsl,imx-audio-sgtl5000";
@@ -402,17 +446,17 @@ reference manual.
 	gpio {
 		pinctrl_gpio: gpiogrp {
 			fsl,pins = <
-                                MX6QDL_PAD_EIM_DA12__GPIO3_IO12   0x4001b0b0 /* GPIO3_12 EDM pin 255 */
-                                MX6QDL_PAD_EIM_DA11__GPIO3_IO11   0x4001b0b0 /* GPIO3_11 EDM pin 256 */
-                                MX6QDL_PAD_EIM_DA10__GPIO3_IO10   0x4001b0b0 /* GPIO3_10 EDM pin 257 */
-                                MX6QDL_PAD_EIM_D27__GPIO3_IO27    0x4001b0b0 /* GPIO3_27 EDM pin 258 */
-                                MX6QDL_PAD_EIM_D26__GPIO3_IO26    0x4001b0b0 /* GPIO3_26 EDM pin 259 */
-                                MX6QDL_PAD_EIM_BCLK__GPIO6_IO31   0x4001b0b0 /* GPIO6_31 EDM pin 260 */
-                                MX6QDL_PAD_EIM_DA8__GPIO3_IO08    0x4001b0b0 /* GPIO3_8  EDM pin 261 */
-                                MX6QDL_PAD_ENET_RX_ER__GPIO1_IO24 0x4001b0b0 /* GPIO1_24 EDM pin 262 */
-                                MX6QDL_PAD_GPIO_19__GPIO4_IO05    0x4001b0b0 /* GPIO4_5  EDM pin 263 */
-                                MX6QDL_PAD_SD3_RST__GPIO7_IO08    0x4001b0b0 /* GPIO7_8  EDM pin 264 */
-			>;
+                MX6QDL_PAD_CSI0_DAT19__GPIO6_IO05  0x4001b0b5 /* GPIO6_05 EDM pin 255 */
+                MX6QDL_PAD_CSI0_DAT16__GPIO6_IO02  0x4001b0b5 /* GPIO6_02 EDM pin 256 */
+                MX6QDL_PAD_CSI0_DAT18__GPIO6_IO04  0x4001b0b5 /* GPIO6_04 EDM pin 258 */
+                MX6QDL_PAD_EIM_D27__GPIO3_IO27     0x4001b0b5 /* GPIO3_27 EDM pin 259 */
+                MX6QDL_PAD_EIM_D26__GPIO3_IO26     0x4001b0b5 /* GPIO3_26 EDM pin 260 */
+                MX6QDL_PAD_EIM_BCLK__GPIO6_IO31    0x4001b0b5 /* GPIO3_31 EDM pin 261 */
+                MX6QDL_PAD_CSI0_DAT17__GPIO6_IO03  0x4001b0b5 /* GPIO6_03 EDM pin 262 */
+                MX6QDL_PAD_ENET_RX_ER__GPIO1_IO24  0x4001b0b5 /* GPIO1_24 EDM pin 263 */
+                MX6QDL_PAD_GPIO_19__GPIO4_IO05     0x4001b0b5 /* GPIO1_05 EDM touch irq */
+                MX6QDL_PAD_SD3_RST__GPIO7_IO08     0x4001b0b5 /* GPIO7_08 EDM touch irq */
+		    >;
 		};
 	};
 	bluetooth_ctrl {
