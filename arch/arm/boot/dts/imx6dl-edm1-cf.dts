@@ -25,6 +25,14 @@
 	};
 };
 
+&flexcan1{
+	status = "okay";
+};
+
+&flexcan2{
+	status = "okay";
+};
+
 &mxcfb1 {
 	status = "okay";
 };
