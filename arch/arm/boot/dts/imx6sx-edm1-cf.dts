@@ -444,6 +444,11 @@
 		reg = <0x0e>;
 		position = <2>;
 	};
+
+	ds1337: rtc@68 {
+		compatible = "mxim,ds1337";
+		reg = <0x68>;
+	};
 };
 
 &i2c4 {
