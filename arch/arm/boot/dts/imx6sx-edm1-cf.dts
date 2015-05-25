@@ -116,22 +116,6 @@
 		};
 	};
 
-	gpio-keys {
-		compatible = "gpio-keys";
-
-		volume-up {
-			label = "Volume Up";
-			gpios = <&gpio1 18 GPIO_ACTIVE_LOW>;
-			linux,code = <115>; /* KEY_VOLUMEUP */
-		};
-
-		volume-down {
-			label = "Volume Down";
-			gpios = <&gpio1 19 GPIO_ACTIVE_LOW>;
-			linux,code = <114>; /* KEY_VOLUMEDOWN */
-		};
-	};
-
 	sound {
 		compatible = "fsl,edm1-cf-imx6sx-sgtl5000",
 			   "fsl,imx-audio-sgtl5000";
@@ -374,22 +358,6 @@
 			};
 		};
 	};
-
-	ov564x: ov564x@3c {
-		compatible = "ovti,ov564x";
-		reg = <0x3c>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_csi_0>;
-		clocks = <&clks IMX6SX_CLK_CSI>;
-		clock-names = "csi_mclk";
-		AVDD-supply = <&vgen3_reg>;  /* 2.8v */
-		DVDD-supply = <&vgen2_reg>;  /* 1.5v*/
-		pwn-gpios = <&gpio3 28 1>;
-		rst-gpios = <&gpio3 27 0>;
-		csi_id = <0>;
-		mclk = <24000000>;
-		mclk_source = <0>;
-	};
 };
 
 &flexcan1 {
@@ -441,27 +409,12 @@
 		compatible = "fsl,isl29023";
 		reg = <0x44>;
 		rext = <499>;
-		interrupt-parent = <&gpio6>;
-		interrupts = <5 1>;
-		shared-interrupt;
 	};
 
 	mag3110@0e {
 		compatible = "fsl,mag3110";
 		reg = <0x0e>;
 		position = <2>;
-		interrupt-parent = <&gpio6>;
-		interrupts = <5 1>;
-		shared-interrupt;
-	};
-
-	mma8451@1c {
-		compatible = "fsl,mma8451";
-		reg = <0x1c>;
-		position = <1>;
-		interrupt-parent = <&gpio6>;
-		interrupts = <2 8>;
-		interrupt-route = <2>;
 	};
 };
 
@@ -479,11 +432,8 @@
 	hog {
 		pinctrl_hog: hoggrp {
 			fsl,pins = <
-				MX6SX_PAD_ENET2_COL__GPIO2_IO_6 0x80000000
-				MX6SX_PAD_QSPI1A_DATA3__GPIO4_IO_19 0x80000000
-				MX6SX_PAD_KEY_COL0__GPIO2_IO_10	0x17059
-				MX6SX_PAD_KEY_ROW0__GPIO2_IO_15	0x17059
-				MX6SX_PAD_KEY_COL1__GPIO2_IO_11	0x17059
+				MX6SX_PAD_ENET2_COL__GPIO2_IO_6 0x80000000	/* Ethernet Power Enable */
+				MX6SX_PAD_QSPI1A_DATA3__GPIO4_IO_19 0x80000000	/* Voltage regulators Enable */
 			>;
 		};
 	};
