@@ -1,3 +1,4 @@
+#include <linux/tcp.h>
 #include <net/ip.h>
 #include <net/tso.h>
 
