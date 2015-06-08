@@ -5,4 +5,5 @@ obj-$(CONFIG_EDM_BASEBOARD_FAIRY) += baseboard-fairy.o
 obj-$(CONFIG_EDM_EXPANSION_FWBADAPT) += expansion-fwbadapt.o
 obj-$(CONFIG_EDM_EXPANSION_WANDQC) += expansion-wandqc.o
 obj-$(CONFIG_EDM_BASEBOARD_TOUCAN) += baseboard-toucan.o
+obj-$(CONFIG_EDM_BASEBOARD_POTION) += baseboard-potion.o
 

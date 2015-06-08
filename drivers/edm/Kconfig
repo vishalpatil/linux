@@ -54,3 +54,12 @@ config EDM_BASEBOARD_TOUCAN
 
           If you have one, say Y.
 
+config EDM_BASEBOARD_POTION
+	tristate "Support for the Potion baseboard
+	depends on EDM
+	default n
+	help
+	  Include support for Potionboard.
+
+          If you have one, say Y.
+
