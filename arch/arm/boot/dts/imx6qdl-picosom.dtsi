@@ -230,6 +230,21 @@
 		VDDA-supply = <&reg_2p5v>;
 		VDDIO-supply = <&reg_3p3v>;
 	};
+
+	fxas2100x@21 {
+		compatible = "fsl,fxas2100x";
+		reg = <0x21>;
+	};
+
+	fxos8700@1e {
+		compatible = "fsl,fxos8700";
+		reg = <0x1e>;
+	};
+
+	mpl3115@60 {
+		compatible = "fsl,mpl3115";
+		reg = <0x60>;
+	};
 };
 
 &i2c2 {
@@ -272,7 +287,6 @@
 		flip_x=<0>;
 		flip_y=<0>;
 	};
-
 };
 
 &i2c3 {
