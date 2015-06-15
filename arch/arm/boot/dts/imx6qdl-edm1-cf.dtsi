@@ -657,7 +657,9 @@ reference manual.
 
 &usdhc3 { /* Module i-Nand */
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_usdhc3_2>;
+	pinctrl-0 = <&pinctrl_usdhc3_1>;
+	bus-width = <8>;
+	non-removable;
 	vmmc-supply = <&reg_3p3v>;
 	status = "okay";
 };
