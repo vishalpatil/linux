@@ -197,8 +197,9 @@ config FB_SYS_FOPS
        default n
 
 config FB_DEFERRED_IO
-	bool
+	bool "Framebuffer deferred IO"
 	depends on FB
+	default n
 
 config FB_HECUBA
 	tristate
