@@ -515,6 +515,8 @@ const struct spi_device_id spi_nor_ids[] = {
 	{ "s25fl064k",  INFO(0xef4017,      0,  64 * 1024, 128, SECT_4K) },
 
 	/* SST -- large erase sizes are "overlays", "sectors" are 4K */
+	{ "sst25vf010b", INFO(0xbf258b, 0, 64 * 1024,  2, SECT_4K | SST_WRITE) },
+	{ "sst25vf020b", INFO(0xbf258c, 0, 64 * 1024,  4, SECT_4K | SST_WRITE) },
 	{ "sst25vf040b", INFO(0xbf258d, 0, 64 * 1024,  8, SECT_4K | SST_WRITE) },
 	{ "sst25vf080b", INFO(0xbf258e, 0, 64 * 1024, 16, SECT_4K | SST_WRITE) },
 	{ "sst25vf016b", INFO(0xbf2541, 0, 64 * 1024, 32, SECT_4K | SST_WRITE) },
