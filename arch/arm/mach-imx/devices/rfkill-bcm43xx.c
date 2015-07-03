@@ -73,6 +73,7 @@ static int bcm43xx_rfkill_wifi_probe(struct device *dev,
 	if (gpio_is_valid(wl_rst_n)) {
 		gpio_request(wl_rst_n, "wl_rst_n");
 		gpio_direction_output(wl_rst_n, 0);
+		gpio_export(wl_rst_n,true);
 		msleep(11);
 		gpio_set_value_cansleep(wl_rst_n, 1);
 	}
@@ -80,16 +81,19 @@ static int bcm43xx_rfkill_wifi_probe(struct device *dev,
 	if (gpio_is_valid(wl_ref_on)) {
 		gpio_request(wl_ref_on, "wl_ref_on");
 		gpio_direction_output(wl_ref_on, 1);
+		gpio_export(wl_ref_on,true);
 	}
 
 	if (gpio_is_valid(wl_reg_on)) {
 		gpio_request(wl_reg_on, "wl_reg_on");
 		gpio_direction_output(wl_reg_on, 1);
+		gpio_export(wl_reg_on,true);
 	}
 
 	if (gpio_is_valid(wl_host_wake)) {
 		gpio_request(wl_host_wake, "wl_host_wake");
 		gpio_direction_input(wl_host_wake);
+		gpio_export(wl_host_wake,true);
 	}
 
 	rfkill->shutdown_name = "wifi_shutdown";
@@ -139,6 +143,7 @@ static int bcm43xx_rfkill_bt_probe(struct device *dev,
 	if (gpio_is_valid(bt_rst_n)) {
 		gpio_request(bt_rst_n, "bt_rst_n");
 		gpio_direction_output(bt_rst_n, 0);
+		gpio_export(bt_rst_n,true);
 		msleep(11);
 		gpio_set_value_cansleep(bt_rst_n, 1);
 	}
@@ -146,16 +151,19 @@ static int bcm43xx_rfkill_bt_probe(struct device *dev,
 	if (gpio_is_valid(bt_reg_on)) {
 		gpio_request(bt_reg_on, "bt_reg_on");
 		gpio_direction_output(bt_reg_on, 1);
+		gpio_export(bt_reg_on,true);
 	}
 
 	if (gpio_is_valid(bt_wake)) {
 		gpio_request(bt_wake, "bt_wake");
 		gpio_direction_output(bt_wake, 1);
+		gpio_export(bt_wake,true);
 	}
 
 	if (gpio_is_valid(bt_host_wake)) {
 		gpio_request(bt_host_wake, "bt_host_wake");
 		gpio_direction_input(bt_host_wake);
+		gpio_export(bt_host_wake,true);
 	}
 
 	rfkill->shutdown_name = "bluetooth_shutdown";
