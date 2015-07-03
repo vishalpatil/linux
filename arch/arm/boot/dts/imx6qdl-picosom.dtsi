@@ -533,7 +533,7 @@ reference manual.
 &usbotg {
 	vbus-supply = <&reg_usb_otg_vbus>;
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_usbotg_1>;
+	pinctrl-0 = <&pinctrl_usbotg_2>;
 	disable-over-current;
 	dr_mode = "otg";
 	status = "okay";
