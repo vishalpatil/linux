@@ -548,5 +548,6 @@ reference manual.
         ti,settle-delay-usec = /bits/ 16 <150>;
 
         linux,wakeup;
+        status = "okay";
     };
 };
