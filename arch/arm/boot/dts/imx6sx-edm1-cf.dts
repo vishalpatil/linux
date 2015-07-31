@@ -167,6 +167,25 @@
 	};
 };
 
+&cpu0 {
+	operating-points = <
+		/* kHz    uV */
+		996000  1250000
+		792000  1175000
+		396000  1075000
+		>;
+	fsl,soc-operating-points = <
+		/* ARM kHz      SOC uV */
+		996000	1175000
+		792000	1175000
+		396000	1175000
+	>;
+	arm-supply = <&sw1a_reg>;
+	soc-supply = <&sw1c_reg>;
+	pu-supply = <&pu_dummy>;
+	fsl,arm-soc-shared = <0>;
+};
+
 &csi1 {
 	status = "okay";
 };
@@ -245,11 +264,12 @@
 };
 
 &gpc {
-	fsl,cpu_pupscr_sw2iso = <0xf>;
-	fsl,cpu_pupscr_sw = <0xf>;
+	fsl,cpu_pupscr_sw2iso = <0x2>;
+	fsl,cpu_pupscr_sw = <0x1>;
 	fsl,cpu_pdnscr_iso2sw = <0x1>;
 	fsl,cpu_pdnscr_iso = <0x1>;
 	fsl,wdog-reset = <1>; /* watchdog select of reset source */
+	fsl,ldo-bypass = <1>; /* use ldo-bypass, u-boot will check it and configure */
 };
 
 &i2c1 {
