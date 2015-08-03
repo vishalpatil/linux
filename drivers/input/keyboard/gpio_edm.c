@@ -255,7 +255,7 @@ static void __exit gpio_edm_exit(void)
 	platform_driver_unregister(&gpio_edm_device_driver);
 }
 
-late_initcall(gpio_edm_init);
+ subsys_initcall(gpio_edm_init);
 module_exit(gpio_edm_exit);
 
 MODULE_LICENSE("GPL");
