@@ -275,6 +275,19 @@ mmdc_podf1:
 
 	.macro	mmdc_clk_lower_100MHz
 
+#ifdef CONFIG_IMX6_LPDDR2_400
+	ldr	r0, =0x03032073
+	str	r0, [r5, #0xc] /* MMDC0_MDCFG0 */
+	ldr	r0, =0x00200482
+	str	r0, [r5, #0x10] /* MMDC0_MDCFG1 */
+	ldr	r0, =0x00000049
+	str	r0, [r5, #0x14] /* MMDC0_MDCFG2 */
+	ldr	r0, =0x00080555
+	str	r0, [r5, #0x38] /* MMDC0_MDCFG3LP */
+	ldr	r0, =0x000016cc
+	str	r0, [r5, #0x18] /* MMDC0_MISC */
+#endif
+
 	/*
 	 * Prior to reducing the DDR frequency (at 528/400 MHz),
 	 * read the Measure unit count bits (MU_UNIT_DEL_NUM)
@@ -308,6 +321,20 @@ mmdc_podf1:
 	ldr	r6, [r8, r5]
 	orr	r6, r6, #0x800
 	str	r6, [r8, r5]
+
+#ifdef CONFIG_IMX6_LPDDR2_400
+	ldr	r0, =0x03032073
+	str	r0, [r7, #0xc] /* MMDC0_MDCFG0 */
+	ldr	r0, =0x00200482
+	str	r0, [r7, #0x10] /* MMDC0_MDCFG1 */
+	ldr	r0, =0x00000049
+	str	r0, [r7, #0x14] /* MMDC0_MDCFG2 */
+	ldr	r0, =0x00080555
+	str	r0, [r7, #0x38] /* MMDC0_MDCFG3LP */
+	ldr	r0, =0x000016cc
+	str	r0, [r7, #0x18] /* MMDC0_MISC */
+#endif
+
 	/* Wait for FRC_MSR to clear. */
 force_measure:
 	ldr	r6, [r8, r5]
@@ -319,6 +346,19 @@ force_measure:
 
 	.macro	mmdc_clk_above_100MHz
 
+#ifdef CONFIG_IMX6_LPDDR2_400
+	ldr	r0, =0x34386143
+	str	r0, [r5, #0xc] /* MMDC0_MDCFG0 */
+	ldr	r0, =0x00100A82
+	str	r0, [r5, #0x10] /* MMDC0_MDCFG1 */
+	ldr	r0, =0x00000093
+	str	r0, [r5, #0x14] /* MMDC0_MDCFG2 */
+	ldr	r0, =0x00190778
+	str	r0, [r5, #0x38] /* MMDC0_MDCFG3LP */
+	ldr	r0, =0x000016cc
+	str	r0, [r5, #0x18] /* MMDC0_MISC */
+#endif
+
 	/* Make sure that the PHY measurement unit is NOT in bypass mode */
 	ldr	r5, =0x8B8
 	ldr	r6, [r8, r5]
@@ -328,6 +368,20 @@ force_measure:
 	ldr	r6, [r8, r5]
 	orr	r6, r6, #0x800
 	str	r6, [r8, r5]
+
+#ifdef CONFIG_IMX6_LPDDR2_400
+	ldr	r0, =0x34386143
+	str	r0, [r7, #0xc] /* MMDC0_MDCFG0 */
+	ldr	r0, =0x00100A82
+	str	r0, [r7, #0x10] /* MMDC0_MDCFG1 */
+	ldr	r0, =0x00000093
+	str	r0, [r7, #0x14] /* MMDC0_MDCFG2 */
+	ldr	r0, =0x00190778
+	str	r0, [r7, #0x38] /* MMDC0_MDCFG3LP */
+	ldr	r0, =0x000016cc
+	str	r0, [r7, #0x18] /* MMDC0_MISC */
+#endif
+
 	/* Wait for FRC_MSR to clear. */
 force_measure1:
 	ldr	r6, [r8, r5]

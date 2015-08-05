@@ -529,6 +529,11 @@
 
 	.macro	imx6dl_ddr_io_set_lpm
 
+#ifdef CONFIG_IMX6_LPDDR2_400
+	ldr	r4, [r8, #0x774] /* CTL_GRP_DDR_TYPE */
+	and	r4, r4, #0xC0000
+#endif
+
 	mov	r10, #0
 	str	r10, [r8, #0x470] /* DRAM_DQM0 */
 	str	r10, [r8, #0x474] /* DRAM_DQM1 */
@@ -548,6 +553,11 @@
 	str	r10, [r8, #0x750] /* DDRMODE_CTL */
 	str	r10, [r8, #0x760] /* DDRMODE */
 
+#ifdef CONFIG_IMX6_LPDDR2_400
+	cmp	r10, #0xC0000
+	bne	skip_sdq_lpm
+#endif
+
 	str	r10, [r8, #0x4bc] /* DRAM_SDQS0 */
 	str	r10, [r8, #0x4c0] /* DRAM_SDQS1 */
 	str	r10, [r8, #0x4c4] /* DRAM_SDQS2 */
@@ -558,6 +568,7 @@
 	str	r10, [r8, #0x4d4] /* DRAM_SDQS6 */
 	str	r10, [r8, #0x4d8] /* DRAM_SDQS7 */
 
+skip_sdq_lpm:
 	str	r10, [r8, #0x764] /* GPR_B0DS */
 	str	r10, [r8, #0x770] /* GPR_B1DS */
 	str	r10, [r8, #0x778] /* GPR_B2DS */
@@ -686,6 +697,11 @@
 
 	.macro	imx6dq_ddr_io_set_lpm
 
+#ifdef CONFIG_IMX6_LPDDR2_400
+	ldr	r4, [r8, #0x774] /* CTL_GRP_DDR_TYPE */
+	and	r4, r4, #0xC0000
+#endif
+
 	mov	r10, #0
 	str	r10, [r8, #0x5ac] /* DRAM_DQM0 */
 	str	r10, [r8, #0x5b4] /* DRAM_DQM1 */
@@ -705,6 +721,11 @@
 	str	r10, [r8, #0x750] /* DDRMODE_CTL */
 	str	r10, [r8, #0x774] /* DDRMODE */
 
+#ifdef CONFIG_IMX6_LPDDR2_400
+	cmp	r4, #0xC0000
+	bne	skip_sdq_lpm_2
+#endif
+
 	str	r10, [r8, #0x5a8] /* DRAM_SDQS0 */
 	str	r10, [r8, #0x5b0] /* DRAM_SDQS1 */
 	str	r10, [r8, #0x524] /* DRAM_SDQS2 */
@@ -715,6 +736,7 @@
 	str	r10, [r8, #0x5b8] /* DRAM_SDQS6 */
 	str	r10, [r8, #0x5c0] /* DRAM_SDQS7 */
 
+skip_sdq_lpm_2:
 	str	r10, [r8, #0x784] /* GPR_B0DS */
 	str	r10, [r8, #0x788] /* GPR_B1DS */
 	str	r10, [r8, #0x794] /* GPR_B2DS */

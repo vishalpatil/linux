@@ -881,6 +881,16 @@ config SOC_VF610
 	help
 	  This enable support for Freescale Vybrid VF610 processor.
 
+config IMX6_LPDDR2_400
+	bool "iMX6Q LPDDR2 400MHz support"
+	default n
+	depends on SOC_IMX6Q
+
+	help
+	  This forces the memory clock to 400 MHz on iMX6Q CPUs.
+	  For this to be stable, memory clock should be set to 400MHz at boot (e.g. by SPL/u-boot).
+	  Just say N.
+
 endif
 
 source "arch/arm/mach-imx/devices/Kconfig"
