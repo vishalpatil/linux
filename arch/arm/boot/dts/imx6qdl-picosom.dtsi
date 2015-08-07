@@ -656,6 +656,7 @@ reference manual.
 	pinctrl-0 = <&pinctrl_usdhc2_2>;
 	bus-width = <4>;
 	non-removable;
+	sdio-force-rescan;
 	vmmc-supply = <&reg_3p3v>;
 	keep-power-in-suspend;
 	status = "okay";
