@@ -89,7 +89,9 @@ int bcm_wlan_set_power(bool on)
 
 	if (on) {
 		printk("======== PULL WL_REG_ON HIGH! ========\n");
-		gpio_direction_output(wl_reg_on, 1);
+		gpio_direction_output(wl_reg_on, 0);
+		mdelay(10);
+		gpio_set_value(wl_reg_on, 1);
 #ifdef CONFIG_MACH_ODROID_4210
 		err = gpio_set_value(EXYNOS4_GPK1(0), 1);
 #endif
@@ -106,17 +108,20 @@ int bcm_wlan_set_power(bool on)
 	return err;
 }
 
+#include <linux/mmc/host.h>
 int bcm_wlan_set_carddetect(bool present)
 {
 	int err = 0;
 
 	if (present) {
 		printk("======== Card detection to detect SDIO card! ========\n");
+		mmc_host_rescan(NULL, 1, 1);//NULL => SDIO host
 #ifdef CONFIG_MACH_ODROID_4210
 		err = sdhci_s3c_force_presence_change(&sdmmc_channel, 1);
 #endif
 	} else {
 		printk("======== Card detection to remove SDIO card! ========\n");
+		mmc_host_rescan(NULL, 0, 1);//NULL => SDIO host
 #ifdef CONFIG_MACH_ODROID_4210
 		err = sdhci_s3c_force_presence_change(&sdmmc_channel, 0);
 #endif
