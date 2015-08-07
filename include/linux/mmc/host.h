@@ -281,6 +281,7 @@ struct mmc_host {
 #define MMC_CAP2_PACKED_CMD	(MMC_CAP2_PACKED_RD | \
 				 MMC_CAP2_PACKED_WR)
 #define MMC_CAP2_NO_PRESCAN_POWERUP (1 << 14)	/* Don't power up before scan */
+#define MMC_CAP2_SDIO_FORCE_RESCAN (1 << 15)	/* Force sdio rescan */
 
 	mmc_pm_flag_t		pm_caps;	/* supported pm features */
 
@@ -370,6 +371,7 @@ int mmc_add_host(struct mmc_host *);
 void mmc_remove_host(struct mmc_host *);
 void mmc_free_host(struct mmc_host *);
 void mmc_of_parse(struct mmc_host *host);
+int mmc_host_rescan(struct mmc_host *host, int val, int irq_type);
 
 static inline void *mmc_priv(struct mmc_host *host)
 {
