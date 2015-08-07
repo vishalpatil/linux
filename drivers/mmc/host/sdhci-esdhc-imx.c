@@ -992,6 +992,9 @@ sdhci_esdhc_imx_probe_dt(struct platform_device *pdev,
 	if (of_find_property(np, "enable-sdio-wakeup", NULL))
 		host->mmc->pm_caps |= MMC_PM_WAKE_SDIO_IRQ;
 
+	if (of_find_property(np, "sdio-force-rescan", NULL))
+		host->mmc->caps2 |= MMC_CAP2_SDIO_FORCE_RESCAN;
+
 	return 0;
 }
 #else
