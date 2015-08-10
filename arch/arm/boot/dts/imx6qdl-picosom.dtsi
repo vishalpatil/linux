@@ -495,6 +495,7 @@ reference manual.
 			fsl,pins = <
 				MX6QDL_PAD_GPIO_17__GPIO7_IO12	0x000b0		/* bluetooth-reg-on */
 				MX6QDL_PAD_GPIO_4__GPIO1_IO04	0x000b0		/* bluetooth-wake */
+                MX6QDL_PAD_GPIO_5__GPIO1_IO05   0x000b0     /* bluetooth-host-wake */
 			>;
 		};
 	};
