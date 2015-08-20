@@ -30,6 +30,7 @@
 #include <linux/kernel.h>
 #include <linux/memblock.h>
 #include <linux/phy.h>
+#include <linux/pwm_backlight.h>
 
 #include <mach/ahci_sata.h>
 #include <mach/common.h>
@@ -596,17 +597,30 @@ static void __init edm_cf_imx6_pads_ipu2_lcd(void)
 	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT23__IPU2_DISP0_DAT_23);
 }
 
+/* LVDS0 backlight for edm1 */
+static struct platform_pwm_backlight_data edm_cf_imx6_backlight0_data = {
+	.pwm_id		= 2,
+	.max_brightness	= 255,
+	.dft_brightness	= 255,
+	.pwm_period_ns	= 50000,
+};
+
+/* LVDS1 for edm2 and LCD backlight for edm1 */
+static struct platform_pwm_backlight_data edm_cf_imx6_backlight1_data = {
+	.pwm_id		= 3,
+	.max_brightness	= 255,
+	.dft_brightness	= 255,
+	.pwm_period_ns	= 50000,
+};
+
 static __init void edm_cf_imx6_init_display(void)
 {
 	EDM_IMX6_SET_PAD( PAD_SD4_DAT0__GPIO_2_8 );
-	EDM_IMX6_SET_PAD( PAD_SD4_DAT1__GPIO_2_9 );
-	EDM_IMX6_SET_PAD( PAD_SD4_DAT2__GPIO_2_10 );
+	EDM_IMX6_SET_PAD( PAD_SD4_DAT1__PWM3_PWMO );
+	EDM_IMX6_SET_PAD( PAD_SD4_DAT2__PWM4_PWMO );
 	EDM_IMX6_SET_PAD( PAD_SD4_DAT3__GPIO_2_11 );
 
 	gpio_request(IMX_GPIO_NR(2, 8), "lvds0_en");
-	gpio_request(IMX_GPIO_NR(2, 9), "lvds0_blt_ctrl");
-
-	gpio_request(IMX_GPIO_NR(2, 10), "disp0_bklen");
 	gpio_request(IMX_GPIO_NR(2, 11), "disp0_vdden");
 
 	mx6_disp_ctrls = kmalloc(sizeof(struct mx6_display_controls), GFP_KERNEL);
@@ -643,6 +657,10 @@ static __init void edm_cf_imx6_init_display(void)
 /* For EDM1 , the following are supported: lcd0, hdmi0, lvds0, dsi */
 		mx6_display_ch_capability_setup(1, 0, 1, 1, 0, 0, 1);
 
+	imx6q_add_mxc_pwm(2);
+	imx6q_add_mxc_pwm(3);
+	imx6q_add_mxc_pwm_backlight(2, &edm_cf_imx6_backlight0_data);
+	imx6q_add_mxc_pwm_backlight(3, &edm_cf_imx6_backlight1_data);
 	mx6_init_display();
 }
 
