@@ -651,13 +651,10 @@
 };
 
 &usdhc3 {
-	pinctrl-names = "default", "state_100mhz", "state_200mhz";
+	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc3_1>;
-	pinctrl-1 = <&pinctrl_usdhc3_1_100mhz>;
-	pinctrl-2 = <&pinctrl_usdhc3_1_200mhz>;
 	bus-width = <8>;
-	cd-gpios = <&gpio6 00 0>;
-//	wp-gpios = <&gpio6 01 0>;
+	non-removable;
 	keep-power-in-suspend;
 	enable-sdio-wakeup;
 	status = "okay";
