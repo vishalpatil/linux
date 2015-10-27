@@ -58,6 +58,21 @@
 			gpio = <&gpio3 22 0>;
 			enable-active-high;
 		};
+
+		wlreg_on: wlreg_on {
+			compatible = "regulator-fixed";
+			regulator-min-microvolt = <5000000>;
+			regulator-max-microvolt = <5000000>;
+			regulator-name = "wlreg_on";
+			gpio = <&gpio1 7 GPIO_ACTIVE_HIGH>;
+			enable-active-high;
+		};
+	};
+
+	bcmdhd_wlan_0: bcmdhd_wlan@0 {
+		compatible = "android,bcmdhd_wlan";
+		pinctrl-0 = <&pinctrl_wifi_ctrl>;
+		wlreg_on-supply = <&wlreg_on>;
 	};
 
     gpio-edm {
@@ -1260,7 +1275,7 @@ reference manual.
 				MX6QDL_PAD_GPIO_8__GPIO1_IO08		0x000b0		/* ov5640 mipi reset */
 				MX6QDL_PAD_GPIO_3__CCM_CLKO2		0x000b0		/* ov5640 mclk */
 				MX6QDL_PAD_EIM_D29__GPIO3_IO29   	0x80000000
-				MX6QDL_PAD_ENET_RXD0__XTALOSC_REF_CLK_32K      0x000b0  /* wifi LPO 32K Hz clock */
+				MX6QDL_PAD_ENET_RXD0__XTALOSC_REF_CLK_32K	0x000b0	/* wifi LPO 32K Hz clock */
 			>;
 		};
 	};
@@ -1279,6 +1294,15 @@ reference manual.
                                 MX6QDL_PAD_GPIO_19__GPIO4_IO05    0x4001b0b5 /* GPIO4_5  EDM pin 263 */
                                 MX6QDL_PAD_SD3_RST__GPIO7_IO08    0x4001b0b5 /* GPIO7_8  EDM pin 264 */
 
+			>;
+		};
+	};
+
+	wifi_ctrl {
+		pinctrl_wifi_ctrl: wifi_ctrlgrp {
+			fsl,pins = <
+				MX6QDL_PAD_GPIO_7__GPIO1_IO07	0x000b0		/* wifi-reg-on */
+				MX6QDL_PAD_GPIO_16__GPIO7_IO11	0x80000000	/* wifi-host-wake */
 			>;
 		};
 	};
@@ -1431,9 +1455,11 @@ reference manual.
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc2_2>;
 	bus-width = <4>;
-	//non-removable;
 	vmmc-supply = <&reg_3p3v>;
+	enable-sdio-wakeup;
 	keep-power-in-suspend;
+	tuning-step = <2>;
+	wifi-host;
 	status = "okay";
 };
 
