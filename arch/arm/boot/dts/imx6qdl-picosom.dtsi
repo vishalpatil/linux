@@ -67,6 +67,15 @@
 			gpio = <&gpio1 7 GPIO_ACTIVE_HIGH>;
 			enable-active-high;
 		};
+
+		bt_on: bt_on {
+			compatible = "regulator-fixed";
+			regulator-min-microvolt = <3300000>;
+			regulator-max-microvolt = <3300000>;
+			regulator-name = "bt_on";
+			gpio = <&gpio7 12 GPIO_ACTIVE_HIGH>;
+			regulator-boot-on;
+		};
 	};
 
 	bcmdhd_wlan_0: bcmdhd_wlan@0 {
@@ -102,7 +111,7 @@
 		model = "imx-audio-hdmi";
 		hdmi-controller = <&hdmi_audio>;
 	};
-        
+
 	mxcfb1: fb@0 {
 		compatible = "fsl,mxc_sdc_fb";
 		disp_dev = "hdmi";
@@ -1260,11 +1269,22 @@ reference manual.
 		};
 	};
 
+
 	wifi_ctrl {
 		pinctrl_wifi_ctrl: wifi_ctrlgrp {
 			fsl,pins = <
 				MX6QDL_PAD_GPIO_7__GPIO1_IO07	0x000b0		/* wifi-reg-on */
 				MX6QDL_PAD_GPIO_16__GPIO7_IO11	0x80000000	/* wifi-host-wake */
+			>;
+		};
+	};
+
+	bluetooth_ctrl {
+		pinctrl_bt_ctrl: bt_ctrlgrp {
+			fsl,pins = <
+				MX6QDL_PAD_GPIO_17__GPIO7_IO12	0x000b0		/* bluetooth-reg-on */
+				MX6QDL_PAD_GPIO_4__GPIO1_IO04	0x000b0		/* bluetooth-wake */
+				MX6QDL_PAD_GPIO_5__GPIO1_IO05   0x000b0		/* bluetooth-host-wake */
 			>;
 		};
 	};
@@ -1347,6 +1367,13 @@ reference manual.
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1_2>;
+	fsl,uart-has-rtscts;
+	status = "okay";
+};
+
+&uart2 {  /* Bluetooth module */
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart2_2 &pinctrl_bt_ctrl>;
 	fsl,uart-has-rtscts;
 	status = "okay";
 };
