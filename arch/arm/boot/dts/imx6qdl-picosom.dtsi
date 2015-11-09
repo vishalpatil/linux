@@ -665,7 +665,7 @@ reference manual.
 
 &usdhc3 { /* SOM microSD slot */
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_usdhc3_2>;
+	pinctrl-0 = <&pinctrl_usdhc3_1>;
 	vmmc-supply = <&reg_3p3v>;
 	cd-gpios = <&gpio1 2 0>;
 	status = "okay";
