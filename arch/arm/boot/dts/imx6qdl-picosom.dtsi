@@ -390,6 +390,11 @@
 		flip_x=<0>;
 		flip_y=<0>;
 	};
+
+	expander: pca9554@20 {
+		compatible = "nxp,pca9554";
+		reg = <0x20>;
+	};
 };
 
 &i2c3 {
