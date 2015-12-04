@@ -173,6 +173,17 @@
 			default-state = "on";
 		};
 	};
+
+	pwm-leds {
+		compatible = "pwm-leds";
+
+		led_d24 {
+			label = "led_d24";
+			pwms = <&pwm1 0 5000000>;
+			max-brightness = <255>;
+			linux,default-trigger = "default-on";
+		};
+	};
 };
 
 
@@ -815,6 +826,12 @@ reference manual.
 				MX6QDL_PAD_SD1_DAT3__PWM1_OUT 0x1b0b1
 			>;
 		};
+
+		pinctrl_pwm1_2: pwm1grp-2 {
+			fsl,pins = <
+				MX6QDL_PAD_GPIO_9__PWM1_OUT 0x1b0b1
+			>;
+		};
 	};
 
 	pwm3 {
@@ -1246,6 +1263,12 @@ reference manual.
 &pcie {
 	pinctrl-0 = <&pinctrl_pcie_reset>;
 	reset-gpio = <&gpio3 31 0>;
+	status = "okay";
+};
+
+&pwm1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pwm1_2>;
 	status = "okay";
 };
 
