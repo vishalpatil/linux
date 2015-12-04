@@ -153,6 +153,26 @@
 		status = "okay";
 	};
 
+	gpio-leds {
+		compatible = "gpio-leds";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_led_gpio>;
+
+		led_d25 {
+			gpios = <&gpio3 30 0>;
+			default-state = "on";
+		};
+
+		led_d26 {
+			gpios = <&gpio3 26 0>;
+			default-state = "on";
+		};
+
+		led_d27 {
+			gpios = <&gpio1 8 0>;
+			default-state = "on";
+		};
+	};
 };
 
 
@@ -1169,6 +1189,16 @@ reference manual.
 		pinctrl_pcie_reset: pciegrp {
 			fsl,pins = <
 				MX6QDL_PAD_EIM_D31__GPIO3_IO31 0x130b0			/* PCIE_nRST */
+			>;
+		};
+	};
+
+	led_gpio {
+		pinctrl_led_gpio: ledgpiogrp {
+			fsl,pins = <
+				MX6QDL_PAD_EIM_D30__GPIO3_IO30		0x80000000
+				MX6QDL_PAD_EIM_D26__GPIO3_IO26		0x80000000
+				MX6QDL_PAD_GPIO_8__GPIO1_IO08		0x80000000
 			>;
 		};
 	};
