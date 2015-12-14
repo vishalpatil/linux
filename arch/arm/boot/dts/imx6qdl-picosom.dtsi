@@ -466,6 +466,7 @@ reference manual.
 				MX6QDL_PAD_GPIO_3__CCM_CLKO2		0x000b0		/* ov5640 mclk */
 				MX6QDL_PAD_EIM_D29__GPIO3_IO29   	0x80000000
 				MX6QDL_PAD_ENET_RXD0__XTALOSC_REF_CLK_32K      0x000b0  /* wifi LPO 32K Hz clock */
+				MX6QDL_PAD_CSI0_DAT9__GPIO5_IO27	0x80000000	/* ADS7846 touch IRQ */
 			>;
 		};
 	};
@@ -480,7 +481,6 @@ reference manual.
                                 MX6QDL_PAD_EIM_BCLK__GPIO6_IO31   0x4001b0b0 /* GPIO6_31 EDM pin 260 */
                                 MX6QDL_PAD_EIM_DA8__GPIO3_IO08    0x4001b0b0 /* GPIO3_8  EDM pin 261 */
                                 MX6QDL_PAD_ENET_RX_ER__GPIO1_IO24 0x4001b0b0 /* GPIO1_24 EDM pin 262 */
-                                MX6QDL_PAD_KEY_ROW4__GPIO4_IO15   0x4001b0b0 /* GPIO4_15 PICO pin 263 */
                                 MX6QDL_PAD_SD3_RST__GPIO7_IO08    0x4001b0b0 /* GPIO7_8  EDM pin 264 */
 			>;
 		};
@@ -687,10 +687,10 @@ reference manual.
         reg = <0>;  /* CS0 */
         compatible = "ti,ads7846";
         pinctrl-names = "default";
-        interrupt-parent = <&gpio4>;
-        interrupts = <15 0>;
+        interrupt-parent = <&gpio5>;
+        interrupts = <27 0>;
         spi-max-frequency = <1000000>;
-        pendown-gpio = <&gpio4 15 0>;
+        pendown-gpio = <&gpio5 27 0>;
         vcc-supply = <&reg_3p3v>;
 
         ti,x-min = /bits/ 16 <0>;
