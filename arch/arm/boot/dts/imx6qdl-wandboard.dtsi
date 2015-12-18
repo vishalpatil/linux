@@ -428,17 +428,12 @@ reference manual.
 	};
 
 	ecspi1 {
-		pinctrl_ecspi1_cs_1: ecspi1_cs_grp-1 {
-			fsl,pins = <
-				MX6QDL_PAD_EIM_D19__GPIO3_IO19 0x80000000
-			>;
-		};
-
 		pinctrl_ecspi1_1: ecspi1grp-1 {
 			fsl,pins = <
 				MX6QDL_PAD_EIM_D17__ECSPI1_MISO 0x100b1
 				MX6QDL_PAD_EIM_D18__ECSPI1_MOSI 0x100b1
 				MX6QDL_PAD_EIM_D16__ECSPI1_SCLK 0x100b1
+				MX6QDL_PAD_EIM_EB2__GPIO2_IO30  0x000f0b0 /* cs0 */
 			>;
 		};
 
@@ -1342,4 +1337,34 @@ reference manual.
 	status = "okay";
 };
 
+&ecspi1 {
+	fsl,spi-num-chipselects = <1>;
+	cs-gpios = <&gpio2 30 0>; /* EIM_EB2 */
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_ecspi1_1>;
+	status = "okay";
 
+	ads7846@0 {
+		reg = <0>;  /* CS0 */
+		compatible = "ti,ads7846";
+		interrupt-parent = <&gpio4>;
+		interrupts = <5 0>;
+		spi-max-frequency = <1000000>;
+		pendown-gpio = <&gpio4 5 0>; /* GPIO_19 */
+		vcc-supply = <&reg_3p3v>;
+
+		ti,x-min = /bits/ 16 <0>;
+		ti,x-max = /bits/ 16 <4095>;
+		ti,y-min = /bits/ 16 <0>;
+		ti,y-max = /bits/ 16 <4095>;
+		ti,pressure-max = /bits/ 16 <1024>;
+		ti,x-plate-ohms = /bits/ 16 <90>;
+		ti,y-plate-ohms = /bits/ 16 <90>;
+		ti,debounce-max = /bits/ 16 <70>;
+		ti,debounce-tol = /bits/ 16 <3>;
+		ti,debounce-rep = /bits/ 16 <2>;
+		ti,settle-delay-usec = /bits/ 16 <150>;
+
+		linux,wakeup;
+	};
+};
