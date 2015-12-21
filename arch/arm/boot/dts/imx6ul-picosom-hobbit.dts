@@ -138,6 +138,14 @@
 				<&gpio5 2 0>;
 		status = "okay";
 	};
+
+	leds {
+		compatible = "gpio-leds";
+		hobbitled {
+			label = "hobbitled";
+			gpios = <&gpio1 29 GPIO_ACTIVE_LOW>;
+		};
+	};
 };
 
 &cpu0 {
