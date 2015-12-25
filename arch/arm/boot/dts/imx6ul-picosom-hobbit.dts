@@ -581,6 +581,8 @@
 &pwm3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pwm3>;
+	clocks = <&clks IMX6UL_CLK_PWM3>,
+		 <&clks IMX6UL_CLK_PWM3>;
 	status = "okay";
 };
 
@@ -734,14 +736,23 @@
 	};
 };
 
+&pwm1 {
+	clocks = <&clks IMX6UL_CLK_DUMMY>,
+		 <&clks IMX6UL_CLK_DUMMY>;
+};
+
 &pwm7 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pwm7>;
+	clocks = <&clks IMX6UL_CLK_PWM7>,
+		 <&clks IMX6UL_CLK_PWM7>;
 	status = "okay";
 };
 
 &pwm8 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pwm8>;
+	clocks = <&clks IMX6UL_CLK_PWM8>,
+		 <&clks IMX6UL_CLK_PWM8>;
 	status = "okay";
 };
