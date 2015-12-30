@@ -65,6 +65,70 @@
 		};
 	};
 
+	gpio-edm {
+		compatible = "gpio-edm";
+		gpio_p233 {
+			label = "GPIO_P233";
+			gpios = <&gpio1 1 1>;
+			dir   = "out";
+		};
+		gpio_p235 {
+			label = "GPIO_P235";
+			gpios = <&gpio2 9 1>;
+			dir   = "out";
+		};
+		gpio_p237 {
+			label = "GPIO_P237";
+			gpios = <&gpio2 10 1>;
+			dir   = "in";
+		};
+		gpio_p239 {
+			label = "GPIO_P239";
+			gpios = <&gpio6 1 1>;
+			dir   = "in";
+		};
+		gpio_p241 {
+			label = "GPIO_P241";
+			gpios = <&gpio6 2 1>;
+			dir   = "out";
+		};
+		gpio_p243 {
+			label = "GPIO_P243";
+			gpios = <&gpio6 3 1>;
+			dir   = "out";
+		};
+		gpio_p245 {
+			label = "GPIO_P245";
+			gpios = <&gpio6 4 1>;
+			dir   = "in";
+		};
+		gpio_p247 {
+			label = "GPIO_P247";
+			gpios = <&gpio6 5 1>;
+			dir   = "in";
+		};
+		gpio_p133 {
+			label = "GPIO_P133";
+			gpios = <&gpio1 3 1>;
+			dir   = "out";
+		};
+		gpio_p135 {
+			label = "GPIO_P135";
+			gpios = <&gpio1 4 1>;
+			dir   = "out";
+		};
+		gpio_p137 {
+			label = "GPIO_P137";
+			gpios = <&gpio1 6 1>;
+			dir   = "out";
+		};
+		gpio_p139 {
+			label = "GPIO_P139";
+			gpios = <&gpio5 27 1>;
+			dir   = "out";
+		};
+	};
+
 	sound {
 		compatible = "fsl,box-imx6-sgtl5000",
                              "fsl,imx-audio-sgtl5000";
@@ -407,7 +471,7 @@ reference manual.
 &iomuxc {
 
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_hog_1>;
+	pinctrl-0 = <&pinctrl_hog>;
 
 	audmux {
 		pinctrl_audmux_1: audmux-1 {
@@ -1185,15 +1249,23 @@ reference manual.
 	};
 
 	imx6qdl-box {
-		pinctrl_hog_1: hoggrp-1 {
+		pinctrl_hog: hoggrp {
 			fsl,pins = <
-				MX6QDL_PAD_GPIO_0__CCM_CLKO1     	0x130b0
 				MX6QDL_PAD_EIM_D22__GPIO3_IO22		0x80000000	/* USB Power Enable */
 				MX6QDL_PAD_GPIO_2__GPIO1_IO02		0x80000000	/* USDHC1 CD */
 				MX6QDL_PAD_GPIO_0__CCM_CLKO1		0x000b0		/* SGTL5000 sys_mclk */
-				MX6QDL_PAD_GPIO_6__GPIO1_IO06		0x0b0b0		/* ov5640 mipi powerdown */
-				MX6QDL_PAD_GPIO_3__CCM_CLKO2		0x000b0		/* ov5640 mclk */
-				MX6QDL_PAD_EIM_D29__GPIO3_IO29   	0x80000000
+				MX6QDL_PAD_GPIO_1__GPIO1_IO01		0x1b0b9		/* IO expansion board - GPIO_P233 - 1   */
+				MX6QDL_PAD_SD4_DAT1__GPIO2_IO09		0x1b0b9		/* IO expansion board - GPIO_P235 - 41  */
+				MX6QDL_PAD_SD4_DAT2__GPIO2_IO10		0x80000000	/* IO expansion board - GPIO_P237 - 42  */
+				MX6QDL_PAD_CSI0_DAT15__GPIO6_IO01	0x80000000	/* IO expansion board - GPIO_P239 - 161 */
+				MX6QDL_PAD_CSI0_DAT16__GPIO6_IO02	0x1b0b9		/* IO expansion board - GPIO_P241 - 162 */
+				MX6QDL_PAD_CSI0_DAT17__GPIO6_IO03	0x1b0b9		/* IO expansion board - GPIO_P243 - 163 */
+				MX6QDL_PAD_CSI0_DAT18__GPIO6_IO04	0x80000000	/* IO expansion board - GPIO_P245 - 164 */
+				MX6QDL_PAD_CSI0_DAT19__GPIO6_IO05	0x80000000	/* IO expansion board - GPIO_P247 - 165 */
+				MX6QDL_PAD_GPIO_3__GPIO1_IO03		0x80000000	/* power board - GPIO_P133 RFU - 3   */
+				MX6QDL_PAD_GPIO_4__GPIO1_IO04		0x80000000	/* power board - GPIO_P135 RFU - 4   */
+				MX6QDL_PAD_GPIO_6__GPIO1_IO06		0x80000000	/* power board - GPIO_P137 RFU - 6   */
+				MX6QDL_PAD_CSI0_DAT9__GPIO5_IO27	0x80000000	/* power board - GPIO_P139 RFU - 155 */
 			>;
 		};
 	};
@@ -1273,18 +1345,6 @@ reference manual.
 &pwm1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pwm1_2>;
-	status = "okay";
-};
-
-&pwm3 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_pwm3_1>;
-	status = "okay";
-};
-
-&pwm4 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_pwm4_1>;
 	status = "okay";
 };
 
