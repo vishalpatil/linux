@@ -27,13 +27,13 @@ config MXC_GPU_VIV
 choice
     depends on MXC_GPU_VIV
     bool "GPU Driver version"
-    default MXC_GPU_VIV_3_14_38
+    default MXC_GPU_VIV_3_14_52
 
     help
     Select the GPU driver version that matches your userland libraries
 
-config MXC_GPU_VIV_3_14_38
-    bool "v3.14.38"
+config MXC_GPU_VIV_3_14_52
+    bool "v3.14.52"
 
 config MXC_GPU_VIV_3_14_26
     bool "v3.14.26"
