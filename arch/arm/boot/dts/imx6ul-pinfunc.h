@@ -924,7 +924,7 @@
 #define	MX6UL_PAD_CSI_DATA06__ECSPI1_MOSI                        	0x01FC 0x0488 0x053C 3 1
 #define	MX6UL_PAD_CSI_DATA06__EIM_AD06                           	0x01FC 0x0488 0x0000 4 0
 #define	MX6UL_PAD_CSI_DATA06__GPIO4_IO27                         	0x01FC 0x0488 0x0000 5 0
-#define	MX6UL_PAD_CSI_DATA06__SAI1_RX_DATA                       	0x01FC 0x0488 0x0000 6 0
+#define	MX6UL_PAD_CSI_DATA06__SAI1_RX_DATA                       	0x01FC 0x0488 0x05E4 6 1
 #define	MX6UL_PAD_CSI_DATA06__USDHC1_RESET_B                     	0x01FC 0x0488 0x0000 8 0
 #define	MX6UL_PAD_CSI_DATA07__CSI_DATA09                         	0x0200 0x048C 0x04E8 0 1
 #define	MX6UL_PAD_CSI_DATA07__USDHC2_DATA7                       	0x0200 0x048C 0x0698 1 2
