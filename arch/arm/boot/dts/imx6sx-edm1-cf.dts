@@ -259,6 +259,40 @@
 	};
 };
 
+&ecspi1 {
+	fsl,spi-num-chipselects = <1>;
+	cs-gpios = <&gpio4 22 0>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_ecspi1_1 &pinctrl_ecspi1_cs_1>;
+	status = "okay";
+
+	ads7846@0 {
+		reg = <0>;  /* CS0 */
+		compatible = "ti,ads7846";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_ads7846_irq>;
+		interrupt-parent = <&gpio1>;
+		interrupts = <13 0>;
+		spi-max-frequency = <1000000>;
+		pendown-gpio = <&gpio1 13 0>;
+		vcc-supply = <&reg_3p3v>;
+
+		ti,x-min = /bits/ 16 <0>;
+		ti,x-max = /bits/ 16 <4095>;
+		ti,y-min = /bits/ 16 <0>;
+		ti,y-max = /bits/ 16 <4095>;
+		ti,pressure-max = /bits/ 16 <1024>;
+		ti,x-plate-ohms = /bits/ 16 <90>;
+		ti,y-plate-ohms = /bits/ 16 <90>;
+		ti,debounce-max = /bits/ 16 <70>;
+		ti,debounce-tol = /bits/ 16 <3>;
+		ti,debounce-rep = /bits/ 16 <2>;
+		ti,settle-delay-usec = /bits/ 16 <150>;
+
+		linux,wakeup;
+	};
+};
+
 &cpu0 {
 	operating-points = <
 		/* kHz    uV */
@@ -763,13 +797,11 @@
 				MX6SX_PAD_SD1_DATA0__GPIO6_IO_2 0x17059
 				MX6SX_PAD_SD1_DATA3__GPIO6_IO_5 0xb000
 				MX6SX_PAD_CSI_DATA03__GPIO1_IO_17 0x17059
-				MX6SX_PAD_GPIO1_IO13__WDOG1_WDOG_ANY 0x30b0
                 MX6SX_PAD_QSPI1B_DATA2__GPIO4_IO_26  0xb000 /* GPIO4_26 EDM pin 255 */
                 MX6SX_PAD_QSPI1B_DATA3__GPIO4_IO_27  0xb000 /* GPIO4_27 EDM pin 256 */
                 MX6SX_PAD_CSI_DATA02__GPIO1_IO_16    0xb000 /* GPIO1_16 EDM pin 257 */
                 MX6SX_PAD_CSI_DATA03__GPIO1_IO_17    0xb000 /* GPIO1_17 EDM pin 259 */
                 MX6SX_PAD_ENET1_CRS__GPIO2_IO_1      0xb000 /* GPIO2_1 EDM pin 261 */
-                MX6SX_PAD_GPIO1_IO13__GPIO1_IO_13    0xb000 /* GPIO1_13 EDM pin 263 */
 			>;
 		};
 
@@ -840,8 +872,6 @@
 				MX6SX_PAD_RGMII1_RD2__ENET1_RX_DATA_2	0x3081
 				MX6SX_PAD_RGMII1_RD3__ENET1_RX_DATA_3	0x3081
 				MX6SX_PAD_RGMII1_RX_CTL__ENET1_RX_EN	0x3081
-				MX6SX_PAD_QSPI1A_DATA0__GPIO4_IO_16	0x80000000
-				MX6SX_PAD_ENET2_COL__GPIO2_IO_6 	0x80000000
 				MX6SX_PAD_ENET2_RX_CLK__ENET2_REF_CLK_25M	0x91
 			>;
 		};
@@ -874,6 +904,26 @@
 			fsl,pins = <
 				MX6SX_PAD_QSPI1B_SS1_B__CAN2_RX		0x1b020
 				MX6SX_PAD_QSPI1A_DQS__CAN2_TX		0x1b020
+			>;
+		};
+
+		pinctrl_ecspi1_cs_1: ecspi1_cs_grp-1 {
+			fsl,pins = <
+				MX6SX_PAD_QSPI1A_SS0_B__GPIO4_IO_22  0x80000000
+			>;
+		};
+
+		pinctrl_ecspi1_1: ecspi1grp-1 {
+			fsl,pins = <
+				MX6SX_PAD_QSPI1A_DATA1__ECSPI1_MISO 0x100b1
+				MX6SX_PAD_QSPI1A_DATA0__ECSPI1_MOSI   0x100b1
+				MX6SX_PAD_QSPI1A_SCLK__ECSPI1_SCLK   0x100b1
+			>;
+		};
+
+		pinctrl_ads7846_irq: ads7846_irq_ctrlgrp {
+			fsl,pins = <
+				MX6SX_PAD_GPIO1_IO13__GPIO1_IO_13     0x1f059
 			>;
 		};
 
