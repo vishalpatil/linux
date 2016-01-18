@@ -214,14 +214,6 @@
 		spdif-controller = <&spdif>;
 		spdif-out;
 	};
-
-	sii902x_reset: sii902x-reset {
-		compatible = "gpio-reset";
-		reset-gpios = <&gpio3 27 1>;
-		reset-delay-us = <100000>;
-		#reset-cells = <0>;
-		status = "disabled";
-	};
 };
 
 &adc1 {
@@ -238,25 +230,6 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_audmux>;
 	status = "okay";
-};
-
-&csi1 {
-	status = "okay";
-
-	port {
-		csi1_ep: endpoint {
-			remote-endpoint = <&ov5640_ep>;
-		};
-	};
-};
-
-&csi2 {
-	status = "okay";
-	port {
-		csi2_ep: endpoint {
-			remote-endpoint = <&vadc_ep>;
-		};
-	};
 };
 
 &ecspi1 {
@@ -386,6 +359,12 @@
 			};
 		};
 	};
+};
+
+&pwm2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pwm2>;
+	status = "okay";
 };
 
 &pwm3 {
@@ -570,11 +549,19 @@
 	status = "okay";
 
 	pmic: pfuze100@08 {
-		compatible = "fsl,pfuze200";
+		compatible = "fsl,pfuze100";
 		reg = <0x08>;
 
 		regulators {
 			sw1a_reg: sw1ab {
+				regulator-min-microvolt = <300000>;
+				regulator-max-microvolt = <1875000>;
+				regulator-boot-on;
+				regulator-always-on;
+				regulator-ramp-delay = <6250>;
+			};
+
+			sw1c_reg: sw1c {
 				regulator-min-microvolt = <300000>;
 				regulator-max-microvolt = <1875000>;
 				regulator-boot-on;
@@ -601,6 +588,11 @@
 				regulator-max-microvolt = <1975000>;
 				regulator-boot-on;
 				regulator-always-on;
+			};
+
+			sw4_reg: sw4 {
+				regulator-min-microvolt = <800000>;
+				regulator-max-microvolt = <3300000>;
 			};
 
 			swbst_reg: swbst {
@@ -655,38 +647,6 @@
 				regulator-always-on;
 			};
 		};
-	};
-
-	ov5640: ov5640@3c {
-		compatible = "ovti,ov5640";
-		reg = <0x3c>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_csi_0>;
-		clocks = <&clks IMX6SX_CLK_CSI>;
-		clock-names = "csi_mclk";
-		AVDD-supply = <&vgen3_reg>;  /* 2.8v */
-		DVDD-supply = <&vgen2_reg>;  /* 1.5v*/
-		pwn-gpios = <&gpio3 28 1>;
-		rst-gpios = <&gpio3 27 0>;
-		csi_id = <0>;
-		mclk = <24000000>;
-		mclk_source = <0>;
-		port {
-			ov5640_ep: endpoint {
-				remote-endpoint = <&csi1_ep>;
-			};
-		};
-	};
-
-	sii902x@39 {
-		compatible = "SiI,sii902x";
-		interrupt-parent = <&gpio4>;
-		interrupts = <21 2>;
-		mode_str ="1280x720M@60";
-		bits-per-pixel = <16>;
-		resets = <&sii902x_reset>;
-		reg = <0x39>;
-		status = "disabled";
 	};
 };
 
@@ -774,18 +734,6 @@
 	pinctrl-0 = <&pinctrl_i2c4>;
 	status = "disabled";
 };
-
-&vadc {
-	vadc_in = <0>;
-	csi_id = <1>;
-	status = "okay";
-	port {
-		vadc_ep: endpoint {
-			remote-endpoint = <&csi2_ep>;
-		};
-	};
-};
-
 
 &iomuxc {
 	pinctrl-names = "default";
