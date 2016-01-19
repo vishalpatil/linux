@@ -16,7 +16,7 @@
 
 / {
 	model = "Technexion PicoSOM DualLite/Solo board";
-	compatible = "fsl,picosom", "fsl,imx6dl";
+	compatible = "fsl,picosom-imx6dl", "fsl,imx6dl";
 };
 
 &ldb {

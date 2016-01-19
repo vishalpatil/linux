@@ -16,7 +16,7 @@
 
 / {
 	model = "Technexion PicoSOM Pop Quad board";
-	compatible = "fsl,picosom", "fsl,imx6q";
+	compatible = "fsl,picosom-imx6q", "fsl,imx6q";
 };
 
 &ldb {
