@@ -12,8 +12,8 @@
 #include "imx7d.dtsi"
 
 / {
-	model = "Freescale i.MX7 SabreSD Board";
-	compatible = "fsl,imx7d-sdb", "fsl,imx7d";
+	model = "Technexion IMX7 PicoSOM Dual/Solo board";
+	compatible = "fsl,picosom-imx7d", "fsl,imx7d";
 
 	aliases {
 		fb_lcd = &lcdif;
