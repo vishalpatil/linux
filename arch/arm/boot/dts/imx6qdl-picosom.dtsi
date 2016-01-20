@@ -430,6 +430,15 @@
 		flip_x=<0>;
 		flip_y=<0>;
 	};
+
+	pca9554: pca9554@25 {
+		compatible = "nxp,pca9554";
+		gpio-controller;
+		#gpio-cells = <2>;
+		#interrupt-cells = <2>;
+		reg = <0x25>;
+	};
+
 };
 
 &i2c3 {
