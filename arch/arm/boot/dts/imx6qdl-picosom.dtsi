@@ -100,7 +100,37 @@
 			gpios = <&gpio1 5 0>;
 			dir   = "in";
 		};
-    };
+		gpio_exp0 {
+			label = "GPIO_EXP0";
+			gpios = <&pca9554 0 0>;
+			dir   = "in";
+		};
+		gpio_exp1 {
+			label = "GPIO_EXP1";
+			gpios = <&pca9554 1 0>;
+			dir   = "in";
+		};
+		gpio_exp2 {
+			label = "GPIO_EXP2";
+			gpios = <&pca9554 2 0>;
+			dir   = "in";
+		};
+		gpio_exp3 {
+			label = "GPIO_EXP3";
+			gpios = <&pca9554 3 0>;
+			dir   = "in";
+		};
+		gpio_exp4 {
+			label = "GPIO_EXP4";
+			gpios = <&pca9554 4 0>;
+			dir   = "in";
+		};
+		gpio_exp5 {
+			label = "GPIO_EXP5";
+			gpios = <&pca9554 5 0>;
+			dir   = "in";
+		};
+	};
 
 	sound {
 		compatible = "fsl,imx6-picosom-sgtl5000", 
