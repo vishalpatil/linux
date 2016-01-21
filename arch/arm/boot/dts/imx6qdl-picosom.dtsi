@@ -1302,7 +1302,6 @@ reference manual.
                                 MX6QDL_PAD_EIM_D26__GPIO3_IO26    0x4001b0b5 /* GPIO3_26 EDM pin 259 */
                                 MX6QDL_PAD_EIM_BCLK__GPIO6_IO31   0x4001b0b5 /* GPIO6_31 EDM pin 260 */
                                 MX6QDL_PAD_EIM_DA8__GPIO3_IO08    0x4001b0b5 /* GPIO3_8  EDM pin 261 */
-                                MX6QDL_PAD_ENET_RX_ER__GPIO1_IO24 0x4001b0b5 /* GPIO1_24 EDM pin 262 */
                                 MX6QDL_PAD_GPIO_19__GPIO4_IO05    0x4001b0b5 /* GPIO4_5  EDM pin 263 */
                                 MX6QDL_PAD_SD3_RST__GPIO7_IO08    0x4001b0b5 /* GPIO7_8  EDM pin 264 */
 
