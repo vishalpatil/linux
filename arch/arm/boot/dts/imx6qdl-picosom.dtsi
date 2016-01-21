@@ -85,20 +85,10 @@
 
 	gpio-edm {
 		compatible = "gpio-edm";
-		wl_reg {
-			label = "wl_reg";
-			gpios = <&gpio1 7 1>;
-			dir   = "out";
-		};
 		wifi_host_wake {
 			label = "wifi_host_wake";
 			gpios = <&gpio7 11 0>;
 			dir   = "in";
-		};
-		bt_reg {
-			label = "bt_reg";
-			gpios = <&gpio7 12 1>;
-			dir   = "out";
 		};
 		bt_wake {
 			label = "bt_wake";
