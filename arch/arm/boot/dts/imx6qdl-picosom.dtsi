@@ -66,15 +66,6 @@
 			gpio = <&gpio1 7 GPIO_ACTIVE_HIGH>;
 			enable-active-high;
 		};
-
-		bt_on: bt_on {
-			compatible = "regulator-fixed";
-			regulator-min-microvolt = <3300000>;
-			regulator-max-microvolt = <3300000>;
-			regulator-name = "bt_on";
-			gpio = <&gpio7 12 GPIO_ACTIVE_HIGH>;
-			regulator-boot-on;
-		};
 	};
 
 	bcmdhd_wlan_0: bcmdhd_wlan@0 {
@@ -85,21 +76,6 @@
 
 	gpio-edm {
 		compatible = "gpio-edm";
-		wifi_host_wake {
-			label = "wifi_host_wake";
-			gpios = <&gpio7 11 0>;
-			dir   = "in";
-		};
-		bt_wake {
-			label = "bt_wake";
-			gpios = <&gpio1 4 0>;
-			dir   = "in";
-		};
-		bt_host_wake {
-			label = "bt_host_wake";
-			gpios = <&gpio1 5 0>;
-			dir   = "in";
-		};
 		gpio_exp0 {
 			label = "GPIO_EXP0";
 			gpios = <&pca9554 0 0>;
@@ -240,6 +216,14 @@
 		status = "okay";
 	};
 
+	bt_rfkill {
+		compatible = "net,rfkill-gpio";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_bt_ctrl>;
+		name = "bt_rfkill";
+		type = <2>;     /* bluetooth */
+		bt_rfkill_reset-gpios = <&gpio7 12 0>;
+	};
 };
 
 
@@ -1433,7 +1417,7 @@ reference manual.
 
 &uart2 {  /* Bluetooth module */
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_uart2_2 &pinctrl_bt_ctrl>;
+	pinctrl-0 = <&pinctrl_uart2_2>;
 	fsl,uart-has-rtscts;
 	status = "okay";
 };
