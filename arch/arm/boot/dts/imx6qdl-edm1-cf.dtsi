@@ -235,6 +235,15 @@
 		type = <2>;     /* bluetooth */
 		bt_rfkill_reset-gpios = <&gpio5 21 0>;
 	};
+
+	wifi_rfkill {
+		compatible = "net,rfkill-gpio";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_wifi>;
+		name = "wifi_rfkill";
+		type = <1>;     /* wifi */
+		wifi_rfkill_reset-gpios = <&gpio6 0 0>;
+	};
 };
 
 
@@ -1230,6 +1239,14 @@ reference manual.
 				MX6QDL_PAD_CSI0_DAT12__GPIO5_IO30       0x80000000      /* bluetooth-reg-on */
 				MX6QDL_PAD_ENET_TXD0__GPIO1_IO30        0x80000000      /* bluetooth-wake */
 				MX6QDL_PAD_CSI0_DATA_EN__GPIO5_IO20     0x80000000      /* bluetooth-host-wake */
+			>;
+		};
+
+		pinctrl_wifi: wifigrp {
+			fsl,pins = <
+				MX6QDL_PAD_CSI0_DAT14__GPIO6_IO00	0x0f0b0		/* wifi-rst-n */
+				MX6QDL_PAD_ENET_RXD1__GPIO1_IO26	0x000b0		/* wifi-reg-on */
+				MX6QDL_PAD_ENET_TXD1__GPIO1_IO29	0x80000000	/* wifi-host-wake */
 			>;
 		};
 	};
