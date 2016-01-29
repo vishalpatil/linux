@@ -501,16 +501,13 @@
 	status = "okay";
 };
 
-&usdhc3 {
-	pinctrl-names = "default", "state_100mhz", "state_200mhz";
+&usdhc3 { /* Module i-Nand */
+	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc3>;
-	pinctrl-1 = <&pinctrl_usdhc3_100mhz>;
-	pinctrl-2 = <&pinctrl_usdhc3_200mhz>;
 	bus-width = <8>;
 	keep-power-in-suspend;
 	enable-sdio-wakeup;
-    non-removable;
-	/*vmmc-supply = <&vcc_sd3>;*/
+	non-removable;
 	status = "okay";
 };
 
