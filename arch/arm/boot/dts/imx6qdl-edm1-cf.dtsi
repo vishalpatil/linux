@@ -117,6 +117,11 @@
 			gpios = <&gpio7 8 1>;
 			dir   = "in";
 		};
+		wifi-bt-pwr-on {
+			label = "wifi-bt-pwr-on";
+			gpios = <&gpio5 31 1>;
+			dir   = "out";
+		};
 	};
 
 	sound {
