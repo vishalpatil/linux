@@ -150,45 +150,10 @@
 			gpios = <&pca9555 7 0>;
 			dir   = "out";
 		};
-		wifi-ref-on {
-			label = "wifi-ref-on";
+		wifi-bt-pwr-on {
+			label = "wifi-bt-pwr-on";
 			gpios = <&pca9555 10 1>;
 			dir   = "out";
-		};
-		wifi-rst-n {
-			label = "wifi-rst-n";
-			gpios = <&pca9555 9 1>;
-			dir   = "out";
-		};
-		wifi-reg-on {
-			label = "wifi-reg-on";
-			gpios = <&pca9555 11 1>;
-			dir   = "out";
-		};
-		wifi-host-wake {
-			label = "wifi-host-wake";
-			gpios = <&pca9555 8 1>;
-			dir   = "in";
-		};
-		bluetooth-on {
-			label = "bluetooth-on";
-			gpios = <&pca9555 12 1>;
-			dir   = "out";
-		};
-		bluetooth-reg-on {
-			label = "bluetooth-reg-on";
-			gpios = <&pca9555 3 1>;
-			dir   = "out";
-		};
-		bluetooth-wake {
-			label = "bluetooth-wake";
-			gpios = <&pca9555 4 1>;
-			dir   = "in";
-		};
-		bluetooth-host-wake {
-			label = "bluetooth-host-wake";
-			gpios = <&pca9555 13 1>;
-			dir   = "in";
 		};
 	};
 
@@ -213,6 +178,13 @@
 		model = "imx-spdif";
 		spdif-controller = <&spdif>;
 		spdif-out;
+	};
+
+	bt_rfkill {
+		compatible = "net,rfkill-gpio";
+		name = "bt_rfkill";
+		type = <2>;     /* bluetooth */
+		bt_rfkill_reset-gpios = <&pca9555 12 0>;
 	};
 };
 
