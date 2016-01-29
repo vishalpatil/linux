@@ -186,6 +186,13 @@
 		type = <2>;     /* bluetooth */
 		bt_rfkill_reset-gpios = <&pca9555 12 0>;
 	};
+
+	wifi_rfkill {
+		compatible = "net,rfkill-gpio";
+		name = "wifi_rfkill";
+		type = <1>;     /* wifi */
+		wifi_rfkill_reset-gpios = <&pca9555 9 0>;
+	};
 };
 
 &adc1 {
@@ -485,13 +492,12 @@
 	tx-d-cal = <0x5>;
 };
 
+/* Broadcom Wifi */
 &usdhc2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc2>;
-	non-removable;
-	no-1-8-v;
+	bus-width = <4>;
 	keep-power-in-suspend;
-	enable-sdio-wakeup;
 	status = "okay";
 };
 
