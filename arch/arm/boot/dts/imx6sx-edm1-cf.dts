@@ -353,12 +353,6 @@
 	status = "okay";
 };
 
-&pwm4 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_pwm4>;
-	status = "okay";
-};
-
 &dcic1 {
 	dcic_id = <0>;
 	dcic_mux = "dcic-lcdif1";
@@ -713,19 +707,16 @@
 
 &iomuxc {
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_hog &pinctrl_can_gpios>;
+	pinctrl-0 = <&pinctrl_hog>;
 
 	imx6sx-edm1-cf {
 		pinctrl_hog: hoggrp {
 			fsl,pins = <
-				MX6SX_PAD_SD1_DATA0__GPIO6_IO_2 0x17059
-				MX6SX_PAD_SD1_DATA3__GPIO6_IO_5 0xb000
-				MX6SX_PAD_CSI_DATA03__GPIO1_IO_17 0x17059
-                MX6SX_PAD_QSPI1B_DATA2__GPIO4_IO_26  0xb000 /* GPIO4_26 EDM pin 255 */
-                MX6SX_PAD_QSPI1B_DATA3__GPIO4_IO_27  0xb000 /* GPIO4_27 EDM pin 256 */
-                MX6SX_PAD_CSI_DATA02__GPIO1_IO_16    0xb000 /* GPIO1_16 EDM pin 257 */
-                MX6SX_PAD_CSI_DATA03__GPIO1_IO_17    0xb000 /* GPIO1_17 EDM pin 259 */
-                MX6SX_PAD_ENET1_CRS__GPIO2_IO_1      0xb000 /* GPIO2_1 EDM pin 261 */
+				MX6SX_PAD_QSPI1B_DATA2__GPIO4_IO_26  0xb000 /* GPIO4_26 EDM pin 255 */
+				MX6SX_PAD_QSPI1B_DATA3__GPIO4_IO_27  0xb000 /* GPIO4_27 EDM pin 256 */
+				MX6SX_PAD_CSI_DATA02__GPIO1_IO_16    0xb000 /* GPIO1_16 EDM pin 257 */
+				MX6SX_PAD_CSI_DATA03__GPIO1_IO_17    0xb000 /* GPIO1_17 EDM pin 259 */
+				MX6SX_PAD_ENET1_CRS__GPIO2_IO_1      0xb000 /* GPIO2_1 EDM pin 261 */
 			>;
 		};
 
@@ -998,17 +989,19 @@
 
 		pinctrl_uart2: uart2grp {
 			fsl,pins = <
-				MX6SX_PAD_GPIO1_IO07__UART2_RX		0x1b0b1
-				MX6SX_PAD_GPIO1_IO06__UART2_TX		0x1b0b1
+				MX6SX_PAD_SD1_DATA0__UART2_RX 0x1b0b1
+				MX6SX_PAD_SD1_DATA1__UART2_TX 0x1b0b1
+				MX6SX_PAD_SD1_DATA2__UART2_CTS_B 0x1b0b1
+				MX6SX_PAD_SD1_DATA3__UART2_RTS_B 0x1b0b1
 			>;
 		};
 
 		pinctrl_uart3: uart3grp {
 			fsl,pins = <
-				MX6SX_PAD_GPIO1_IO07__UART2_RX			0x1b0b1
-				MX6SX_PAD_QSPI1B_SS0_B__UART3_TX		0x1b0b1
-				MX6SX_PAD_QSPI1B_DATA0__UART3_CTS_B		0x1b0b1
-				MX6SX_PAD_QSPI1B_DATA1__UART3_RTS_B		0x1b0b1
+				MX6SX_PAD_QSPI1B_SCLK__UART3_RX    0x1b0b1
+				MX6SX_PAD_QSPI1B_SS0_B__UART3_TX    0x1b0b1
+				MX6SX_PAD_QSPI1B_DATA0__UART3_CTS_B 0x1b0b1
+				MX6SX_PAD_QSPI1B_DATA1__UART3_RTS_B 0x1b0b1
 			>;
 		};
 
