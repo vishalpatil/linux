@@ -127,8 +127,8 @@ CONFIG_USB_USBNET=y
 # CONFIG_USB_NET_ZAURUS is not set
 CONFIG_BCMDHD=y
 CONFIG_BCMDHD_SDIO=y
-CONFIG_BCMDHD_FW_PATH="/lib/firmware/bcm/fw_bcmdhd.bin"
-CONFIG_BCMDHD_NVRAM_PATH="/lib/firmware/bcm/bcmdhd.cal"
+CONFIG_BCMDHD_FW_PATH="/lib/firmware/brcm/fw_bcmdhd.bin"
+CONFIG_BCMDHD_NVRAM_PATH="/lib/firmware/brcm/bcmdhd.cal"
 # CONFIG_RTL_CARDS is not set
 # CONFIG_INPUT_MOUSEDEV_PSAUX is not set
 CONFIG_INPUT_MOUSEDEV_SCREEN_X=1280
