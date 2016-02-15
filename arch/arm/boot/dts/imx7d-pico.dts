@@ -278,7 +278,7 @@
 };
 
 &mipi_csi {
-	clock-frequency = <24000000>;
+	clock-frequency = <12000000>;
 	status = "okay";
 	port {
 		mipi_sensor_ep: endpoint1 {
@@ -417,9 +417,11 @@
 	};
 
 	ov5640_mipi: ov5640_mipi@3c {
-		compatible = "ovti,ov564x_mipi";
+		compatible = "ovti,ov5640_mipi";
 		reg = <0x3c>;
-		clocks = <&clks IMX7D_CLKO1_ROOT_SRC>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_mipi_csi>;
+		clocks = <&clks IMX7D_CLK_DUMMY>;
 		clock-names = "csi_mclk";
 		DOVDD-supply = <&reg_vref_1v8>;
 		AVDD-supply = <&reg_2p5v>;
@@ -427,13 +429,13 @@
 		pwn-gpios = <&gpio7 6 GPIO_ACTIVE_HIGH>;
 		rst-gpios = <&gpio7 7 GPIO_ACTIVE_LOW>;
 		csi_id = <0>;
-		mclk = <24000000>;
+		mclk = <12000000>;
 		mclk_source = <0>;
 		port {
 			ov564x_mipi_ep: endpoint {
 			remote-endpoint = <&mipi_sensor_ep>;
 		    };
-        };
+		};
 	};
 };
 
@@ -447,7 +449,6 @@
 			fsl,pins = <
 				MX7D_PAD_ECSPI2_SS0__GPIO4_IO23	 0x80000000  /* bt reg on */
 				MX7D_PAD_ENET1_RGMII_TD0__GPIO7_IO6 0x5d /*mipi csi power down*/
-				MX7D_PAD_ENET1_RGMII_TD1__GPIO7_IO7 0x5d /*mipi csi reset*/
 				MX7D_PAD_SD3_DATA7__GPIO6_IO9	 0x59 /*som sd cd pin */
 				MX7D_PAD_GPIO1_IO03__CCM_CLKO2	 0x7d /* wifi LPO 32K Hz clock */
 				MX7D_PAD_GPIO1_IO02__CCM_CLKO1	 0x7d /* mipi csi main clock */
@@ -775,6 +776,12 @@
 				MX7D_PAD_SAI1_RX_SYNC__GPIO6_IO16       0x55 /* bluetooth-reg-on */
 				MX7D_PAD_SAI1_TX_SYNC__GPIO6_IO14       0x55 /* bluetooth-wake */
 				MX7D_PAD_ENET1_RX_CLK__GPIO7_IO13       0x55 /* bluetooth-host-wake */
+			>;
+		};
+
+		pinctrl_mipi_csi: mipicsigrp-1 {
+		fsl,pins = <
+				MX7D_PAD_ENET1_RGMII_TD1__GPIO7_IO7 0x15 /*mipi csi reset*/
 			>;
 		};
 
