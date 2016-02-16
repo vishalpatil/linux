@@ -111,7 +111,7 @@
 	sound {
 		compatible = "fsl,imx6-picosom-sgtl5000", 
                              "fsl,imx-audio-sgtl5000";
-		model = "imx6-picosom-sgtl5000";
+		model = "sgtl5000-audio";
 		cpu-dai = <&ssi1>;
 		audio-codec = <&codec>;
 		audio-routing =
