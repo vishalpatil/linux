@@ -153,7 +153,7 @@ dtb-$(CONFIG_ARCH_MXC) += \
 	imx53-mba53.dtb \
 	imx53-qsb.dtb \
 	imx53-smd.dtb \
-	imx6dl-box.dtb \
+	imx6dl-tek3.dtb \
 	imx6dl-cubox-i.dtb \
 	imx6dl-edm1-cf.dtb \
 	imx6dl-hummingboard.dtb \
@@ -170,7 +170,7 @@ dtb-$(CONFIG_ARCH_MXC) += \
 	imx6dl-wandboard.dtb \
 	imx6dl-picosom.dtb \
 	imx6q-arm2.dtb \
-	imx6q-box.dtb \
+	imx6q-tek3.dtb \
 	imx6q-cubox-i.dtb \
 	imx6q-edm1-cf.dtb \
 	imx6q-edm1-cf-mimas.dtb \

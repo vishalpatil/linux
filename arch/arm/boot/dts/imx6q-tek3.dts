@@ -11,17 +11,17 @@
 /dts-v1/;
 
 #include <dt-bindings/interrupt-controller/irq.h>
-#include "imx6dl.dtsi"
-#include "imx6qdl-box.dtsi"
+#include "imx6q.dtsi"
+#include "imx6qdl-tek3.dtsi"
 
 / {
-	model = "Technexion BOX-IMX6 DualLite/Solo board";
-	compatible = "fsl,box-imx6dl", "fsl,imx6dl";
+	model = "Technexion TEK3-IMX6 Quad board";
+	compatible = "fsl,tek3-imx6q", "fsl,imx6q";
 };
 
 &ldb {
 	lvds-channel@0 {
-		crtc = "ipu1-di1";
+		crtc = "ipu2-di0";
 	};
 };
 
@@ -51,8 +51,6 @@
 };
 #endif
 
-&epdc {
-	status = "disabled";
+&sata {
+	status = "okay";
 };
-
-

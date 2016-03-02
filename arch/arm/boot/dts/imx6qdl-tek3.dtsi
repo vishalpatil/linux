@@ -130,9 +130,9 @@
 	};
 
 	sound {
-		compatible = "fsl,box-imx6-sgtl5000",
+		compatible = "fsl,tek3-imx6-sgtl5000",
                              "fsl,imx-audio-sgtl5000";
-		model = "box-imx6-sgtl5000";
+		model = "sgtl5000-audio";
 		cpu-dai = <&ssi1>;
 		audio-codec = <&codec>;
 		audio-routing =
@@ -1248,7 +1248,7 @@ reference manual.
 		};
 	};
 
-	imx6qdl-box {
+	imx6qdl-tek3 {
 		pinctrl_hog: hoggrp {
 			fsl,pins = <
 				MX6QDL_PAD_EIM_D22__GPIO3_IO22		0x80000000	/* USB Power Enable */
