@@ -25,7 +25,7 @@
 #include "common.h"
 #include "cpuidle.h"
 
-#ifdef CONFIG_NET_ETHERNET
+#ifdef CONFIG_ETHERNET
 static void __init imx6ul_enet_clk_init(void)
 {
 	struct regmap *gpr;
@@ -66,7 +66,7 @@ static inline void imx6ul_enet_init(void)
 }
 #else
 static inline void imx6ul_enet_init(void) { }
-#endif /* CONFIG_NET_ETHERNET */
+#endif /* CONFIG_ETHERNET */
 
 static void __init imx6ul_init_machine(void)
 {
