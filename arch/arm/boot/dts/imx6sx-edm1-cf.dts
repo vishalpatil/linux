@@ -426,6 +426,10 @@
 &spdif {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_spdif>;
+	assigned-clocks = <&clks IMX6SX_CLK_SPDIF_SEL>,
+			  <&clks IMX6SX_CLK_SPDIF_PODF>;
+	assigned-clock-parents = <&clks IMX6SX_CLK_PLL4_AUDIO_DIV>;
+	assigned-clock-rates = <0>, <227368421>;
 	status = "okay";
 };
 
@@ -960,7 +964,7 @@
 
 		pinctrl_spdif: spdifgrp {
 			fsl,pins = <
-				MX6SX_PAD_SD4_DATA4__SPDIF_OUT          0x1b0b0
+				MX6SX_PAD_ENET1_RX_CLK__SPDIF_OUT	0x1b0b0
 			>;
 		};
 
