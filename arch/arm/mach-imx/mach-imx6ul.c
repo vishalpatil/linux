@@ -24,7 +24,6 @@
 #include "cpuidle.h"
 #include "hardware.h"
 
-#ifdef CONFIG_NET_ETHERNET
 static void __init imx6ul_enet_clk_init(void)
 {
 	struct regmap *gpr;
@@ -136,9 +135,6 @@ static inline void imx6ul_enet_init(void)
 	else
 		imx6_enet_mac_init("fsl,imx6ul-fec", "fsl,imx6ull-ocotp");
 }
-#else
-static inline void imx6ul_enet_init(void) { }
-#endif /* CONFIG_NET_ETHERNET */
 
 static void __init imx6ul_init_machine(void)
 {
