@@ -425,7 +425,7 @@ static inline void ov5640_power_down(int enable)
 	if (pwn_gpio < 0)
 		return;
 
-	if (!enable)
+	if (enable)
 		gpio_set_value_cansleep(pwn_gpio, 0);
 	else
 		gpio_set_value_cansleep(pwn_gpio, 1);
