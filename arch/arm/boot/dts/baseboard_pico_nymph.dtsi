@@ -96,6 +96,12 @@
 		VDDA-supply = <&reg_2p5v>;
 		VDDIO-supply = <&reg_3p3v>;
 	};
+
+	adc: adc081c {
+		compatible = "ti,adc081c";
+		reg = <0x52>;
+		vref-supply = <&reg_2p5v>;
+	};
 };
 
 &i2c2 {
@@ -120,12 +126,6 @@
 
 &i2c3 {
 	status = "okay";
-
-	adc: adc081c {
-		compatible = "ti,adc081c";
-		reg = <0x52>;
-		vref-supply = <&reg_2p5v>;
-	};
 
 	rtc: ds1337 {
 		compatible = "dallas,ds1337";
