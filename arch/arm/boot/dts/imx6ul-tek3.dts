@@ -385,7 +385,7 @@
 	imx6ul-tek3 {
 		pinctrl_hog_1: hoggrp-1 {
 			fsl,pins = <
-				MX6UL_PAD_UART1_RTS_B__USDHC1_CD_B 0x03029 /* SD1 CD */
+				MX6UL_PAD_UART1_RTS_B__GPIO1_IO19	0x17059		/* SD1 CD */
 				MX6UL_PAD_GPIO1_IO08__GPIO1_IO08	0x03029 /* PCA9555 interrupt */
 				MX6UL_PAD_GPIO1_IO04__GPIO1_IO04	0x1b0b9		/* IO expansion board output- GPIO_P233 - 1   */
 				MX6UL_PAD_GPIO1_IO05__GPIO1_IO05	0x1b0b9		/* IO expansion board output- GPIO_P235 - 41  */
