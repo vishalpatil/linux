@@ -357,7 +357,11 @@ dtb-$(CONFIG_SOC_IMX6Q) += \
 	imx6q-pico_hobbit.dtb \
 	imx6q-pico_nymph.dtb \
 	imx6q-tek3.dtb \
-	imx6q-tep5.dtb
+	imx6q-tep5.dtb \
+	imx6dqscm-1gb-qwks-rev2-fix-ldo.dtb \
+	imx6dqscm-1gb-qwks-rev2-interleave-android-ldo.dtb \
+	imx6dqscm-1gb-qwks-rev2-wifi-fix-ldo.dtb \
+	imx6dqscm-1gb-qwks-rev2-hdcp-fix-ldo.dtb
 dtb-$(CONFIG_SOC_IMX6SL) += \
 	imx6sl-evk.dtb \
 	imx6sl-evk-btwifi.dtb \
