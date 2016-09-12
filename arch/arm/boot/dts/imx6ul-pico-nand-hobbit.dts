@@ -100,8 +100,18 @@
 	bcmdhd_wlan_0: bcmdhd_wlan@0 {
 		compatible = "android,bcmdhd_wlan";
 		pinctrl-0 = <&pinctrl_wifi_ctrl>;
+		pinctrl-names = "default";
 		wlreg_on-supply = <&wlreg_on>;
 		status="okay";
+	};
+
+	bt_rfkill {
+		compatible = "net,rfkill-bcm43xx";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_bt_ctrl>;
+		name = "bt_rfkill";
+		type = <2>;     /* bluetooth */
+		bt_rfkill_reset-gpios = <&gpio1 15 0>;
 	};
 
 	sound {
@@ -198,7 +208,7 @@
 
 &uart5 { /* Bluetooth */
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_uart5 &pinctrl_bt_ctrl>;
+	pinctrl-0 = <&pinctrl_uart5>;
 	fsl,uart-has-rtscts;
 	status = "okay";
 };
@@ -489,6 +499,7 @@
 				MX6UL_PAD_ENET2_TX_DATA1__ENET2_TDATA01	0x1b0b0
 				MX6UL_PAD_ENET2_TX_CLK__ENET2_REF_CLK2	0x4001b031
 				MX6UL_PAD_SNVS_TAMPER6__GPIO5_IO06	0x800
+				MX6UL_PAD_SNVS_TAMPER2__GPIO5_IO02      0x79    /* ethernet reset pin */
 			>;
 		};
 
@@ -648,7 +659,7 @@
 	phy-mode = "rmii";
 	phy-handle = <&ethphy1>;
 	status = "okay";
-	phy-reset-gpios = <&pca9554 7 GPIO_ACTIVE_LOW>;
+	phy-reset-gpios = <&gpio5 2 GPIO_ACTIVE_LOW>;
 	phy-reset-duration = <11>;
 	
 	mdio {
