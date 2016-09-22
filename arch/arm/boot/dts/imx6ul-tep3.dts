@@ -68,89 +68,70 @@
 			regulator-max-microvolt = <5000000>;
 			gpio = <&gpio5 9 0>;
 		};
+
+		reg_3p3v: 3p3v {
+			compatible = "regulator-fixed";
+			regulator-name = "3P3V";
+			regulator-min-microvolt = <3300000>;
+			regulator-max-microvolt = <3300000>;
+			regulator-always-on;
+		};
 	};
 
 	gpio-edm {
 		compatible = "gpio-edm";
 
+		/* Digital IO_PORT1 */
+		/* IO_PIN1_2 */
+		gpio_p245 {
+			label = "GPIO_P245";
+			gpios = <&pca9555 7 1>;
+			dir   = "out";
+		};
+
+		/* GPIO IO_PORT2 */
+		/* IO_PIN2_1 */
+		gpio_expio4 {
+			label = "GPIO_EXPIO4";
+			gpios = <&pca9555 15 0>;
+			dir   = "out";
+		};
+		/* IO_PIN2_2 */
 		gpio_expio1 {
 			label = "GPIO_EXPIO1";
 			gpios = <&pca9555 12 0>;
 			dir   = "out";
 		};
+		/* IO_PIN2_5 */
 		gpio_expio2 {
 			label = "GPIO_EXPIO2";
 			gpios = <&pca9555 13 0>;
-			dir   = "out";
+			dir   = "in";
 		};
+		/* IO_PIN2_6 */
 		gpio_expio3 {
 			label = "GPIO_EXPIO3";
 			gpios = <&pca9555 14 0>;
 			dir   = "in";
 		};
-		gpio_expio4 {
-			label = "GPIO_EXPIO4";
-			gpios = <&pca9555 15 0>;
-			dir   = "in";
-		};
-		gpio_p133 {
-			label = "GPIO_P133";
-			gpios = <&pca9555 0 0>;
-			dir   = "out";
-		};
-		gpio_p135 {
-			label = "GPIO_P135";
-			gpios = <&pca9555 1 0>;
-			dir   = "out";
-		};
-		gpio_p137 {
-			label = "GPIO_P137";
-			gpios = <&pca9555 2 0>;
-			dir   = "in";
-		};
-		gpio_p139 {
-			label = "GPIO_P139";
-			gpios = <&pca9555 3 0>;
-			dir   = "in";
-		};
-		gpio_p233 {
-			label = "GPIO_P233";
-			gpios = <&gpio1 4 1>;
-			dir   = "out";
-		};
-		gpio_p235 {
-			label = "GPIO_P235";
-			gpios = <&gpio1 5 1>;
-			dir   = "out";
-		};
-		gpio_p237 {
-			label = "GPIO_P237";
-			gpios = <&gpio4 16 1>;
-			dir   = "in";
-		};
+
+		/* GPIO IO_PORT3 */
+		/* IO_PIN3_2 */
 		gpio_p239 {
 			label = "GPIO_P239";
-			gpios = <&pca9555 4 1>;
-			dir   = "in";
+			gpios = <&pca9555 4 0>;
+			dir   = "out";
 		};
+		/* IO_PIN3_5 */
 		gpio_p241 {
 			label = "GPIO_P241";
-			gpios = <&pca9555 5 1>;
-			dir   = "out";
-		};
-		gpio_p243 {
-			label = "GPIO_P243";
-			gpios = <&pca9555 6 1>;
-			dir   = "out";
-		};
-		gpio_p245 {
-			label = "GPIO_P245";
-			gpios = <&pca9555 7 1>;
+			gpios = <&pca9555 5 0>;
 			dir   = "in";
 		};
-		gpio_p247 {
-			label = "GPIO_P247";
-			gpios = <&pca9555 8 1>;
+		/* IO_PIN3_6 */
+		gpio_p243 {
+			label = "GPIO_P243";
+			gpios = <&pca9555 6 0>;
 			dir   = "in";
 		};
 	};
@@ -396,6 +377,24 @@
 		compatible = "mxim,ds1337";
 		reg = <0x68>;
 	};
+
+	adc: adc081c@52 {
+		compatible = "ti,adc081c";
+		reg = <0x52>;
+		vref-supply = <&reg_3p3v>;
+	};
+
+	polytouch: edt-ft5x06@38 {
+		compatible = "edt,edt-ft5x06";
+		reg = <0x38>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_ft5606_touch_irq &pinctrl_ft5606_touch_reset>; /* Touch IRQ and Touch Reset */
+		interrupt-parent = <&gpio4>;
+		interrupts = <20 0>;
+		reset-gpios = <&gpio4 24 GPIO_ACTIVE_LOW>;
+		touchscreen-size-x = <800>;
+		touchscreen-size-y = <480>;
+	};
 };
 
 &iomuxc {
@@ -406,9 +405,6 @@
 			fsl,pins = <
 				MX6UL_PAD_UART1_RTS_B__GPIO1_IO19	0x17059		/* SD1 CD */
 				MX6UL_PAD_GPIO1_IO08__GPIO1_IO08	0x03029		/* PCA9555 interrupt */
-				MX6UL_PAD_GPIO1_IO04__GPIO1_IO04	0x1b0b9		/* IO expansion board output- GPIO_P233 - 1   */
-				MX6UL_PAD_GPIO1_IO05__GPIO1_IO05	0x1b0b9		/* IO expansion board output- GPIO_P235 - 41  */
-				MX6UL_PAD_NAND_DQS__GPIO4_IO16		0x80000000	/* IO expansion board input - GPIO_P237 - 42  */
 			>;
 		};
 
@@ -527,15 +523,21 @@
 			>;
 		};
 
-		pinctrl_pwm1: pwm1grp {
-			fsl,pins = <
-				MX6UL_PAD_GPIO1_IO08__PWM1_OUT   0x110b0
-			>;
-		};
-
 		pinctrl_pwm2: pwm2grp {
 			fsl,pins = <
 				MX6UL_PAD_GPIO1_IO09__PWM2_OUT   0x110b0
+			>;
+		};
+
+		pinctrl_pwm3: pwm3grp {
+			fsl,pins = <
+				MX6UL_PAD_GPIO1_IO04__PWM3_OUT   0x110b0
+			>;
+		};
+
+		pinctrl_pwm4: pwm4grp {
+			fsl,pins = <
+				MX6UL_PAD_GPIO1_IO05__PWM4_OUT   0x110b0
 			>;
 		};
 
@@ -649,8 +651,6 @@
 			fsl,pins = <
 				MX6UL_PAD_CSI_PIXCLK__UART6_DCE_RX	0x1b0b1
 				MX6UL_PAD_CSI_MCLK__UART6_DCE_TX	0x1b0b1
-				MX6UL_PAD_CSI_HSYNC__UART6_DCE_CTS	0x1b0b1
-				MX6UL_PAD_CSI_VSYNC__UART6_DCE_RTS	0x1b0b1
 			>;
 		};
 
@@ -714,6 +714,18 @@
 				MX6UL_PAD_LCD_RESET__WDOG1_WDOG_ANY    0x30b0
 			>;
 		};
+
+		pinctrl_ft5606_touch_irq: ft5606-touch-irq {
+			fsl,pins = <
+				MX6UL_PAD_CSI_HSYNC__GPIO4_IO20 0x79 /* touch irq */
+			>;
+		};
+
+		pinctrl_ft5606_touch_reset: ft5606-touch-reset {
+			fsl,pins = <
+				MX6UL_PAD_CSI_DATA03__GPIO4_IO24 0x79 /* touch reset */
+			>;
+		};
 	};
 };
 
@@ -725,36 +737,66 @@
 	status = "okay";
 
 	display0: display {
-		bits-per-pixel = <24>;
+		bits-per-pixel = <32>;
 		bus-width = <24>;
 
 		display-timings {
-			native-mode = <&vga_timing0>;
-			vga_timing0: vga_timing0 {
-			clock-frequency = <74929000>;
-			hactive = <1024>;
-			vactive = <768>;
-			hback-porch = <144>;
-			hfront-porch = <24>;
-			vback-porch = <29>;
-			vfront-porch = <3>;
-			hsync-len = <136>;
-			vsync-len = <6>;
+			native-mode = <&timing0>;
+			timing0: timing0 {
+			clock-frequency = <33200000>;
+			hactive = <800>;
+			vactive = <480>;
+			hfront-porch = <210>;
+			hback-porch = <46>;
+			hsync-len = <1>;
+			vback-porch = <22>;
+			vfront-porch = <23>;
+			vsync-len = <1>;
 			hsync-active = <0>;
 			vsync-active = <0>;
 			de-active = <1>;
 			pixelclk-active = <0>;
-			interlaced =  <0>;
 			};
 		};
 	};
 };
 
+/* Digital IO_PORT1 - IO_PIN1_1 */
+/* PWM1 */
 &pwm2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pwm2>;
 	clocks = <&clks IMX6UL_CLK_PWM2>,
 		 <&clks IMX6UL_CLK_PWM2>;
+	status = "okay";
+};
+
+/* Digital IO_PORT1 - IO_PIN1_5 */
+/* PWM_P235 */
+&pwm4 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pwm4>;
+	clocks = <&clks IMX6UL_CLK_PWM4>,
+		 <&clks IMX6UL_CLK_PWM4>;
+	status = "okay";
+};
+
+/* Digital IO_PORT1 - IO_PIN1_6 */
+/* PWM_P233 */
+&pwm3 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pwm3>;
+	clocks = <&clks IMX6UL_CLK_PWM3>,
+		 <&clks IMX6UL_CLK_PWM3>;
+	status = "okay";
+};
+
+/* PWM_P237 backlight adjustment */
+&pwm5 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pwm5>;
+	clocks = <&clks IMX6UL_CLK_PWM5>,
+		 <&clks IMX6UL_CLK_PWM5>;
 	status = "okay";
 };
 
