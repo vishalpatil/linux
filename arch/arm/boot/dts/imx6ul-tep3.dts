@@ -144,6 +144,15 @@
 			default-state = "on";
 		};
 	};
+
+	sound-mqs {
+		compatible = "fsl,imx6ul-mqs",
+				"fsl,imx-audio-mqs";
+		model = "mqs-audio";
+		cpu-dai = <&sai1>;
+		asrc-controller = <&asrc>;
+		audio-codec = <&mqs>;
+	};
 };
 
 &cpu0 {
@@ -173,6 +182,22 @@
 &clks {
 	assigned-clocks = <&clks IMX6UL_CLK_PLL4_AUDIO_DIV>;
 	assigned-clock-rates = <786432000>;
+};
+
+&sai1 {
+	assigned-clocks = <&clks IMX6UL_CLK_SAI1_SEL>,
+			<&clks IMX6UL_CLK_SAI1>;
+	assigned-clock-parents = <&clks IMX6UL_CLK_PLL4_AUDIO_DIV>;
+	assigned-clock-rates = <0>, <24576000>;
+	status = "okay";
+};
+
+&mqs {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_mqs>;
+	clocks = <&clks IMX6UL_CLK_SAI1>;
+	clock-names = "mclk";
+	status = "okay";
 };
 
 &fec1 {
@@ -674,6 +699,13 @@
 				MX6UL_PAD_NAND_DATA05__USDHC2_DATA5 0x17059
 				MX6UL_PAD_NAND_DATA06__USDHC2_DATA6 0x17059
 				MX6UL_PAD_NAND_DATA07__USDHC2_DATA7 0x17059
+			>;
+		};
+
+		pinctrl_mqs: mqsgrp {
+			fsl,pins = <
+				MX6UL_PAD_JTAG_TDI__MQS_LEFT         0x11088
+				MX6UL_PAD_JTAG_TDO__MQS_RIGHT        0x11088
 			>;
 		};
 
