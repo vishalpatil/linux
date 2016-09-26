@@ -17,7 +17,7 @@
 #include "imx6ul.dtsi"
 
 / {
-	model = "Technexion Pico i.MX6 UltraLite Board";
+	model = "Technexion Pico i.MX6 UltraLite Board with NAND";
 	compatible = "fsl,imx6ul-pico", "fsl,imx6ul";
 
 	memory {
