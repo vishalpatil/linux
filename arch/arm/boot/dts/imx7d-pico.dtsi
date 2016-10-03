@@ -51,14 +51,20 @@
 
 	backlight {
 		compatible = "pwm-backlight";
-		pwms = <&pwm3 0 5000000>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_backlight>;
+		pwms = <&pwm4 0 5000000 0>;
 		brightness-levels = <0 4 8 16 32 64 128 255>;
 		default-brightness-level = <6>;
+//		enable-gpios = <&gpio1 11 GPIO_ACTIVE_HIGH>;
 		status = "okay";
 	};
 
 	bcmdhd_wlan_0: bcmdhd_wlan@0 {
 		compatible = "android,bcmdhd_wlan";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_wifi_ctrl &pinctrl_bt_ctrl>;
+		status = "okay";
 		wlreg_on-supply = <&wlreg_on>;
 	};
 
@@ -90,11 +96,11 @@
 
 		reg_usb_otg1_vbus: regulator@0 {
 			compatible = "regulator-fixed";
-			reg = <0>;
 			regulator-name = "usb_otg1_vbus";
 			regulator-min-microvolt = <5000000>;
 			regulator-max-microvolt = <5000000>;
-			gpio = <&gpio1 5 GPIO_ACTIVE_HIGH>;
+			gpio = <&gpio4 5 GPIO_ACTIVE_LOW>;
+			enable-active-low;
 		};
 
 		reg_usb_otg2_vbus: regulator@1 {
@@ -103,16 +109,6 @@
 			regulator-name = "usb_otg2_vbus";
 			regulator-min-microvolt = <5000000>;
 			regulator-max-microvolt = <5000000>;
-			gpio = <&gpio4 7 GPIO_ACTIVE_HIGH>;
-		};
-
-		reg_can2_3v3: regulator@4 {
-			compatible = "regulator-fixed";
-			reg = <4>;
-			regulator-name = "can2-3v3";
-			regulator-min-microvolt = <3300000>;
-			regulator-max-microvolt = <3300000>;
-			gpio = <&gpio2 14 GPIO_ACTIVE_LOW>;
 		};
 
 		reg_vref_1v8: regulator@5 {
@@ -135,7 +131,7 @@
 			regulator-min-microvolt = <5000000>;
 			regulator-max-microvolt = <5000000>;
 			regulator-name = "wlreg_on";
-			gpio = <&gpio4 21 GPIO_ACTIVE_HIGH>;
+			gpio = <&gpio4 16 GPIO_ACTIVE_HIGH>;
 			enable-active-high;
 		};
 
@@ -144,9 +140,21 @@
 			regulator-min-microvolt = <3300000>;
 			regulator-max-microvolt = <3300000>;
 			regulator-name = "bt_on";
+			gpio = <&gpio4 18 GPIO_ACTIVE_LOW>;
+			enable-active-low;
 			regulator-boot-on;
 		};
 
+		lcd_on: lcd_on {
+			compatible = "regulator-fixed";
+			regulator-name = "LCD_VDD";
+			reg = <0>;
+			regulator-min-microvolt = <3300000>;
+			regulator-max-microvolt = <3300000>;
+			gpio = <&gpio3 4 GPIO_ACTIVE_HIGH>;
+			enable-active-high;
+			regulator-boot-on;
+		};
 	};
 
 	clocks {
@@ -172,9 +180,7 @@
 		pinctrl_hog_1: hoggrp-1 {
 			fsl,pins = <
 				MX7D_PAD_ECSPI2_SS0__GPIO4_IO23	 0x80000000  /* bt reg on */
-				MX7D_PAD_ENET1_RGMII_TD0__GPIO7_IO6 0x5d /*mipi csi power down*/
-				MX7D_PAD_SD1_CD_B__GPIO5_IO0	 0x59 /* cpu module sd cd pin */
-				MX7D_PAD_SD3_DATA7__GPIO6_IO9	 0x59 /* cpu module sd cd pin */
+				MX7D_PAD_SD1_CD_B__GPIO5_IO0	 0x59 /* baseboard sd cd pin */
 				MX7D_PAD_GPIO1_IO03__CCM_CLKO2	 0x7d /* wifi LPO 32K Hz clock */
 				MX7D_PAD_GPIO1_IO02__CCM_CLKO1	 0x7d /* mipi csi main clock */
 				MX7D_PAD_GPIO1_IO07__GPIO1_IO7	 0x59 /* pmic sd_vel pin*/
@@ -196,10 +202,12 @@
 			>;
 		};
 
-		pinctrl_enet1: enet1grp {
+		pinctrl_enet1: enet1grp { /* REF CLK is set under LPSR pins */
 			fsl,pins = <
 				MX7D_PAD_SD2_CD_B__ENET2_MDIO			0x3
 				MX7D_PAD_SD2_WP__ENET2_MDC			0x3
+				MX7D_PAD_SD3_STROBE__GPIO6_IO10                 0x3  /* MDIO interrupt*/
+
 				MX7D_PAD_ENET1_RGMII_TXC__ENET1_RGMII_TXC	0x1
 				MX7D_PAD_ENET1_RGMII_TD0__ENET1_RGMII_TD0	0x1
 				MX7D_PAD_ENET1_RGMII_TD1__ENET1_RGMII_TD1	0x1
@@ -212,6 +220,7 @@
 				MX7D_PAD_ENET1_RGMII_RD2__ENET1_RGMII_RD2	0x1
 				MX7D_PAD_ENET1_RGMII_RD3__ENET1_RGMII_RD3	0x1
 				MX7D_PAD_ENET1_RGMII_RX_CTL__ENET1_RGMII_RX_CTL	0x1
+				MX7D_PAD_SD3_RESET_B__GPIO6_IO11                0x1  /* Ethernet reset */
 			>;
 		};
 
@@ -271,7 +280,8 @@
 				MX7D_PAD_LCD_ENABLE__LCD_ENABLE	0x79
 				MX7D_PAD_LCD_VSYNC__LCD_VSYNC	0x79
 				MX7D_PAD_LCD_HSYNC__LCD_HSYNC	0x79
-				MX7D_PAD_LCD_RESET__LCD_RESET	0x79
+				MX7D_PAD_LCD_RESET__GPIO3_IO4	0x14
+				//MX7D_PAD_LCD_RESET__LCD_RESET	0x79
 			>;
 		};
 
@@ -318,9 +328,23 @@
 			>;
 		};
 
-		pinctrl_usbotg2_pwr_1: usbotg2-1 {
+		pinctrl_usbotg1_pwr: usbotg_pwr {
 			fsl,pins = <
-				MX7D_PAD_UART3_CTS_B__GPIO4_IO7	0x14
+				MX7D_PAD_UART3_TX_DATA__GPIO4_IO5	0x14
+			>;
+		};
+
+		pinctrl_can_1: can-1 {
+			fsl,pins = <
+				MX7D_PAD_SAI1_RX_DATA__FLEXCAN1_RX	0x59
+				MX7D_PAD_SAI1_TX_BCLK__FLEXCAN1_TX	0x59f
+			>;
+		};
+
+		pinctrl_can_2: can-2 {
+			fsl,pins = <
+				MX7D_PAD_SAI1_TX_SYNC__FLEXCAN2_RX	0x59
+				MX7D_PAD_SAI1_TX_DATA__FLEXCAN2_TX	0x59
 			>;
 		};
 
@@ -404,8 +428,9 @@
 				MX7D_PAD_SD3_DATA4__SD3_DATA4		0x59
 				MX7D_PAD_SD3_DATA5__SD3_DATA5		0x59
 				MX7D_PAD_SD3_DATA6__SD3_DATA6		0x59
-				MX7D_PAD_SD3_DATA7__SD3_DATA7		0x59
-				MX7D_PAD_GPIO1_IO14__GPIO1_IO14		0x15
+//				MX7D_PAD_SD3_DATA7__SD3_DATA7		0x59
+				MX7D_PAD_SD3_DATA7__GPIO6_IO9	 0x59 /* cpu module sd cd pin */
+//				MX7D_PAD_GPIO1_IO14__GPIO1_IO14		0x15
 			>;
 		};
 
@@ -420,8 +445,9 @@
 				MX7D_PAD_SD3_DATA4__SD3_DATA4		0x5a
 				MX7D_PAD_SD3_DATA5__SD3_DATA5		0x5a
 				MX7D_PAD_SD3_DATA6__SD3_DATA6		0x5a
-				MX7D_PAD_SD3_DATA7__SD3_DATA7		0x5a
-				MX7D_PAD_GPIO1_IO14__GPIO1_IO14		0x15
+//				MX7D_PAD_SD3_DATA7__SD3_DATA7		0x5a
+				MX7D_PAD_SD3_DATA7__GPIO6_IO9	 0x15 /* cpu module sd cd pin */
+//				MX7D_PAD_GPIO1_IO14__GPIO1_IO14		0x15
 			>;
 		};
 
@@ -436,8 +462,9 @@
 				MX7D_PAD_SD3_DATA4__SD3_DATA4		0x5b
 				MX7D_PAD_SD3_DATA5__SD3_DATA5		0x5b
 				MX7D_PAD_SD3_DATA6__SD3_DATA6		0x5b
-				MX7D_PAD_SD3_DATA7__SD3_DATA7		0x5b
-				MX7D_PAD_GPIO1_IO14__GPIO1_IO14		0x15
+//				MX7D_PAD_SD3_DATA7__SD3_DATA7		0x5b
+				MX7D_PAD_SD3_DATA7__GPIO6_IO9	 0x15 /* cpu module sd cd pin */
+//				MX7D_PAD_GPIO1_IO14__GPIO1_IO14		0x15
 			>;
 		};
 
@@ -448,20 +475,31 @@
 			>;
 		};
 
-		pinctrl_pwm3: pwm3grp {
+		pinctrl_pwm1: pwm1 {
+			fsl,pins = <
+				MX7D_PAD_GPIO1_IO08__PWM1_OUT   0x7f
+			>;
+		};
+
+		pinctrl_pwm2: pwm2 {
+			fsl,pins = <
+				MX7D_PAD_GPIO1_IO09__PWM2_OUT   0x7f
+			>;
+		};
+
+		pinctrl_pwm3: pwm3 {
 			fsl,pins = <
 				MX7D_PAD_GPIO1_IO10__PWM3_OUT   0x7f
 			>;
 		};
 
-		pinctrl_pwm: pwmgrp {
+		pinctrl_backlight: backlight {
 			fsl,pins = <
-				MX7D_PAD_GPIO1_IO08__PWM1_OUT   0x7f
-				MX7D_PAD_GPIO1_IO09__PWM2_OUT   0x7f
-				MX7D_PAD_GPIO1_IO10__PWM3_OUT   0x7f
-				MX7D_PAD_GPIO1_IO11__PWM4_OUT   0x7f
+				MX7D_PAD_GPIO1_IO11__PWM4_OUT   0x0
+//				MX7D_PAD_GPIO1_IO11__GPIO1_IO11 0x15
 			>;
 		};
+
 
 		pinctrl_wdog: wdoggrp {
 			fsl,pins = <
@@ -484,12 +522,13 @@
 			>;
 		};
 
-		pinctrl_edt_ft5x06: edt-ft5x06grp {
+		pinctrl_pcie: pcie_ctrlgrp {
 			fsl,pins = <
-				MX7D_PAD_ENET1_RGMII_TD2__GPIO7_IO8	 0x59  /* Interrupt */
-				MX7D_PAD_ENET1_RGMII_TD3__GPIO7_IO9	 0x59 /* Reset */
+				MX7D_PAD_EPDC_DATA01__GPIO2_IO1       0x15 /* pcie reset */
 			>;
 		};
+
+
 	};
 };
 
@@ -497,12 +536,12 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_lcdif_dat
 		     &pinctrl_lcdif_ctrl>;
-	lcd-supply = <&reg_vref_3v3>;
+	lcd-supply = <&lcd_on>;
 	display = <&display0>;
 	status = "okay";
 
 	display0: display {
-		bits-per-pixel = <24>;
+		bits-per-pixel = <32>;
 		bus-width = <24>;
 
 		display-timings {
@@ -520,16 +559,32 @@
 				hsync-active = <0>;
 				vsync-active = <0>;
 				de-active = <1>;
-				pixelclk-active = <0>;
+				pixelclk-active = <1>;
 				interlaced =  <0>;
 			};
 		};
 	};
 };
 
+&pwm1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pwm1>;
+	status = "okay";
+};
+
+&pwm2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pwm2>;
+	status = "okay";
+};
+
 &pwm3 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_pwm>;
+	pinctrl-0 = <&pinctrl_pwm3>;
+	status = "okay";
+};
+
+&pwm4 { /* Backlight */
 	status = "okay";
 };
 
@@ -630,7 +685,7 @@
 	pinctrl-0 = <&pinctrl_usdhc3>;
 	pinctrl-1 = <&pinctrl_usdhc3_100mhz>;
 	pinctrl-2 = <&pinctrl_usdhc3_200mhz>;
-	cd-gpios = <&gpio1 14 0>;
+	cd-gpios = <&gpio6 9 GPIO_ACTIVE_LOW>;
 	assigned-clocks = <&clks IMX7D_USDHC3_ROOT_CLK>;
 	assigned-clock-rates = <400000000>;
 	bus-width = <4>;
@@ -688,7 +743,7 @@
 			};
 
 			sw2_reg: sw2 {
-				regulator-min-microvolt = <1500000>;
+				regulator-min-microvolt = <1800000>;
 				regulator-max-microvolt = <1850000>;
 				regulator-boot-on;
 				regulator-always-on;
@@ -760,20 +815,83 @@
 	fsl,spi-num-chipselects = <1>;
 	cs-gpios = <&gpio4 11 GPIO_ACTIVE_LOW>;
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_ecspi3>;
-	pinctrl-1 = <&pinctrl_ecspi3_cs>;
+	pinctrl-0 = <&pinctrl_ecspi3 &pinctrl_ecspi3_cs>;
 	status = "okay";
+
+	spidev@0 {
+		compatible = "rohm,dh2228fv";
+		spi-max-frequency = <60000000>;
+		reg = <0>;
+	};
+
 };
 
 &can1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_can_1>;
 	status = "okay";
 };
 
 &can2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_can_2>;
 	status = "okay";
 };
 
 &cpu0 {
 	arm-supply = <&sw1a_reg>;
+};
+
+&iomuxc_lpsr {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_enet_refclk &pinctrl_lcd_vdden>;
+
+	imx7d-pico-miscpins {
+		pinctrl_enet_refclk: enet_refclk {
+			fsl,pins = <
+				MX7D_PAD_GPIO1_IO01__CCM_ENET_REF_CLK3		0x1  
+			>;
+		};
+		pinctrl_lcd_vdden: lcd_vdden {
+			fsl,pins = <
+				MX7D_PAD_GPIO1_IO06__GPIO1_IO6		0x14
+			>;
+		};
+
+	};
+};
+
+&fec1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_enet1>;
+	phy-mode = "rgmii";
+	phy-handle = <&ethphy0>;
+	phy-reset-gpios = <&gpio6 11 0>;
+	local-mac-address = [00 1f 7b aa 03 14];
+	status = "okay";
+};
+
+&fec2 {
+	status = "disabled";
+	phy-mode = "";
+
+	mdio {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		ethphy0: ethernet-phy@1 {
+			compatible = "ethernet-phy-ieee802.3-c22";
+			reg = <1>;
+			status = "okay";
+		};
+	};
+};
+
+&pcie {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pcie>;
+	reset-gpio = <&gpio2 1 GPIO_ACTIVE_LOW>;
+//	status = "disabled";
+	status = "okay";
 };
 
