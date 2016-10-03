@@ -872,7 +872,7 @@
 };
 
 &fec2 {
-	status = "disabled";
+	status = "okay";
 	phy-mode = "";
 
 	mdio {
@@ -887,11 +887,12 @@
 	};
 };
 
+
 &pcie {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pcie>;
 	reset-gpio = <&gpio2 1 GPIO_ACTIVE_LOW>;
-//	status = "disabled";
-	status = "okay";
+	status = "disabled";
+//	status = "okay";
 };
 
