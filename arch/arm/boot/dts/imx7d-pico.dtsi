@@ -45,6 +45,10 @@
 #define reg_1p8v reg_vref_1v8
 
 / {
+	aliases {
+		mxcfb0 = &mxcfb1;
+	};
+
 	memory {
 		reg = <0x80000000 0x80000000>;
 	};
@@ -170,7 +174,16 @@
 				"fsl,imx-audio-sgtl5000";
 		fsl,no-audmux;
 	};
-};
+
+	mxcfb1: fb@0 {
+		compatible = "fsl,mxc_sdc_fb";
+		disp_dev = "lcdif";
+		interface_pix_fmt = "RGB24";
+		default_bpp = <32>;
+		int_clk = <0>;
+		late_init = <0>;
+		status = "okay";
+	};};
 
 &iomuxc {
 	pinctrl-names = "default";
@@ -550,12 +563,12 @@
 				clock-frequency = <33260000>;
 				hactive = <800>;
 				vactive = <480>;
-				hback-porch = <46>;
-				hfront-porch = <210>;
-				vback-porch = <23>;
-				vfront-porch = <22>;
-				hsync-len = <1>;
-				vsync-len = <1>;
+				hback-porch = <11>;
+				hfront-porch = <11>;
+				vback-porch = <12>;
+				vfront-porch = <11>;
+				hsync-len = <46>;
+				vsync-len = <210>;
 				hsync-active = <0>;
 				vsync-active = <0>;
 				de-active = <1>;
@@ -892,7 +905,7 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pcie>;
 	reset-gpio = <&gpio2 1 GPIO_ACTIVE_LOW>;
-	status = "disabled";
-//	status = "okay";
+//	status = "disabled";
+	status = "okay";
 };
 
