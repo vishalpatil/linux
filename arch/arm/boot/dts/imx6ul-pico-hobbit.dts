@@ -336,7 +336,7 @@
 		reg = <0x38>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_ext_gpio_ft5606_touch_irq_hobbit &pinctrl_ext_gpio_ft5606_touch_reset_hobbit>; /* Touch IRQ and Touch Reset */
-		interrupt-parent = <&gpio4>; /* GPIO_P42 */
+		interrupt-parent = <&gpio4>; /* GPIO_P25 */
 		interrupts = <20 0>;
 		reset-gpios = <&gpio4 24 GPIO_ACTIVE_LOW>; /* GPIO_P32 */
 		touchscreen-size-x = <800>;
@@ -627,7 +627,7 @@
 
 		pinctrl_ext_gpio_ft5606_touch_irq_hobbit: ext-gpio-ft5606-touch-irq-hobbit {
 			fsl,pins = <
-				MX6UL_PAD_CSI_HSYNC__GPIO4_IO20 0x79 /* GPIO_P42, touch irq */
+				MX6UL_PAD_CSI_HSYNC__GPIO4_IO20 0x79 /* GPIO_P25, touch irq */
 			>;
 		};
 
