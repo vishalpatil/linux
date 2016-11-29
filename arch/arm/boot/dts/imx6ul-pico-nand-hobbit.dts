@@ -311,6 +311,16 @@
 		reg = <0x50>;
 		vref-supply = <&reg_3p3v>;
 	};
+
+	polytouch: edt-ft5x06@38 {
+		compatible = "edt,edt-ft5x06";
+		reg = <0x38>;
+		interrupt-parent = <&pca9554>; /* GPIO_P25 */
+		interrupts = <6 0>;
+		reset-gpios = <&pca9554 4 GPIO_ACTIVE_LOW>; /* GPIO_P32 */
+		touchscreen-size-x = <800>;
+		touchscreen-size-y = <480>;
+	};
 };
 
 &i2c2 {
@@ -329,10 +339,15 @@
 
 	pca9554: pca9554@23 {
 		compatible = "nxp,pca9554";
+		reg = <0x23>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_pca9554_interrupt>;
+		interrupt-parent = <&gpio1>;
+		interrupts = <18 0>;
 		gpio-controller;
 		#gpio-cells = <2>;
+		interrupt-controller;
 		#interrupt-cells = <2>;
-		reg = <0x23>;
 	};
 };
 
@@ -592,6 +607,12 @@
 		pinctrl_pwm8: pwm8grp {
 			fsl,pins = <
 				MX6UL_PAD_ENET1_RX_ER__PWM8_OUT	0x110b0
+			>;
+		};
+
+		pinctrl_pca9554_interrupt: pca9554_interrupt {
+			fsl,pins = <
+				MX6UL_PAD_UART1_CTS_B__GPIO1_IO18 0x17059
 			>;
 		};
 	};
