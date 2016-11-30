@@ -144,9 +144,11 @@
 
 	leds {
 		compatible = "gpio-leds";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_gpio_led>;
 		hobbitled {
 			label = "hobbitled";
-			gpios = <&gpio1 29 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio1 13 GPIO_ACTIVE_HIGH>;
 		};
 	};
 };
@@ -613,6 +615,12 @@
 		pinctrl_pca9554_interrupt: pca9554_interrupt {
 			fsl,pins = <
 				MX6UL_PAD_UART1_CTS_B__GPIO1_IO18 0x17059
+			>;
+		};
+
+		pinctrl_gpio_led: gpioled {
+			fsl,pins = <
+				MX6UL_PAD_JTAG_TDI__GPIO1_IO13	0x79
 			>;
 		};
 	};
