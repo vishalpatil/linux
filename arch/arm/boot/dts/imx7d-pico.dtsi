@@ -60,7 +60,6 @@
 		pwms = <&pwm4 0 5000000 0>;
 		brightness-levels = <0 4 8 16 32 64 128 255>;
 		default-brightness-level = <6>;
-//		enable-gpios = <&gpio1 11 GPIO_ACTIVE_HIGH>;
 		status = "okay";
 	};
 
@@ -509,7 +508,6 @@
 		pinctrl_backlight: backlight {
 			fsl,pins = <
 				MX7D_PAD_GPIO1_IO11__PWM4_OUT   0x0
-//				MX7D_PAD_GPIO1_IO11__GPIO1_IO11 0x15
 			>;
 		};
 
@@ -882,7 +880,6 @@
 	phy-mode = "rgmii";
 	phy-handle = <&ethphy0>;
 	phy-reset-gpios = <&gpio6 11 0>;
-	local-mac-address = [00 1f 7b aa 03 14];
 	status = "okay";
 };
 
@@ -907,7 +904,6 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pcie>;
 	reset-gpio = <&gpio2 1 GPIO_ACTIVE_LOW>;
-//	status = "disabled";
 	status = "okay";
 };
 
