@@ -163,7 +163,9 @@ static const u32 vf610_hw_avgs[] = { 1, 4, 8, 16, 32 };
 	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),	\
 }
 
-static const struct iio_chan_spec vf610_adc_iio_channels[] = {
+#define MAX_IIO_CHANNEL_NUM 16
+
+static struct iio_chan_spec vf610_adc_iio_channels[] = {
 	VF610_ADC_CHAN(0, IIO_VOLTAGE),
 	VF610_ADC_CHAN(1, IIO_VOLTAGE),
 	VF610_ADC_CHAN(2, IIO_VOLTAGE),
@@ -605,6 +607,8 @@ static int vf610_adc_probe(struct platform_device *pdev)
 	struct resource *mem;
 	int irq;
 	int ret;
+	int i;
+	int use_channel[MAX_IIO_CHANNEL_NUM];
 	u32 channels;
 
 	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(struct vf610_adc));
@@ -660,6 +664,13 @@ static int vf610_adc_probe(struct platform_device *pdev)
 					"num-channels", &channels);
 	if (ret)
 		channels = ARRAY_SIZE(vf610_adc_iio_channels);
+
+	if (!of_property_read_u32_array(pdev->dev.of_node, "use-channels", use_channel, (int)channels)) {
+		if (((int)channels) <= MAX_IIO_CHANNEL_NUM) {
+			for (i = 0; i < (int)channels; i++)
+				vf610_adc_iio_channels[i].channel = use_channel[i];
+		}
+	}
 
 	indio_dev->name = dev_name(&pdev->dev);
 	indio_dev->dev.parent = &pdev->dev;
