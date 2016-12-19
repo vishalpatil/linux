@@ -539,7 +539,18 @@
 			>;
 		};
 
-
+		pinctrl_gpio: gpio_ctrlgrp {
+			fsl,pins = <
+				MX7D_PAD_EPDC_DATA02__GPIO2_IO2		0x15 /* P28 */
+				MX7D_PAD_EPDC_DATA03__GPIO2_IO3		0x15 /* P30 */
+				MX7D_PAD_EPDC_DATA04__GPIO2_IO4		0x15 /* P32 */
+				MX7D_PAD_EPDC_DATA05__GPIO2_IO5		0x15 /* P34 */
+				MX7D_PAD_EPDC_DATA06__GPIO2_IO6		0x15 /* P25 */
+				MX7D_PAD_EPDC_DATA07__GPIO2_IO7		0x15 /* P48 */
+				MX7D_PAD_EPDC_DATA12__GPIO2_IO12	0x15 /* P42 */
+				MX7D_PAD_EPDC_DATA13__GPIO2_IO13	0x15 /* P44 */
+			>;
+		};
 	};
 };
 
@@ -648,7 +659,6 @@
 	fsl,uart-has-rtscts;
 	status = "okay";
 };
-
 
 &usbotg1 {
 	vbus-supply = <&reg_usb_otg1_vbus>;
