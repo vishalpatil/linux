@@ -40,6 +40,24 @@
 #define PICO_EXT_GPIO_EXP6 gpio5 30
 #define PICO_EXT_GPIO_EXP7 gpio5 27
 
+#define PICO_HOBBIT_I2C1 i2c1
+#define PICO_HOBBIT_I2C2 i2c4
+#define PICO_HOBBIT_I2C3 i2c3
+#define PICO_HOBBIT_I2C4 i2c2
+#define PICO_HOBBIT_CSPI2 ecspi2
+
+#define PICO_EXT_GPIO_IOMUX_HOBBIT &pinctrl_ext_gpio_hobbit
+
+/* FT5606 Touch */
+#define PICO_EXT_FT5X06_IOMUX_HOBBIT &pinctrl_ext_gpio_ft5606_touch_irq_hobbit &pinctrl_ext_gpio_ft5606_touch_reset_hobiit
+#define PICO_EXT_GPIO_P32 gpio2 4
+#define PICO_EXT_GPIO_P25 gpio2 6
+
+/* OV5640 */
+#define PICO_EXT_MIPI_CSI_OV5640_IOMUX &pinctrl_ext_ov5640
+#define PICO_EXT_GPIO_P65 gpio1 5
+#define PICO_EXT_GPIO_P67 gpio1 4
+
 #define can1 flexcan1
 #define can2 flexcan2
 #define reg_1p8v reg_vref_1v8
@@ -189,6 +207,15 @@
 	pinctrl-0 = <&pinctrl_hog_1>;
 
 	imx7d-pico {
+		pinctrl_ext_gpio_hobbit: ext-gpio-grp-hobbit {
+			fsl,pins = <
+				MX7D_PAD_EPDC_DATA00__GPIO2_IO0		0x59 /* GPIO2_IO0 pico pin 24 */
+				MX7D_PAD_EPDC_DATA02__GPIO2_IO2		0x59 /* GPIO2_IO2 pico pin 28 */
+				MX7D_PAD_EPDC_DATA03__GPIO2_IO3		0x59 /* GPIO2_IO3 pico pin 30 */
+				MX7D_PAD_EPDC_DATA05__GPIO2_IO5		0x59 /* GPIO2_IO10 pico pin 34 */
+			>;
+		};
+
 		pinctrl_hog_1: hoggrp-1 {
 			fsl,pins = <
 				MX7D_PAD_ECSPI2_SS0__GPIO4_IO23	 0x80000000  /* bt reg on */
@@ -551,6 +578,26 @@
 				MX7D_PAD_EPDC_DATA13__GPIO2_IO13	0x15 /* P44 */
 			>;
 		};
+
+                pinctrl_ext_gpio_ft5606_touch_irq_hobbit: ext-gpio-ft5606-touch-irq-hobbit {
+                        fsl,pins = <
+                                MX7D_PAD_EPDC_DATA06__GPIO2_IO6         0x59 /* capacitive touch irq for hobbit baseboard */
+                        >;
+                };
+
+                pinctrl_ext_gpio_ft5606_touch_reset_hobiit: ext-gpio-ft5606-touch-reset-hobbit {
+                        fsl,pins = <
+                                MX7D_PAD_EPDC_DATA04__GPIO2_IO4         0x59 /* capacitive touch reset for hobbit baseboard */
+                        >;
+                };
+
+                pinctrl_ext_ov5640: ov5640grp {
+                        fsl,pins = <
+                                MX7D_PAD_GPIO1_IO04__GPIO1_IO4          0x0b0b0         /* ov5640 mipi powerdown */
+                                MX7D_PAD_GPIO1_IO05__GPIO1_IO5          0x0b0b0         /* ov5640 mipi reset */
+                                MX7D_PAD_GPIO1_IO03__CCM_CLKO2          0x000b0         /* ov5640 mclk */
+                        >;
+                };
 	};
 };
 
