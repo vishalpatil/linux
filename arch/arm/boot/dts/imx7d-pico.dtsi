@@ -46,7 +46,14 @@
 #define PICO_HOBBIT_I2C4 i2c2
 #define PICO_HOBBIT_CSPI2 ecspi2
 
+#define PICO_PI_I2C1 i2c1
+#define PICO_PI_I2C2 i2c2
+#define PICO_PI_I2C4 i2c4
+#define PICO_PI_ECSPI4 ecspi2
+
 #define PICO_EXT_GPIO_IOMUX_HOBBIT &pinctrl_ext_gpio_hobbit
+#define PICO_EXT_GPIO_IOMUX_PI &pinctrl_ext_gpio_pi
+
 
 /* FT5606 Touch */
 #define PICO_EXT_FT5X06_IOMUX_HOBBIT &pinctrl_ext_gpio_ft5606_touch_irq_hobbit &pinctrl_ext_gpio_ft5606_touch_reset_hobiit
@@ -215,6 +222,15 @@
 				MX7D_PAD_EPDC_DATA05__GPIO2_IO5		0x59 /* GPIO2_IO10 pico pin 34 */
 			>;
 		};
+
+                pinctrl_ext_gpio_pi: ext-gpio-grp-pi {
+                        fsl,pins = <
+                                MX7D_PAD_EPDC_DATA00__GPIO2_IO0         0x59 /* GPIO2_IO0 pico pin 24 */
+                                MX7D_PAD_EPDC_DATA02__GPIO2_IO2         0x59 /* GPIO2_IO2 pico pin 28 */
+                                MX7D_PAD_EPDC_DATA03__GPIO2_IO3         0x59 /* GPIO2_IO3 pico pin 30 */
+                                MX7D_PAD_EPDC_DATA05__GPIO2_IO5         0x59 /* GPIO2_IO10 pico pin 34 */
+                        >;
+                };
 
 		pinctrl_hog_1: hoggrp-1 {
 			fsl,pins = <
