@@ -66,7 +66,8 @@
 			regulator-name = "usb_otg_vbus";
 			regulator-min-microvolt = <5000000>;
 			regulator-max-microvolt = <5000000>;
-			gpio = <&gpio5 9 0>;
+			gpio = <&gpio5 9 GPIO_ACTIVE_LOW>;
+			enable-active-low;
 		};
 
 		reg_3p3v: 3p3v {
@@ -80,12 +81,32 @@
 
 	gpio-edm {
 		compatible = "gpio-edm";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_external_gpio>;
 
 		/* Digital IO_PORT1 */
+		/* IO_PIN1_1 */
+		gpio_mqs_right {
+			label = "GPIO_MQS_R";
+			gpios = <&gpio1 12 GPIO_ACTIVE_HIGH>;
+			dir   = "in";
+		};
 		/* IO_PIN1_2 */
-		gpio_p245 {
-			label = "GPIO_P245";
-			gpios = <&pca9555 7 1>;
+		gpio_mqs_left {
+			label = "GPIO_MQS_L";
+			gpios = <&gpio1 13 GPIO_ACTIVE_HIGH>;
+			dir   = "in";
+		};
+		/* IO_PIN1_5 */
+		gpio_p239 {
+			label = "GPIO_P239";
+			gpios = <&pca9555 4 GPIO_ACTIVE_HIGH>;
+			dir   = "out";
+		};
+		/* IO_PIN1_6 */
+		gpio_p241 {
+			label = "GPIO_P241";
+			gpios = <&pca9555 5 GPIO_ACTIVE_HIGH>;
 			dir   = "out";
 		};
 
@@ -93,46 +114,26 @@
 		/* IO_PIN2_1 */
 		gpio_expio4 {
 			label = "GPIO_EXPIO4";
-			gpios = <&pca9555 15 0>;
-			dir   = "out";
+			gpios = <&pca9555 15 GPIO_ACTIVE_HIGH>;
+			dir   = "in";
 		};
 		/* IO_PIN2_2 */
 		gpio_expio1 {
 			label = "GPIO_EXPIO1";
-			gpios = <&pca9555 12 0>;
-			dir   = "out";
+			gpios = <&pca9555 12 GPIO_ACTIVE_HIGH>;
+			dir   = "in";
 		};
 		/* IO_PIN2_5 */
 		gpio_expio2 {
 			label = "GPIO_EXPIO2";
-			gpios = <&pca9555 13 0>;
-			dir   = "in";
+			gpios = <&pca9555 13 GPIO_ACTIVE_HIGH>;
+			dir   = "out";
 		};
 		/* IO_PIN2_6 */
 		gpio_expio3 {
 			label = "GPIO_EXPIO3";
-			gpios = <&pca9555 14 0>;
-			dir   = "in";
-		};
-
-		/* GPIO IO_PORT3 */
-		/* IO_PIN3_2 */
-		gpio_p239 {
-			label = "GPIO_P239";
-			gpios = <&pca9555 4 0>;
+			gpios = <&pca9555 14 GPIO_ACTIVE_HIGH>;
 			dir   = "out";
-		};
-		/* IO_PIN3_5 */
-		gpio_p241 {
-			label = "GPIO_P241";
-			gpios = <&pca9555 5 0>;
-			dir   = "in";
-		};
-		/* IO_PIN3_6 */
-		gpio_p243 {
-			label = "GPIO_P243";
-			gpios = <&pca9555 6 0>;
-			dir   = "in";
 		};
 	};
 
@@ -152,6 +153,7 @@
 		cpu-dai = <&sai1>;
 		asrc-controller = <&asrc>;
 		audio-codec = <&mqs>;
+		status = "disabled";
 	};
 };
 
@@ -197,7 +199,7 @@
 	pinctrl-0 = <&pinctrl_mqs>;
 	clocks = <&clks IMX6UL_CLK_SAI1>;
 	clock-names = "mclk";
-	status = "okay";
+	status = "disabled";
 };
 
 &fec1 {
@@ -398,7 +400,6 @@
 		pinctrl_hog_1: hoggrp-1 {
 			fsl,pins = <
 				MX6UL_PAD_UART1_RTS_B__GPIO1_IO19	0x17059		/* SD1 CD */
-				MX6UL_PAD_GPIO1_IO08__GPIO1_IO08	0x03029		/* PCA9555 interrupt */
 			>;
 		};
 
@@ -706,6 +707,13 @@
 			fsl,pins = <
 				MX6UL_PAD_JTAG_TDI__MQS_LEFT         0x11088
 				MX6UL_PAD_JTAG_TDO__MQS_RIGHT        0x11088
+			>;
+		};
+
+		pinctrl_external_gpio: extgpiogrp {
+			fsl,pins = <
+				MX6UL_PAD_JTAG_TDI__GPIO1_IO13		0x79
+				MX6UL_PAD_JTAG_TDO__GPIO1_IO12		0x79
 			>;
 		};
 
