@@ -17,14 +17,13 @@
 	gpio-edm {
 		compatible = "gpio-edm";
 /* custom GPIO may be from GPIO expander on CPU module */
-#ifdef PICO_EXT_GPIO_IOMUX_HOBBIT
+#ifdef PICO_EXT_GPIO_IOMUX_PI
 		pinctrl-names = "default";
-		pinctrl-0 = <PICO_EXT_GPIO_IOMUX_HOBBIT>;
+		pinctrl-0 = <PICO_EXT_GPIO_IOMUX_PI>;
 #else
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_gpio>;
 #endif
-
 		gpio_p24 {
 			label = "GPIO_P24";
 			gpios = <&PICO_EXT_GPIO_P24 1>;
@@ -66,11 +65,13 @@
 			gpios = <&PICO_EXT_GPIO_P34 GPIO_ACTIVE_HIGH>;
 			dir   = "in";
 		};
+#ifdef PICO_EXT_GPIO_P42
 		gpio_p42 {
 			label = "GPIO_P42";
 			gpios = <&PICO_EXT_GPIO_P42 GPIO_ACTIVE_HIGH>;
 			dir   = "out";
 		};
+#endif
 /*
 		gpio_p44 {
 			label = "GPIO_P44";
@@ -95,12 +96,16 @@
 			"MIC_IN", "Mic Jack",
 			"Mic Jack", "Mic Bias",
 			"Headphone Jack", "HP_OUT";
+#if defined(PICO_AUD_MUX_INT) && defined(PICO_AUD_MUX_EXT)
 		mux-int-port = <PICO_AUD_MUX_INT>;
 		mux-ext-port = <PICO_AUD_MUX_EXT>;
+#else
+		fsl,no-audmux = "true";
+#endif
 	};
 };
 
-&i2c1 {
+&PICO_PI_I2C1 {
 	status = "okay";
 
 	codec: sgtl5000@0a {
@@ -112,7 +117,7 @@
 	};
 };
 
-&i2c2 {
+&PICO_PI_I2C2 {
 	status = "okay";
 
 #ifdef PICO_EXT_MIPI_CSI_OV5640_IOMUX
@@ -136,7 +141,7 @@
 #endif
 };
 
-&i2c4 {
+&PICO_PI_I2C4 {
 	polytouch: edt-ft5x06@38 {
 		compatible = "edt,edt-ft5x06";
 		reg = <0x38>;
@@ -157,7 +162,7 @@
 	status = "okay";
 };
 
-&ecspi2 {
+&PICO_PI_ECSPI4 {
 	status = "okay";
 
 	spidev@0 {
