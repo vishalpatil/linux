@@ -40,7 +40,18 @@
 #define PICO_HOBBIT_I2C2 i2c1
 #define PICO_HOBBIT_I2C3 i2c3
 
+#define PICO_PI_I2C1 i2c2
+#define PICO_PI_I2C2 i2c1
+#define PICO_PI_I2C4 i2c3
+#define PICO_PI_ECSPI4 ecspi3
+
+#define PICO_EXT_GPIO_IOMUX_HOBBIT &pinctrl_ext_gpio_hobbit
+#define PICO_EXT_GPIO_IOMUX_PI &pinctrl_ext_gpio_pi
+
 #define PICO_HOBBIT_CSPI2 ecspi3
+
+#define can1 flexcan1
+#define can2 flexcan2
 
 / {
 	memory {
@@ -571,6 +582,16 @@
 				MX6UL_PAD_UART1_CTS_B__GPIO1_IO18 0x79		/* GPIO_P34 */
 			>;
 		};
+
+                pinctrl_ext_gpio_pi: ext-gpio-grp-pi {
+                        fsl,pins = <
+                                MX6UL_PAD_CSI_VSYNC__GPIO4_IO19 0x79            /* GPIO_P24 */
+                                MX6UL_PAD_CSI_DATA00__GPIO4_IO21 0x79           /* GPIO_P26 */
+                                MX6UL_PAD_CSI_DATA01__GPIO4_IO22 0x79           /* GPIO_P28 */
+                                MX6UL_PAD_CSI_DATA02__GPIO4_IO23 0x79           /* GPIO_P30 */
+                                MX6UL_PAD_UART1_CTS_B__GPIO1_IO18 0x79          /* GPIO_P34 */
+                        >;
+                };
 
 		pinctrl_ext_gpioled_hobbit: gpioledgrp {
 			fsl,pins = <
