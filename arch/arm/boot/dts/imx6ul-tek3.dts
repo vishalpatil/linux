@@ -354,6 +354,12 @@
 			};
 		};
 	};
+
+	at24@57 {
+		compatible = "at24,24c02";
+		pagesize = <8>;
+		reg = <0x57>;
+	};
 };
 
 &i2c2 {
@@ -376,12 +382,6 @@
 	ds1337: rtc@68 {
 		compatible = "mxim,ds1337";
 		reg = <0x68>;
-	};
-
-	at24@57 {
-		compatible = "at24,24c02";
-		pagesize = <8>;
-		reg = <0x57>;
 	};
 };
 
