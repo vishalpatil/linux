@@ -370,11 +370,13 @@
 
 	pca9555: pca9555@23 {
 		compatible = "nxp,pca9555";
-//		interrupt-parent = <&gpio1>;
-//		interrupts = <7 0x2>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_pca9555_interrupt>;
+		interrupt-parent = <&gpio1>;
+		interrupts = <8 IRQ_TYPE_EDGE_FALLING>;
 		gpio-controller;
 		#gpio-cells = <2>;
-//		interrupt-controller;
+		interrupt-controller;
 		#interrupt-cells = <2>;
 		reg = <0x23>;
 	};
@@ -392,7 +394,6 @@
 		pinctrl_hog_1: hoggrp-1 {
 			fsl,pins = <
 				MX6UL_PAD_UART1_RTS_B__GPIO1_IO19	0x17059		/* SD1 CD */
-				MX6UL_PAD_GPIO1_IO08__GPIO1_IO08	0x03029 /* PCA9555 interrupt */
 				MX6UL_PAD_GPIO1_IO04__GPIO1_IO04	0x1b0b9		/* IO expansion board output- GPIO_P233 - 1   */
 				MX6UL_PAD_GPIO1_IO05__GPIO1_IO05	0x1b0b9		/* IO expansion board output- GPIO_P235 - 41  */
 				MX6UL_PAD_NAND_DQS__GPIO4_IO16		0x80000000	/* IO expansion board input - GPIO_P237 - 42  */
@@ -688,6 +689,12 @@
 		pinctrl_wdog: wdoggrp {
 			fsl,pins = <
 				MX6UL_PAD_LCD_RESET__WDOG1_WDOG_ANY    0x30b0
+			>;
+		};
+
+		pinctrl_pca9555_interrupt: pca9555_interrupt {
+			fsl,pins = <
+				MX6UL_PAD_GPIO1_IO08__GPIO1_IO08	0x17059
 			>;
 		};
 	};
