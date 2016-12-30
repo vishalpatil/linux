@@ -71,7 +71,7 @@
 			regulator-min-microvolt = <5000000>;
 			regulator-max-microvolt = <5000000>;
 			regulator-name = "wlreg_on";
-			gpio = <&gpio4 8 0>;
+			gpio = <&gpio4 17 0>;
 			startup-delay-us = <100>;
 			enable-active-high;
 		};
@@ -197,12 +197,6 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart5>;
 	fsl,uart-has-rtscts;
-	status = "okay";
-};
-
-&uart6 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_uart6>;
 	status = "okay";
 };
 
@@ -340,13 +334,6 @@
 			>;
 		};
 
-		pinctrl_uart6: uart6grp {
-			fsl,pins = <
-				MX6UL_PAD_CSI_MCLK__UART6_DCE_TX	0x1b0b1
-				MX6UL_PAD_CSI_PIXCLK__UART6_DCE_RX	0x1b0b1
-			>;
-		};
-
 		pinctrl_usdhc1: usdhc1grp {
 			fsl,pins = <
 				MX6UL_PAD_SD1_CMD__USDHC1_CMD     0x17059
@@ -392,7 +379,7 @@
 		pinctrl_wifi_ctrl: wifi_ctrlgrp {
 			fsl,pins = <
 				MX6UL_PAD_CSI_MCLK__GPIO4_IO17 0x03029 /* wifi-reg-on */
-				MX6UL_PAD_JTAG_TCK__GPIO1_IO14 0x79    /* wifi-host-wake */
+				MX6UL_PAD_JTAG_TCK__GPIO1_IO14 0x17059 /* wifi-host-wake */
 			>;
 		};
 
@@ -400,7 +387,7 @@
 			fsl,pins = <
 				MX6UL_PAD_JTAG_TRST_B__GPIO1_IO15   0x79   /* bluetooth-reg-on */
 				MX6UL_PAD_JTAG_TDO__GPIO1_IO12      0x79   /* bluetooth-wake */
-				MX6UL_PAD_JTAG_TCK__GPIO1_IO14      0x79   /* bluetooth-host-wake */
+				MX6UL_PAD_CSI_PIXCLK__GPIO4_IO18    0x79   /* bluetooth-host-wake */
 			>;
 		};
 
