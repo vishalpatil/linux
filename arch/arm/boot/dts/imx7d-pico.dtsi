@@ -37,13 +37,12 @@
 #define PICO_EXT_GPIO_EXP3 pca9554 3
 #define PICO_EXT_GPIO_EXP4 pca9554 4
 #define PICO_EXT_GPIO_EXP5 pca9554 5
-#define PICO_EXT_GPIO_EXP6 gpio5 30
+#define PICO_EXT_GPIO_EXP6 gpio2 12
 #define PICO_EXT_GPIO_EXP7 gpio5 27
 
 #define PICO_HOBBIT_I2C1 i2c1
 #define PICO_HOBBIT_I2C2 i2c4
-#define PICO_HOBBIT_I2C3 i2c3
-#define PICO_HOBBIT_I2C4 i2c2
+#define PICO_HOBBIT_I2C3 i2c2
 #define PICO_HOBBIT_CSPI2 ecspi2
 
 #define PICO_PI_I2C1 i2c1
@@ -51,12 +50,24 @@
 #define PICO_PI_I2C4 i2c4
 #define PICO_PI_ECSPI4 ecspi2
 
+#define PICO_NYMPH_I2C1 i2c1
+#define PICO_NYMPH_I2C2 i2c4
+#define PICO_NYMPH_I2C3 i2c2
+#define PICO_NYMPH_CSPI2 ecspi2
+
+#define PICO_DWARF_I2C1 i2c1
+#define PICO_DWARF_I2C2 i2c4
+#define PICO_DWARF_I2C3 i2c2
+#define PICO_DWARF_CSPI2 ecspi2
+
 #define PICO_EXT_GPIO_IOMUX_HOBBIT &pinctrl_ext_gpio_hobbit
 #define PICO_EXT_GPIO_IOMUX_PI &pinctrl_ext_gpio_pi
 
-
 /* FT5606 Touch */
 #define PICO_EXT_FT5X06_IOMUX_HOBBIT &pinctrl_ext_gpio_ft5606_touch_irq_hobbit &pinctrl_ext_gpio_ft5606_touch_reset_hobiit
+#define PICO_EXT_FT5X06_IOMUX_PI &pinctrl_ext_gpio_ft5606_touch_irq_pi &pinctrl_ext_gpio_ft5606_touch_reset_pi
+#define PICO_EXT_FT5X06_IOMUX_DWARF &pinctrl_ext_gpio_ft5606_touch_irq_dwarf
+
 #define PICO_EXT_GPIO_P32 gpio2 4
 #define PICO_EXT_GPIO_P25 gpio2 6
 
@@ -586,12 +597,21 @@
 			fsl,pins = <
 				MX7D_PAD_EPDC_DATA02__GPIO2_IO2		0x15 /* P28 */
 				MX7D_PAD_EPDC_DATA03__GPIO2_IO3		0x15 /* P30 */
-				MX7D_PAD_EPDC_DATA04__GPIO2_IO4		0x15 /* P32 */
 				MX7D_PAD_EPDC_DATA05__GPIO2_IO5		0x15 /* P34 */
 				MX7D_PAD_EPDC_DATA06__GPIO2_IO6		0x15 /* P25 */
 				MX7D_PAD_EPDC_DATA07__GPIO2_IO7		0x15 /* P48 */
-				MX7D_PAD_EPDC_DATA12__GPIO2_IO12	0x15 /* P42 */
-				MX7D_PAD_EPDC_DATA13__GPIO2_IO13	0x15 /* P44 */
+			>;
+		};
+
+		pinctrl_ext_gpio_ft5606_touch_irq_pi: ext-gpio-ft5606-touch-irq-pi {
+			fsl,pins = <
+				MX7D_PAD_EPDC_DATA13__GPIO2_IO13	0x59 /* capacitive touch irq for pi baseboard */
+			>;
+		};
+
+		pinctrl_ext_gpio_ft5606_touch_reset_pi: ext-gpio-ft5606-touch-reset-pi {
+			fsl,pins = <
+				MX7D_PAD_EPDC_DATA04__GPIO2_IO4		0x59 /* capacitive touch reset for pi baseboard */
 			>;
 		};
 
@@ -604,6 +624,12 @@
                 pinctrl_ext_gpio_ft5606_touch_reset_hobiit: ext-gpio-ft5606-touch-reset-hobbit {
                         fsl,pins = <
                                 MX7D_PAD_EPDC_DATA04__GPIO2_IO4         0x59 /* capacitive touch reset for hobbit baseboard */
+                        >;
+                };
+
+                pinctrl_ext_gpio_ft5606_touch_irq_dwarf: ext-gpio-ft5606-touch-irq-dwarf {
+                        fsl,pins = <
+                                MX7D_PAD_EPDC_DATA12__GPIO2_IO12         0x59 /* capacitive touch irq for dwarf baseboard */
                         >;
                 };
 
