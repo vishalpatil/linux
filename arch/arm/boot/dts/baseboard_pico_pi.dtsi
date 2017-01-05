@@ -53,13 +53,6 @@
 			gpios = <&PICO_EXT_GPIO_P30 GPIO_ACTIVE_HIGH>;
 			dir   = "in";
 		};
-/*
-		gpio_p32 {
-			label = "GPIO_P32";
-			gpios = <&PICO_EXT_GPIO_P32 GPIO_ACTIVE_HIGH>;
-			dir   = "out";
-		};
-*/
 		gpio_p34 {
 			label = "GPIO_P34";
 			gpios = <&PICO_EXT_GPIO_P34 GPIO_ACTIVE_HIGH>;
@@ -72,13 +65,6 @@
 			dir   = "out";
 		};
 #endif
-/*
-		gpio_p44 {
-			label = "GPIO_P44";
-			gpios = <&PICO_EXT_GPIO_P44 0>;
-			dir   = "out";
-		};
-*/
 		gpio_p48 {
 			label = "GPIO_P48";
 			gpios = <&PICO_EXT_GPIO_P48 GPIO_ACTIVE_HIGH>;
@@ -145,13 +131,16 @@
 	polytouch: edt-ft5x06@38 {
 		compatible = "edt,edt-ft5x06";
 		reg = <0x38>;
-		interrupt-parent = <&GPIO_BANK(PICO_EXT_GPIO_P44)>;
+#ifdef PICO_EXT_FT5X06_IOMUX_PI
+		pinctrl-names = "default";
+		pinctrl-0 = <PICO_EXT_FT5X06_IOMUX_PI>; /* Touch IRQ and Touch Reset */
+#endif
+		interrupt-parent = <&GPIO_BANK(PICO_EXT_GPIO_P44)>; /* GPIO_P44 */
 		interrupts = <GPIO_NO(PICO_EXT_GPIO_P44) 0>;
-		reset-gpios = <&PICO_EXT_GPIO_P32 GPIO_ACTIVE_LOW>;
+		reset-gpios = <&PICO_EXT_GPIO_P32 GPIO_ACTIVE_LOW>; /* GPIO_P32 */
 		touchscreen-size-x = <800>;
 		touchscreen-size-y = <480>;
 	};
-	
 };
 
 &can1 {
