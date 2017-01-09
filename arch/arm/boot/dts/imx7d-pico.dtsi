@@ -63,6 +63,9 @@
 #define PICO_EXT_GPIO_IOMUX_HOBBIT &pinctrl_ext_gpio_hobbit
 #define PICO_EXT_GPIO_IOMUX_PI &pinctrl_ext_gpio_pi
 
+/* GPIO LED */
+#define PICO_EXT_GPIOLED_IOMUX_HOBBIT &pinctrl_ext_gpioled_hobbit
+
 /* FT5606 Touch */
 #define PICO_EXT_FT5X06_IOMUX_HOBBIT &pinctrl_ext_gpio_ft5606_touch_irq_hobbit &pinctrl_ext_gpio_ft5606_touch_reset_hobiit
 #define PICO_EXT_FT5X06_IOMUX_PI &pinctrl_ext_gpio_ft5606_touch_irq_pi &pinctrl_ext_gpio_ft5606_touch_reset_pi
@@ -640,6 +643,12 @@
                                 MX7D_PAD_GPIO1_IO03__CCM_CLKO2          0x000b0         /* ov5640 mclk */
                         >;
                 };
+
+		pinctrl_ext_gpioled_hobbit: gpioledgrp {
+			fsl,pins = <
+				MX7D_PAD_EPDC_DATA13__GPIO2_IO13	0x0b0b0
+			>;
+		};
 	};
 };
 
