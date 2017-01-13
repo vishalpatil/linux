@@ -145,9 +145,15 @@ static void __init imx6ul_init_machine(void)
 		pr_warn("failed to initialize soc device\n");
 
 	of_platform_populate(NULL, of_default_bus_match_table, NULL, NULL);
+#ifdef CONFIG_FEC
 	imx6ul_enet_init();
+#endif
+#ifdef CONFIG_REGULATOR_ANATOP
 	imx_anatop_init();
+#endif
+#ifdef CONFIG_CPU_PM
 	imx6ul_pm_init();
+#endif
 }
 
 static void __init imx6ul_init_irq(void)
