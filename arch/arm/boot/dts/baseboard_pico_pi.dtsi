@@ -30,13 +30,6 @@
 			dir   = "out";
 		};
 
-		/* LED */
-		gpio_p25 {
-			label = "GPIO_P25";
-			gpios = <&PICO_EXT_GPIO_P25 1>;
-			dir   = "out";
-		};
-
 		/* Mikrobus */
 		gpio_p26 {
 			label = "GPIO_P26";
@@ -88,6 +81,18 @@
 #else
 		fsl,no-audmux = "true";
 #endif
+	};
+
+	gpio-leds {
+		compatible = "gpio-leds";
+#ifdef PICO_EXT_GPIOLED_IOMUX_PI
+			pinctrl-names = "default";
+			pinctrl-0 = <PICO_EXT_GPIOLED_IOMUX_PI>;
+#endif
+		pi-led {
+			label = "pi-led";
+			gpios = <&PICO_EXT_GPIO_P25 GPIO_ACTIVE_HIGH>; /* GPIO_P25 */
+		};
 	};
 };
 
@@ -154,10 +159,10 @@
 &PICO_PI_ECSPI4 {
 	status = "okay";
 
-	spidev@0 {
+	spidev@1 {
 		compatible = "rohm,dh2228fv";
 		spi-max-frequency = <60000000>;
-		reg = <0>;
+		reg = <1>;
 	};
 };
 
