@@ -25,24 +25,30 @@
 
 #define PICO_EXT_GPIO_IOMUX_HOBBIT &pinctrl_ext_gpio_hobbit
 
+/* GPIO LED */
 #define PICO_EXT_GPIOLED_IOMUX_HOBBIT &pinctrl_ext_gpioled_hobbit
+#define PICO_EXT_GPIOLED_IOMUX_PI &pinctrl_ext_gpioled_pi
 
 /* ADS7846 Touch */
 #define PICO_EXT_ADS7846_IOMUX_HOBBIT &pinctrl_ext_gpio_ads7846_touch_irq_hobbit
 
 /* FT5606 Touch */
 #define PICO_EXT_FT5X06_IOMUX_HOBBIT &pinctrl_ext_gpio_ft5606_touch_irq_hobbit &pinctrl_ext_gpio_ft5606_touch_reset_hobbit
+#define PICO_EXT_FT5X06_IOMUX_PI &pinctrl_ext_gpio_ft5606_touch_irq_pi &pinctrl_ext_gpio_ft5606_touch_reset_pi
 
 #define PICO_AUD_CLK_SRC sys_mclk 1
 #define PICO_AUD_I2S_CHANNEL sai1
 
-#define PICO_HOBBIT_I2C1 i2c2
+/*Hobbit Baseboard Contrast Define*/
+#define PICO_HOBBIT_I2C1 i2c3
 #define PICO_HOBBIT_I2C2 i2c1
-#define PICO_HOBBIT_I2C3 i2c3
+#define PICO_HOBBIT_I2C3 i2c2
+#define PICO_HOBBIT_CSPI2 ecspi3
 
+/* Pi   Baseboard Contrast Define*/
 #define PICO_PI_I2C1 i2c2
-#define PICO_PI_I2C2 i2c1
-#define PICO_PI_I2C4 i2c3
+#define PICO_PI_I2C2 i2c3
+#define PICO_PI_I2C4 i2c1
 #define PICO_PI_ECSPI4 ecspi3
 
 #define PICO_EXT_GPIO_IOMUX_HOBBIT &pinctrl_ext_gpio_hobbit
@@ -593,9 +599,15 @@
                         >;
                 };
 
-		pinctrl_ext_gpioled_hobbit: gpioledgrp {
+		pinctrl_ext_gpioled_hobbit: gpioledgrp_hobbit {
 			fsl,pins = <
 				MX6UL_PAD_UART4_RX_DATA__GPIO1_IO29 0x79	/* GPIO_P44 */
+			>;
+		};
+
+		pinctrl_ext_gpioled_pi: gpioledgrp_pi {
+			fsl,pins = <
+				MX6UL_PAD_CSI_HSYNC__GPIO4_IO20 0x79            /* GPIO_P25 */
 			>;
 		};
 
@@ -612,6 +624,18 @@
 		};
 
 		pinctrl_ext_gpio_ft5606_touch_reset_hobbit: ext-gpio-ft5606-touch-reset-hobbit {
+			fsl,pins = <
+				MX6UL_PAD_CSI_DATA03__GPIO4_IO24 0x79 /* GPIO_P32, touch reset */
+			>;
+		};
+
+		pinctrl_ext_gpio_ft5606_touch_irq_pi: ext-gpio-ft5606-touch-irq-pi {
+			fsl,pins = <
+				MX6UL_PAD_UART4_RX_DATA__GPIO1_IO29 0x79 /* GPIO_P25, touch irq */
+			>;
+		};
+
+		pinctrl_ext_gpio_ft5606_touch_reset_pi: ext-gpio-ft5606-touch-reset-pi {
 			fsl,pins = <
 				MX6UL_PAD_CSI_DATA03__GPIO4_IO24 0x79 /* GPIO_P32, touch reset */
 			>;
