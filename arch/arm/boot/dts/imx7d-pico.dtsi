@@ -40,31 +40,36 @@
 #define PICO_EXT_GPIO_EXP6 gpio2 12
 #define PICO_EXT_GPIO_EXP7 gpio5 27
 
+/*Hobbit Baseboard Contrast Define*/
 #define PICO_HOBBIT_I2C1 i2c1
 #define PICO_HOBBIT_I2C2 i2c4
 #define PICO_HOBBIT_I2C3 i2c2
-#define PICO_HOBBIT_CSPI2 ecspi2
+#define PICO_HOBBIT_CSPI2 ecspi3
 
+/* Pi   Baseboard Contrast Define*/
 #define PICO_PI_I2C1 i2c1
 #define PICO_PI_I2C2 i2c2
 #define PICO_PI_I2C4 i2c4
-#define PICO_PI_ECSPI4 ecspi2
+#define PICO_PI_ECSPI4 ecspi3
 
+/*Nymph Baseboard Contrast Define*/
 #define PICO_NYMPH_I2C1 i2c1
 #define PICO_NYMPH_I2C2 i2c4
 #define PICO_NYMPH_I2C3 i2c2
-#define PICO_NYMPH_CSPI2 ecspi2
+#define PICO_NYMPH_CSPI2 ecspi3
 
+/*Dwarf Baseboard Contrast Define*/
 #define PICO_DWARF_I2C1 i2c1
 #define PICO_DWARF_I2C2 i2c4
 #define PICO_DWARF_I2C3 i2c2
-#define PICO_DWARF_CSPI2 ecspi2
+#define PICO_DWARF_CSPI2 ecspi3
 
 #define PICO_EXT_GPIO_IOMUX_HOBBIT &pinctrl_ext_gpio_hobbit
 #define PICO_EXT_GPIO_IOMUX_PI &pinctrl_ext_gpio_pi
 
 /* GPIO LED */
 #define PICO_EXT_GPIOLED_IOMUX_HOBBIT &pinctrl_ext_gpioled_hobbit
+#define PICO_EXT_GPIOLED_IOMUX_PI &pinctrl_ext_gpioled_pi
 
 /* FT5606 Touch */
 #define PICO_EXT_FT5X06_IOMUX_HOBBIT &pinctrl_ext_gpio_ft5606_touch_irq_hobbit &pinctrl_ext_gpio_ft5606_touch_reset_hobiit
@@ -646,6 +651,12 @@
 				MX7D_PAD_EPDC_DATA13__GPIO2_IO13	0x0b0b0
 			>;
 		};
+
+		pinctrl_ext_gpioled_pi: gpioledgrp_pi {
+			fsl,pins = <
+				MX7D_PAD_EPDC_DATA06__GPIO2_IO6         0x0b0b0
+			>;
+		};
 	};
 };
 
@@ -930,18 +941,11 @@
 };
 
 &ecspi3 {
-	fsl,spi-num-chipselects = <1>;
+	fsl,spi-num-chipselects = <2>;
 	cs-gpios = <&gpio4 11 GPIO_ACTIVE_LOW>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_ecspi3 &pinctrl_ecspi3_cs>;
 	status = "okay";
-
-	spidev@0 {
-		compatible = "rohm,dh2228fv";
-		spi-max-frequency = <60000000>;
-		reg = <0>;
-	};
-
 };
 
 &can1 {
