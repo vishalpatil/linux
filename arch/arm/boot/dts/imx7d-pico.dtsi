@@ -80,7 +80,7 @@
 #define PICO_EXT_GPIO_P25 gpio2 6
 
 /* OV5640 */
-#define PICO_EXT_MIPI_CSI_OV5640_IOMUX &pinctrl_ext_ov5640
+#define PICO_EXT_MIPI_CSI_OV5640_IOMUX &pinctrl_mipi_csi
 #define PICO_EXT_GPIO_P65 gpio1 5
 #define PICO_EXT_GPIO_P67 gpio1 4
 
@@ -620,31 +620,23 @@
 			>;
 		};
 
-                pinctrl_ext_gpio_ft5606_touch_irq_hobbit: ext-gpio-ft5606-touch-irq-hobbit {
-                        fsl,pins = <
-                                MX7D_PAD_EPDC_DATA06__GPIO2_IO6         0x59 /* capacitive touch irq for hobbit baseboard */
-                        >;
-                };
+		pinctrl_ext_gpio_ft5606_touch_irq_hobbit: ext-gpio-ft5606-touch-irq-hobbit {
+			fsl,pins = <
+				MX7D_PAD_EPDC_DATA06__GPIO2_IO6         0x59 /* capacitive touch irq for hobbit baseboard */
+			>;
+		};
 
-                pinctrl_ext_gpio_ft5606_touch_reset_hobiit: ext-gpio-ft5606-touch-reset-hobbit {
-                        fsl,pins = <
-                                MX7D_PAD_EPDC_DATA04__GPIO2_IO4         0x59 /* capacitive touch reset for hobbit baseboard */
-                        >;
-                };
+		pinctrl_ext_gpio_ft5606_touch_reset_hobiit: ext-gpio-ft5606-touch-reset-hobbit {
+			fsl,pins = <
+				MX7D_PAD_EPDC_DATA04__GPIO2_IO4         0x59 /* capacitive touch reset for hobbit baseboard */
+			>;
+		};
 
-                pinctrl_ext_gpio_ft5606_touch_irq_dwarf: ext-gpio-ft5606-touch-irq-dwarf {
-                        fsl,pins = <
-                                MX7D_PAD_EPDC_DATA12__GPIO2_IO12         0x59 /* capacitive touch irq for dwarf baseboard */
-                        >;
-                };
-
-                pinctrl_ext_ov5640: ov5640grp {
-                        fsl,pins = <
-                                MX7D_PAD_GPIO1_IO04__GPIO1_IO4          0x0b0b0         /* ov5640 mipi powerdown */
-                                MX7D_PAD_GPIO1_IO05__GPIO1_IO5          0x0b0b0         /* ov5640 mipi reset */
-                                MX7D_PAD_GPIO1_IO03__CCM_CLKO2          0x000b0         /* ov5640 mclk */
-                        >;
-                };
+		pinctrl_ext_gpio_ft5606_touch_irq_dwarf: ext-gpio-ft5606-touch-irq-dwarf {
+			fsl,pins = <
+				MX7D_PAD_EPDC_DATA13__GPIO2_IO13         0x59 /* capacitive touch irq for dwarf baseboard */
+			>;
+		};
 
 		pinctrl_ext_gpioled_hobbit: gpioledgrp {
 			fsl,pins = <
