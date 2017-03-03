@@ -78,7 +78,8 @@ static struct clk_onecell_data clk_data;
 static int const clks_init_on[] __initconst = {
 	IMX6UL_CLK_AIPSTZ1, IMX6UL_CLK_AIPSTZ2, IMX6UL_CLK_AIPSTZ3,
 	IMX6UL_CLK_AXI, IMX6UL_CLK_ARM, IMX6UL_CLK_ROM,
-	IMX6UL_CLK_MMDC_P0_FAST, IMX6UL_CLK_MMDC_P0_IPG,
+	IMX6UL_CLK_MMDC_P0_FAST, IMX6UL_CLK_MMDC_P0_IPG, IMX6UL_CLK_ENET_REF, IMX6UL_CLK_ENET2_REF, 
+	IMX6UL_CLK_CKO1, IMX6UL_CLK_CKO2, IMX6UL_CLK_CKO,
 };
 
 static struct clk_div_table clk_enet_ref_table[] = {
@@ -103,6 +104,26 @@ static struct clk_div_table video_div_table[] = {
 	{ .val = 3, .div = 4, },
 	{ }
 };
+
+static const char *cko1_sels[]	= { 
+    "dummy", "dummy", "dummy", "dummy",
+    "dummy", "axi", "enfc", "dummy",
+    "dummy", "dummy", "lcdif_pix", "ahb",
+    "ipg", "ipg_per", "ckil", "pll4_audio_div",
+};
+
+static const char *cko2_sels[] = {
+/*000*/	"dummy", "dummy", "dummy", "usdhc1",
+/*001*/	"dummy", "dummy", "ecspi_root", "dummy",
+/*010*/	"bch_root", "dummy", "arm_root", "csi_core",
+/*011*/	"dummy", "dummy", "osc", "dummy",
+/*100*/	"dummy", "usdhc2", "sai1", "sai2",
+/*101*/	"sai3", "dummy", "dummy", "can_root",
+/*110*/	"dummy", "dummy", "dummy", "dummy",
+/*111*/	"uart_serial", "spdif", "dummy", "dummy",
+};
+
+static const char *cko_sels[] = { "cko1", "cko2", };
 
 static u32 share_count_asrc;
 static u32 share_count_audio;
@@ -316,6 +337,9 @@ static void __init imx6ul_clocks_init(struct device_node *ccm_node)
 	clks[IMX6UL_CLK_AXI_PODF]	= imx_clk_busy_divider("axi_podf",  "axi_sel",	base +  0x14, 16, 3,  base + 0x48, 0);
 	clks[IMX6UL_CLK_AHB]		= imx_clk_busy_divider("ahb",	    "periph",	base +  0x14, 10, 3,  base + 0x48, 1);
 
+	clks[IMX6UL_CLK_CKO1_PODF]        = imx_clk_divider("cko1_podf",        "cko1_sel",          base + 0x60, 4,  3);
+	clks[IMX6UL_CLK_CKO2_PODF]        = imx_clk_divider("cko2_podf",        "cko2_sel",          base + 0x60, 21, 3);
+
 	/* CCGR0 */
 	clks[IMX6UL_CLK_AIPSTZ1]	= imx_clk_gate2("aips_tz1", 	"ahb",		base + 0x68,	0);
 	clks[IMX6UL_CLK_AIPSTZ2]	= imx_clk_gate2("aips_tz2", 	"ahb",		base + 0x68,	2);
@@ -339,6 +363,15 @@ static void __init imx6ul_clocks_init(struct device_node *ccm_node)
 	clks[IMX6UL_CLK_GPT2_SERIAL]	= imx_clk_gate2("gpt_serial",	"perclk",	base + 0x68,	26);
 	clks[IMX6UL_CLK_UART2_IPG]	= imx_clk_gate2("uart2_ipg",	"ipg",		base + 0x68,	28);
 	clks[IMX6UL_CLK_UART2_SERIAL]	= imx_clk_gate2("uart2_serial",	"uart_podf",	base + 0x68,	28);
+    clks[IMX6UL_CLK_CKO1_SEL]     = imx_clk_mux("cko1_sel",         base + 0x60, 0,  4, cko1_sels,         ARRAY_SIZE(cko1_sels));
+    clks[IMX6UL_CLK_CKO2_SEL]     = imx_clk_mux("cko2_sel",         base + 0x60, 16, 5, cko2_sels,         ARRAY_SIZE(cko2_sels));
+    clks[IMX6UL_CLK_CKO]          = imx_clk_mux("cko",             base + 0x60, 8, 1,  cko_sels,          ARRAY_SIZE(cko_sels));
+
+    clks[IMX6UL_CLK_CKO1]         = imx_clk_gate("cko1",           "cko1_podf",         base + 0x60, 7);
+    clks[IMX6UL_CLK_CKO2]         = imx_clk_gate("cko2",           "cko2_podf",         base + 0x60, 24);
+
+    imx_clk_set_parent(clks[IMX6UL_CLK_CKO2_SEL], clks[IMX6UL_CLK_OSC]);
+    imx_clk_set_parent(clks[IMX6UL_CLK_CKO], clks[IMX6UL_CLK_CKO2]);
 	if (cpu_is_imx6ul())
 		clks[IMX6UL_CLK_AIPSTZ3]	= imx_clk_gate2("aips_tz3",	"ahb",		base + 0x68,	30);
 
@@ -440,6 +473,7 @@ static void __init imx6ul_clocks_init(struct device_node *ccm_node)
 	clks[IMX6UL_CLK_PWM5]		= imx_clk_gate2("pwm5",		"perclk",	 base + 0x80,	26);
 	clks[IMX6UL_CLK_PWM6]		= imx_clk_gate2("pwm6",		"perclk",	 base +	0x80,	28);
 	clks[IMX6UL_CLK_PWM7]		= imx_clk_gate2("Pwm7",		"perclk",	 base + 0x80,	30);
+
 
 	/* mask handshake of mmdc */
 	writel_relaxed(BM_CCM_CCDR_MMDC_CH0_MASK, base + CCDR);
