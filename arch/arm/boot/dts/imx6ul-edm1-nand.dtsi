@@ -61,13 +61,13 @@
         status = "okay";
     };
 
-	backlight {
-		compatible = "pwm-backlight";
-		pwms = <&pwm5 0 5000000>;
-		brightness-levels = <0 4 8 16 32 64 128 255>;
-		default-brightness-level = <6>;
-		status = "okay";
-	};
+    backlight_lvds {
+        compatible = "pwm-backlight";
+        pwms = <&pwm2 0 5000000>;
+        brightness-levels = <0 4 8 16 32 64 128 255>;
+        default-brightness-level = <6>;
+        status = "okay";
+    };
 
 	regulators {
 		compatible = "simple-bus";
@@ -144,6 +144,14 @@
 		type = <2>;     /* bluetooth */
         bt_rfkill_reset-gpios = <&pca9555 4 0>;
 	};
+
+    sound-spdif {
+        compatible = "fsl,imx-audio-spdif";
+        model = "imx-spdif";
+        spdif-controller = <&spdif>;
+        spdif-in;
+        spdif-out;
+    };
 
     gpio-edm {
         compatible = "gpio-edm";
@@ -534,6 +542,12 @@
             >;
         };
 
+        pinctrl_spdif: spdifgrp {
+            fsl,pins = <
+                MX6UL_PAD_GPIO1_IO08__SPDIF_OUT       0x1b0b0
+            >;
+        };
+
         pinctrl_ecspi1: ecspi1grp {
             fsl,pins = <
                 MX6UL_PAD_CSI_DATA05__GPIO4_IO26  0x10b0
@@ -556,6 +570,12 @@
                 MX6UL_PAD_UART2_CTS_B__FLEXCAN2_TX	0x1b020
 			>;
 		};
+
+        pinctrl_pwm2: pwm2grp {
+            fsl,pins = <
+                MX6UL_PAD_GPIO1_IO09__PWM2_OUT   0x110b0
+            >;
+        };
 
 		pinctrl_pwm5: pwm5grp {
 			fsl,pins = <
@@ -611,20 +631,20 @@
 		display-timings {
 			native-mode = <&timing0>;
 			timing0: timing0 {
-			clock-frequency = <33200000>;
-			hactive = <800>;
-			vactive = <480>;
-			hfront-porch = <210>;
-			hback-porch = <46>;
+            clock-frequency = <51000000>;
+            hactive = <1024>;
+            vactive = <600>;
+            hfront-porch = <90>;
+            hback-porch = <120>;
 			hsync-len = <1>;
-			vback-porch = <22>;
-			vfront-porch = <23>;
-			vsync-len = <1>;
+            vback-porch = <1>;
+            vfront-porch = <100>;
+            vsync-len = <33>;
 
-			hsync-active = <0>;
-			vsync-active = <0>;
+            hsync-active = <1>;
+            vsync-active = <1>;
 			de-active = <1>;
-			pixelclk-active = <0>;
+            pixelclk-active = <1>;
 			};
 		};
 	};
@@ -720,10 +740,28 @@
 	status = "okay";
 };
 
+&pwm2 {
+        pinctrl-names = "default";
+        pinctrl-0 = <&pinctrl_pwm2>;
+        clocks = <&clks IMX6UL_CLK_PWM2>,
+            <&clks IMX6UL_CLK_PWM2>;
+        status = "okay";
+};
+
 &pwm5 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pwm5>;
 	clocks = <&clks IMX6UL_CLK_PWM5>,
 		 <&clks IMX6UL_CLK_PWM5>;
 	status = "okay";
+};
+
+&spdif {
+        pinctrl-names = "default";
+        pinctrl-0 = <&pinctrl_spdif>;
+        assigned-clocks = <&clks IMX6UL_CLK_SPDIF_SEL>,
+                <&clks IMX6UL_CLK_SPDIF_PODF>;
+        assigned-clock-parents = <&clks IMX6UL_CLK_PLL4_AUDIO_DIV>;
+        assigned-clock-rates = <0>, <227368421>;
+        status = "okay";
 };
