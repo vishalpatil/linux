@@ -27,6 +27,9 @@
 #define EDM1_AUD_I2S_CHANNEL sai2
 #define EDM1_AUD_CLK_SRC clks IMX6UL_CLK_OSC
 
+/* ADS7846 Touch */
+#define EDM1_EXT_ADS7846_IOMUX_FAIRY &pinctrl_ext_gpio_ads7846_touch_irq_fairy
+
 #define can1 flexcan1
 #define can2 flexcan2
 
@@ -597,6 +600,12 @@
         pinctrl_pca9555_interrupt: pca9555_interrupt {
             fsl,pins = <
                 MX6UL_PAD_GPIO1_IO04__GPIO1_IO04 0x17059
+            >;
+        };
+
+        pinctrl_ext_gpio_ads7846_touch_irq_fairy: ext-gpio-ads7846-touch-irq-fairy {
+            fsl,pins = <
+                MX6UL_PAD_SNVS_TAMPER7__GPIO5_IO07     0x79 // GPIO1_04 EDM pin 263 touch irq
             >;
         };
 	};
