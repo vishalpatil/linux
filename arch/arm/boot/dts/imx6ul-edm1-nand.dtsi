@@ -203,12 +203,6 @@
             dir   = "out";
         };
 
-        gpio_expio14 {
-            label = "GPIO_EXPIO14";   /*GPIO_P261*/
-            gpios = <&EDM1_EXT_GPIO_P261 0>;
-            dir   = "in";
-        };
-
         gpio_expio16 {
             label = "GPIO_EXPIO16";
             gpios = <&gpio5 8 1>;
