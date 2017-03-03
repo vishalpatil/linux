@@ -474,35 +474,17 @@
 			>;
 		};
 
-		pinctrl_ecspi3: ecspi3grp {
-			fsl,pins = <
-				MX6UL_PAD_UART2_TX_DATA__GPIO1_IO20	0x10b0
-				MX6UL_PAD_UART2_RX_DATA__ECSPI3_SCLK	0x10b0
-				MX6UL_PAD_UART2_CTS_B__ECSPI3_MOSI	0x10b0
-				MX6UL_PAD_UART2_RTS_B__ECSPI3_MISO	0x10b0
-			>;
-		};
-
 		pinctrl_flexcan1: flexcan1grp {
 			fsl,pins = <
-				MX6UL_PAD_ENET1_RX_DATA0__FLEXCAN1_TX	0x1b020
-				MX6UL_PAD_ENET1_RX_DATA1__FLEXCAN1_RX	0x1b020
+                MX6UL_PAD_UART3_RTS_B__FLEXCAN1_RX	0x1b020
+                MX6UL_PAD_UART3_CTS_B__FLEXCAN1_TX	0x1b020
 			>;
 		};
 
 		pinctrl_flexcan2: flexcan2grp {
 			fsl,pins = <
-				MX6UL_PAD_ENET1_TX_DATA0__FLEXCAN2_RX	0x1b020
-				MX6UL_PAD_ENET1_RX_EN__FLEXCAN2_TX	0x1b020
-			>;
-		};
-
-		pinctrl_uart3: uart3grp {
-			fsl,pins = <
-				MX6UL_PAD_UART3_TX_DATA__UART3_DCE_TX	0x1b0b0
-				MX6UL_PAD_UART3_RX_DATA__UART3_DCE_RX	0x1b0b0
-				MX6UL_PAD_UART3_RTS_B__UART3_DCE_RTS	0x1b0b0
-				MX6UL_PAD_UART3_CTS_B__UART3_DCE_CTS	0x1b0b0
+                MX6UL_PAD_UART2_RTS_B__FLEXCAN2_RX	0x1b020
+                MX6UL_PAD_UART2_CTS_B__FLEXCAN2_TX	0x1b020
 			>;
 		};
 
@@ -667,14 +649,6 @@
 	status = "okay";
 };
 
-&ecspi3 {
-	fsl,spi-num-chipselects = <2>;
-	cs-gpios = <&gpio1 20 GPIO_ACTIVE_HIGH>;
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_ecspi3>;
-	status = "okay";
-};
-
 &flexcan1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_flexcan1>;
@@ -684,13 +658,6 @@
 &flexcan2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_flexcan2>;
-	status = "okay";
-};
-
-&uart3 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_uart3>;
-	fsl,uart-has-rtscts;
 	status = "okay";
 };
 
