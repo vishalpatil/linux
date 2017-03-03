@@ -58,8 +58,12 @@
 			"MIC_IN", "Mic Jack",
 			"Mic Jack", "Mic Bias",
 			"Headphone Jack", "HP_OUT";
+#if defined(EDM1_AUD_MUX_INT) && defined(EDM1_AUD_MUX_EXT)
 		mux-int-port = <EDM1_AUD_MUX_INT>;
 		mux-ext-port = <EDM1_AUD_MUX_EXT>;
+#else
+        fsl,no-audmux = "true";
+#endif
 	};
 };
 

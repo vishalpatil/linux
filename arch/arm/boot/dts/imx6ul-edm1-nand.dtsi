@@ -24,10 +24,8 @@
 #define EDM1_EXT_GPIO_P262 pca9555 15
 
 /* audio codec */
-#define EDM1_AUD_I2S_CHANNEL sai1
-#define EDM1_AUD_MUX_INT 1
-#define EDM1_AUD_MUX_EXT 3
-#define EDM1_AUD_CLK_SRC clks 201
+#define EDM1_AUD_I2S_CHANNEL sai2
+#define EDM1_AUD_CLK_SRC clks IMX6UL_CLK_OSC
 
 #define can1 flexcan1
 #define can2 flexcan2
@@ -142,20 +140,10 @@
 
 	bt_rfkill {
 		compatible = "net,rfkill-bcm43xx";
-		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_bt_ctrl>;
 		name = "bt_rfkill";
 		type = <2>;     /* bluetooth */
-		bt_rfkill_reset-gpios = <&gpio1 15 0>;
+        bt_rfkill_reset-gpios = <&pca9555 4 0>;
 	};
-
-	clocks {
-		sys_mclk: clock {
-                        compatible = "fixed-clock";
-			#clock-cells = <0>;
-                        clock-frequency = <24576000>;
-                };
-        };
 
     gpio-edm {
         compatible = "gpio-edm";
@@ -250,6 +238,12 @@
 	fsl,cpu_pdnscr_iso = <0x1>;
 	fsl,wdog-reset = <1>; /* watchdog select of reset source */
 	fsl,ldo-bypass = <0>; /* DCDC, ldo-enable */
+};
+
+&sai2 {
+    pinctrl-names = "default";
+    pinctrl-0 = <&pinctrl_sai2>;
+    status = "okay";
 };
 
 /* Debug Console */
@@ -384,6 +378,7 @@
         pinctrl_hog_1: hoggrp-1 {
             fsl,pins = <
                 MX6UL_PAD_GPIO1_IO03__GPIO1_IO03 	0x17059		/* SD1 CD */
+                MX6UL_PAD_JTAG_TMS__CCM_CLKO1		0x17088
             >;
         };
 
@@ -421,14 +416,7 @@
 
 		pinctrl_wifi_ctrl: wifi_ctrlgrp {
 			fsl,pins = <
-                MX6UL_PAD_JTAG_TCK__GPIO1_IO14 0x17059 /* wifi-host-wake */
-			>;
-		};
-
-		pinctrl_bt_ctrl: bt_ctrlgrp {
-			fsl,pins = <
-				MX6UL_PAD_JTAG_TRST_B__GPIO1_IO15   0x79   /* bluetooth-reg-on */
-				MX6UL_PAD_JTAG_TDO__GPIO1_IO12      0x79   /* bluetooth-wake */				
+                MX6UL_PAD_SNVS_TAMPER8__GPIO5_IO08 0x79 /* wifi-host-wake */
 			>;
 		};
 
@@ -536,6 +524,16 @@
 			>;
 		};
 
+        pinctrl_sai2: sai2grp {
+            fsl,pins = <
+                MX6UL_PAD_JTAG_TCK__SAI2_RX_DATA	0x110b0
+                MX6UL_PAD_JTAG_TDI__SAI2_TX_BCLK	0x110b0
+                MX6UL_PAD_JTAG_TDO__SAI2_TX_SYNC	0x110b0
+                MX6UL_PAD_JTAG_TRST_B__SAI2_TX_DATA	0x1f0b8
+                MX6UL_PAD_SNVS_TAMPER4__GPIO5_IO04 0x17059
+            >;
+        };
+
         pinctrl_ecspi1: ecspi1grp {
             fsl,pins = <
                 MX6UL_PAD_CSI_DATA05__GPIO4_IO26  0x10b0
@@ -581,18 +579,6 @@
                 MX6UL_PAD_GPIO1_IO04__GPIO1_IO04 0x17059
             >;
         };
-
-		pinctrl_ext_gpioled_hobbit: gpioledgrp {
-			fsl,pins = <
-				MX6UL_PAD_JTAG_TDI__GPIO1_IO13	0x79
-			>;
-		};
-
-		pinctrl_pca9554_interrupt: pca9554_interrupt {
-			fsl,pins = <
-				MX6UL_PAD_UART1_CTS_B__GPIO1_IO18 0x17059
-			>;
-		};
 	};
 };
 
