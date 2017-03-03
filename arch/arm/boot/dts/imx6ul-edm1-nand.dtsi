@@ -13,14 +13,15 @@
 #include <dt-bindings/gpio/gpio.h>
 
 /* external GPIO */
-#define EDM1_EXT_GPIO_P256 gpio1 2
-#define EDM1_EXT_GPIO_P258 gpio3 27
-#define EDM1_EXT_GPIO_P259 gpio3 26
-#define EDM1_EXT_GPIO_P260 gpio2 31
-#define EDM1_EXT_GPIO_P261 gpio3 3
-#define EDM1_EXT_GPIO_P262 gpio1 24
-#define EDM1_EXT_GPIO_P263 gpio4 5
-#define EDM1_EXT_GPIO_P264 gpio5 8
+#define EDM1_EXT_GPIO_P263 gpio5 7
+#define EDM1_EXT_GPIO_P255 pca9555 8
+#define EDM1_EXT_GPIO_P256 pca9555 9
+#define EDM1_EXT_GPIO_P257 pca9555 10
+#define EDM1_EXT_GPIO_P258 pca9555 11
+#define EDM1_EXT_GPIO_P259 pca9555 12
+#define EDM1_EXT_GPIO_P260 pca9555 13
+#define EDM1_EXT_GPIO_P261 pca9555 14
+#define EDM1_EXT_GPIO_P262 pca9555 15
 
 /* audio codec */
 #define EDM1_AUD_I2S_CHANNEL sai1
@@ -155,6 +156,58 @@
                         clock-frequency = <24576000>;
                 };
         };
+
+    gpio-edm {
+        compatible = "gpio-edm";
+
+        gpio_expio0 {
+            label = "GPIO_EXPIO0";
+            gpios = <&gpio5 7 0>;
+            dir   = "in";
+        };
+
+        gpio_expio1 {
+            label = "GPIO_EXPIO1";    /*WIFI_PW_ON*/
+            gpios = <&pca9555 1 1>;
+            dir   = "out";
+        };
+
+        gpio_expio4 {
+            label = "GPIO_EXPIO4";    /*BT_nRST*/
+            gpios = <&pca9555 4 1>;
+            dir   = "out";
+        };
+
+        gpio_expio5 {
+            label = "GPIO_EXPIO5";    /*LVDS0_BLT_EN*/
+            gpios = <&pca9555 5 1>;
+            dir   = "out";
+        };
+
+        gpio_expio6 {
+            label = "GPIO_EXPIO6";    /*LVDS0_VDD_EN*/
+            gpios = <&pca9555 6 1>;
+            dir   = "out";
+        };
+
+        gpio_expio7 {
+            label = "GPIO_EXPIO7";    /*LCD_BLT_EN*/
+            gpios = <&pca9555 7 1>;
+            dir   = "out";
+        };
+
+        gpio_expio14 {
+            label = "GPIO_EXPIO14";   /*GPIO_P261*/
+            gpios = <&EDM1_EXT_GPIO_P261 0>;
+            dir   = "in";
+        };
+
+        gpio_expio16 {
+            label = "GPIO_EXPIO16";
+            gpios = <&gpio5 8 1>;
+            dir   = "out";
+        };
+    };
 };
 
 &cpu0 {
