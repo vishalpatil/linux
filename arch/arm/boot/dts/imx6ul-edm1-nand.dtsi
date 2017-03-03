@@ -300,6 +300,12 @@
         #interrupt-cells = <2>;
         reg = <0x23>;
 	};
+
+    eeprom@50 {
+        compatible = "atmel,24c08";
+        reg = <0x50>;
+        pagesize = <16>;
+    };
 };
 
 &i2c3 {
