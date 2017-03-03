@@ -259,6 +259,13 @@
     status = "okay";
 };
 
+&uart1 {
+    pinctrl-names = "default";
+    pinctrl-0 = <&pinctrl_uart1>;
+    fsl,uart-has-rtscts;
+    status = "okay";
+};
+
 // Bluetooth
 &uart2 {
     pinctrl-names = "default";
@@ -403,6 +410,15 @@
             fsl,pins = <
                 MX6UL_PAD_GPIO1_IO03__GPIO1_IO03 	0x17059		/* SD1 CD */
                 MX6UL_PAD_JTAG_TMS__CCM_CLKO1		0x17088
+            >;
+        };
+
+        pinctrl_uart1: uart1grp {
+            fsl,pins = <
+                MX6UL_PAD_UART1_TX_DATA__UART1_DCE_TX	0x1b0b1
+                MX6UL_PAD_UART1_RX_DATA__UART1_DCE_RX	0x1b0b1
+                MX6UL_PAD_UART1_RTS_B__UART1_DCE_RTS	0x1b0b1
+                MX6UL_PAD_UART1_CTS_B__UART1_DCE_CTS	0x1b0b1
             >;
         };
 
