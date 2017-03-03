@@ -31,6 +31,10 @@
 #define can1 flexcan1
 #define can2 flexcan2
 
+#define EDM1_FAIRY_I2C1 i2c3
+#define EDM1_FAIRY_I2C2 i2c1
+#define EDM1_FAIRY_I2C3 i2c2
+
 / {
 	memory {
 		reg = <0x80000000 0x10000000>;
@@ -183,13 +187,6 @@
 	fsl,ldo-bypass = <0>; /* DCDC, ldo-enable */
 };
 
-&uart5 { /* Bluetooth */
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_uart5>;
-	fsl,uart-has-rtscts;
-	status = "okay";
-};
-
 /* Debug Console */
 &uart6 {
     pinctrl-names = "default";
@@ -291,25 +288,22 @@
 	pinctrl-0 = <&pinctrl_i2c2>;
 	status = "okay";
 
-	pca9554: pca9554@23 {
-		compatible = "nxp,pca9554";
-		reg = <0x23>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_pca9554_interrupt>;
-		interrupt-parent = <&gpio1>;
-		interrupts = <18 0>;
-		gpio-controller;
-		#gpio-cells = <2>;
-		interrupt-controller;
-		#interrupt-cells = <2>;
+    pca9555: pca9555@23 {
+        compatible = "nxp,pca9555";
+        pinctrl-names = "default";
+        pinctrl-0 = <&pinctrl_pca9555_interrupt>;
+        interrupt-parent = <&gpio1>;
+        interrupts = <4 IRQ_TYPE_EDGE_FALLING>;
+        gpio-controller;
+        #gpio-cells = <2>;
+        interrupt-controller;
+        #interrupt-cells = <2>;
+        reg = <0x23>;
 	};
 };
 
 &i2c3 {
-	clock_frequency = <100000>;
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_i2c3>;
-	status = "okay";
+    status = "disabled";
 };
 
 &iomuxc {
@@ -328,15 +322,6 @@
                 MX6UL_PAD_CSI_PIXCLK__UART6_DCE_RX 0x1b0b1
             >;
         };
-
-		pinctrl_uart5: uart5grp {
-			fsl,pins = <
-				MX6UL_PAD_GPIO1_IO04__UART5_DCE_TX	0x1b0b1
-				MX6UL_PAD_GPIO1_IO05__UART5_DCE_RX	0x1b0b1
-				MX6UL_PAD_GPIO1_IO08__UART5_DCE_RTS	0x1b0b1
-				MX6UL_PAD_GPIO1_IO09__UART5_DCE_CTS	0x1b0b1
-			>;
-		};
 
 		pinctrl_usdhc1: usdhc1grp {
 			fsl,pins = <
@@ -367,15 +352,8 @@
 
 		pinctrl_i2c2: i2c2grp {
 			fsl,pins = <
-				MX6UL_PAD_UART5_TX_DATA__I2C2_SCL 0x4001b8b0
-				MX6UL_PAD_UART5_RX_DATA__I2C2_SDA 0x4001b8b0
-			>;
-		};
-
-		pinctrl_i2c3: i2c3grp {
-			fsl,pins = <
-				MX6UL_PAD_UART1_TX_DATA__I2C3_SCL 0x4001b8b0
-				MX6UL_PAD_UART1_RX_DATA__I2C3_SDA 0x4001b8b0
+                MX6UL_PAD_UART5_TX_DATA__I2C2_SCL 0x4001b8b0
+                MX6UL_PAD_UART5_RX_DATA__I2C2_SDA 0x4001b8b0
 			>;
 		};
 
@@ -549,6 +527,13 @@
 				MX6UL_PAD_NAND_DATA07__QSPI_A_SS1_B   0x70a1
 			>;
 		};
+
+        pinctrl_pca9555_interrupt: pca9555_interrupt {
+            fsl,pins = <
+                MX6UL_PAD_GPIO1_IO04__GPIO1_IO04 0x17059
+            >;
+        };
+
 		pinctrl_pwm7: pwm7grp {
 			fsl,pins = <
 				MX6UL_PAD_ENET1_TX_CLK__PWM7_OUT	0x110b0

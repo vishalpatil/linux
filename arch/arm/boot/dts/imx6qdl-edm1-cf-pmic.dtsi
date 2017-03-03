@@ -39,6 +39,9 @@
 
 /* FT5606 Touch */
 #define EDM1_EXT_FT5X06_IOMUX_FAIRY &pinctrl_ext_gpio_ft5606_touch_irq_fairy &pinctrl_ext_gpio_ft5606_touch_reset_fairy
+#define EDM1_FAIRY_I2C1 i2c1
+#define EDM1_FAIRY_I2C2 i2c2
+#define EDM1_FAIRY_I2C3 i2c3
 
 / {
 	aliases {
