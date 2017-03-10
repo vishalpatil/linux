@@ -40,25 +40,25 @@
 #define PICO_EXT_GPIO_EXP6 gpio2 12
 #define PICO_EXT_GPIO_EXP7 gpio5 27
 
-/*Hobbit Baseboard Contrast Define*/
+/* hobbit baseboard bus definitions */
 #define PICO_HOBBIT_I2C1 i2c1
 #define PICO_HOBBIT_I2C2 i2c4
 #define PICO_HOBBIT_I2C3 i2c2
 #define PICO_HOBBIT_CSPI2 ecspi3
 
-/* Pi   Baseboard Contrast Define*/
+/* pi baseboard bus definitions */
 #define PICO_PI_I2C1 i2c1
 #define PICO_PI_I2C2 i2c2
 #define PICO_PI_I2C4 i2c4
 #define PICO_PI_ECSPI4 ecspi3
 
-/*Nymph Baseboard Contrast Define*/
+/* nymph baseboard bus definitions */
 #define PICO_NYMPH_I2C1 i2c1
 #define PICO_NYMPH_I2C2 i2c4
 #define PICO_NYMPH_I2C3 i2c2
 #define PICO_NYMPH_CSPI2 ecspi3
 
-/*Dwarf Baseboard Contrast Define*/
+/* dwarf baseboard bus definitions */
 #define PICO_DWARF_I2C1 i2c1
 #define PICO_DWARF_I2C2 i2c4
 #define PICO_DWARF_I2C3 i2c2
@@ -76,11 +76,7 @@
 #define PICO_EXT_FT5X06_IOMUX_PI &pinctrl_ext_gpio_ft5606_touch_irq_pi &pinctrl_ext_gpio_ft5606_touch_reset_pi
 #define PICO_EXT_FT5X06_IOMUX_DWARF &pinctrl_ext_gpio_ft5606_touch_irq_dwarf
 
-#define PICO_EXT_GPIO_P32 gpio2 4
-#define PICO_EXT_GPIO_P25 gpio2 6
-
 /* OV5640 */
-#define PICO_EXT_MIPI_CSI_OV5640_IOMUX &pinctrl_mipi_csi
 #define PICO_EXT_GPIO_P65 gpio1 5
 #define PICO_EXT_GPIO_P67 gpio1 4
 
@@ -246,8 +242,8 @@
 				MX7D_PAD_EPDC_DATA02__GPIO2_IO2         0x59 /* GPIO2_IO2 pico pin 28 */
 				MX7D_PAD_EPDC_DATA03__GPIO2_IO3         0x59 /* GPIO2_IO3 pico pin 30 */
 				MX7D_PAD_EPDC_DATA05__GPIO2_IO5         0x59 /* GPIO2_IO10 pico pin 34 */
-                        >;
-                };
+			>;
+		};
 
 		pinctrl_ecspi3: ecspi3grp {
 			fsl,pins = <
