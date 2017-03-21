@@ -40,9 +40,9 @@
 #define PICO_AUD_I2S_CHANNEL sai1
 
 /*Hobbit Baseboard Contrast Define*/
-#define PICO_HOBBIT_I2C1 i2c3
+#define PICO_HOBBIT_I2C1 i2c2
 #define PICO_HOBBIT_I2C2 i2c1
-#define PICO_HOBBIT_I2C3 i2c2
+#define PICO_HOBBIT_I2C3 i2c3
 #define PICO_HOBBIT_CSPI2 ecspi3
 
 /* Pi   Baseboard Contrast Define*/
