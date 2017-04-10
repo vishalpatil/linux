@@ -290,6 +290,7 @@ dtb-$(CONFIG_SOC_IMX6Q) += \
 	imx6dl-edm1-cf-pmic_fairy.dtb \
 	imx6dl-edm1-cf_tc0700.dtb \
 	imx6dl-edm1-cf-pmic_tc0700.dtb \
+	imx6dl-edm1-cf-pmic_tc1000.dtb \
 	imx6dl-pico_dwarf.dtb \
 	imx6dl-pico_hobbit.dtb \
 	imx6dl-pico_nymph.dtb \
@@ -351,6 +352,7 @@ dtb-$(CONFIG_SOC_IMX6Q) += \
 	imx6q-edm1-cf-pmic_fairy.dtb \
 	imx6q-edm1-cf_tc0700.dtb \
 	imx6q-edm1-cf-pmic_tc0700.dtb \
+	imx6q-edm1-cf-pmic_tc1000.dtb \
 	imx6q-pico_dwarf.dtb \
 	imx6q-pico_hobbit.dtb \
 	imx6q-pico_nymph.dtb \
@@ -403,6 +405,8 @@ dtb-$(CONFIG_SOC_IMX6UL) += \
 	imx6ul-9x9-evk-csi.dtb \
 	imx6ul-9x9-evk-ldo.dtb \
 	imx6ul-pico_hobbit.dtb \
+	imx6ul-pico_nymph.dtb \
+	imx6ul-pico_dwarf.dtb \
 	imx6ul-pico_pi.dtb \
 	imx6ul-pico-nand_hobbit.dtb \
 	imx6ul-tek3.dtb \
