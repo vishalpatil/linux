@@ -70,11 +70,21 @@
 			enable-active-low;
 		};
 
-		reg_3p3v: 3p3v {
+		reg_3p3v: regulator@1 {
 			compatible = "regulator-fixed";
+			reg = <1>;
 			regulator-name = "3P3V";
 			regulator-min-microvolt = <3300000>;
 			regulator-max-microvolt = <3300000>;
+			regulator-always-on;
+		};
+
+		reg_lcd_5v: regulator@2 {
+			compatible = "regulator-fixed";
+			reg = <2>;
+			regulator-name = "lcd-5v";
+			gpio = <&pca9555 10 GPIO_ACTIVE_HIGH>;
+			enable-active-high;
 			regulator-always-on;
 		};
 	};
@@ -741,6 +751,7 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_lcdif_dat
 		     &pinctrl_lcdif_ctrl>;
+	lcd = <&reg_lcd_5v>;
 	display = <&display0>;
 	status = "okay";
 
