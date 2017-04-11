@@ -69,8 +69,12 @@
 			"MIC_IN", "Mic Jack",
 			"Mic Jack", "Mic Bias",
 			"Headphone Jack", "HP_OUT";
+#if defined(PICO_AUD_MUX_INT) && defined(PICO_AUD_MUX_EXT)
 		mux-int-port = <PICO_AUD_MUX_INT>;
 		mux-ext-port = <PICO_AUD_MUX_EXT>;
+#else
+		fsl,no-audmux = "true";
+#endif
 	};
 };
 
