@@ -66,6 +66,7 @@
 
 #define PICO_EXT_GPIO_IOMUX_HOBBIT &pinctrl_ext_gpio_hobbit
 #define PICO_EXT_GPIO_IOMUX_PI &pinctrl_ext_gpio_pi
+#define PICO_EXT_GPIO_IOMUX_NYMPH &pinctrl_ext_gpio_nymph
 
 /* GPIO LED */
 #define PICO_EXT_GPIOLED_IOMUX_HOBBIT &pinctrl_ext_gpioled_hobbit
@@ -242,6 +243,15 @@
 				MX7D_PAD_EPDC_DATA02__GPIO2_IO2         0x59 /* GPIO2_IO2 pico pin 28 */
 				MX7D_PAD_EPDC_DATA03__GPIO2_IO3         0x59 /* GPIO2_IO3 pico pin 30 */
 				MX7D_PAD_EPDC_DATA05__GPIO2_IO5         0x59 /* GPIO2_IO10 pico pin 34 */
+			>;
+		};
+
+		pinctrl_ext_gpio_nymph: ext-gpio-grp-nymph {
+			fsl,pins = <
+				MX7D_PAD_EPDC_DATA02__GPIO2_IO2         0x59 /* GPIO2_IO2 pico pin 24 */
+				MX7D_PAD_EPDC_DATA03__GPIO2_IO3         0x59 /* GPIO2_IO3 pico pin 28 */
+				MX7D_PAD_EPDC_DATA04__GPIO2_IO4         0x59 /* GPIO2_IO4 pico pin 30 */
+				MX7D_PAD_EPDC_DATA05__GPIO2_IO5         0x59 /* GPIO2_IO5 pico pin 34 */
 			>;
 		};
 
