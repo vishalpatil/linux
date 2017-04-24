@@ -14,7 +14,7 @@
  */
 
 /dts-v1/;
-
+#define EDM1_FAIRY_ENABLE_SPDIF
 #include <dt-bindings/interrupt-controller/irq.h>
 #include "imx6q.dtsi"
 #include "imx6qdl-edm1-cf.dtsi"

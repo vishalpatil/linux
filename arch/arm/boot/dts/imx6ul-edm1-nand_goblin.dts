@@ -11,7 +11,7 @@
  */
 
 /dts-v1/;
-
+#define EDM1_FAIRY_ENABLE_SPDIF
 #include <dt-bindings/input/input.h>
 #include "imx6ul.dtsi"
 #include "imx6ul-edm1-nand.dtsi"

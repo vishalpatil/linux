@@ -156,9 +156,11 @@
 	status = "okay";
 };
 
+#ifdef EDM1_FAIRY_ENABLE_SPDIF
 &spdif {
 	status = "okay";
 };
+#endif
 
 &ecspi1 {
 	status = "okay";
