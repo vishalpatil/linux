@@ -780,7 +780,7 @@
 	};
 };
 
-/* Digital IO_PORT1 - IO_PIN1_1 */
+/* Digital IO_PORT3 - IO_PIN3_6 */
 /* PWM1 */
 &pwm2 {
 	pinctrl-names = "default";
@@ -790,7 +790,7 @@
 	status = "okay";
 };
 
-/* Digital IO_PORT1 - IO_PIN1_5 */
+/* Digital IO_PORT3 - IO_PIN3_2 */
 /* PWM_P235 */
 &pwm4 {
 	pinctrl-names = "default";
@@ -800,7 +800,7 @@
 	status = "okay";
 };
 
-/* Digital IO_PORT1 - IO_PIN1_6 */
+/* Digital IO_PORT3 - IO_PIN3_5 */
 /* PWM_P233 */
 &pwm3 {
 	pinctrl-names = "default";
@@ -819,6 +819,7 @@
 	status = "okay";
 };
 
+/* Digital IO_PORT3- IO_PIN3_1 */
 &adc1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_adc1>;
