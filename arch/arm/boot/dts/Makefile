@@ -464,6 +464,7 @@ dtb-$(CONFIG_SOC_IMX7D) += \
 	imx7d-sdb-reva-qspi.dtb \
 	imx7d-sdb-reva-touch.dtb \
 	imx7d-sdb-reva-wm8960.dtb \
+	imx7d-tep1.dtb \
 	imx7d-pico_dwarf.dtb \
 	imx7d-pico_nymph.dtb \
 	imx7d-pico_hobbit.dtb \
