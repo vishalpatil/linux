@@ -216,6 +216,20 @@
 			>;
 		};
 
+		pinctrl_ecspi2: ecspi2grp {
+			fsl,pins = <
+				MX7D_PAD_ECSPI2_MISO__ECSPI2_MISO	0x2
+				MX7D_PAD_ECSPI2_MOSI__ECSPI2_MOSI	0x2
+				MX7D_PAD_ECSPI2_SCLK__ECSPI2_SCLK	0x2
+			>;
+		};
+
+		pinctrl_ecspi2_cs: ecspi2_cs_grp {
+			fsl,pins = <
+				MX7D_PAD_ECSPI2_SS0__GPIO4_IO23	0x15
+			>;
+		};
+
 		pinctrl_enet1: enet1grp {
 			fsl,pins = <
 				MX7D_PAD_SD2_CD_B__ENET2_MDIO			0x3
@@ -828,6 +842,20 @@
 	status = "okay";
 };
 
+&ecspi2 {
+	fsl,spi-num-chipselects = <1>;
+	cs-gpios = <&gpio4 23 GPIO_ACTIVE_LOW>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_ecspi2 &pinctrl_ecspi2_cs>;
+	status = "okay";
+
+	spidev@1 {
+		compatible = "rohm,dh2228fv";
+		spi-max-frequency = <60000000>;
+		reg = <0>;
+	};
+};
+
 &can1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_can_1>;
@@ -870,8 +898,6 @@
 
 		pinctrl_mipi_csi: mipicsigrp-1 {
 			fsl,pins = <
-				//MX7D_PAD_I2C4_SDA__GPIO4_IO15 0x15 /* mipi csi powerdown */
-				//MX7D_PAD_EPDC_PWR_COM__GPIO2_IO30 0x15 /* mipi csi reset */
 				MX7D_PAD_GPIO1_IO02__CCM_CLKO1	 0x7d /* mipi csi main clock */
 			>;
 		};
