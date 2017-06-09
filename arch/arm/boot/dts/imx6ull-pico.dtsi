@@ -23,29 +23,53 @@
 #define PICO_EXT_GPIO_P44 gpio1 29
 #define PICO_EXT_GPIO_P48 gpio5 2
 
+/* external GPIO */
+#define PICO_EXT_GPIO_EXP0 pca9554 0
+#define PICO_EXT_GPIO_EXP1 pca9554 1
+#define PICO_EXT_GPIO_EXP2 pca9554 2
+#define PICO_EXT_GPIO_EXP3 pca9554 3
+#define PICO_EXT_GPIO_EXP4 pca9554 4
+#define PICO_EXT_GPIO_EXP5 pca9554 5
+#define PICO_EXT_GPIO_EXP6 gpio1 29
+#define PICO_EXT_GPIO_EXP7 gpio5 2
+
 #define PICO_EXT_GPIO_IOMUX_HOBBIT &pinctrl_ext_gpio_hobbit
+#define PICO_EXT_GPIO_IOMUX_PI &pinctrl_ext_gpio_pi
 
 /* GPIO LED */
 #define PICO_EXT_GPIOLED_IOMUX_HOBBIT &pinctrl_ext_gpioled_hobbit
+#define PICO_EXT_GPIOLED_IOMUX_PI &pinctrl_ext_gpioled_pi
+#define PICO_EXT_GPIOLED_IOMUX_DWARF &pinctrl_ext_gpioled_dwarf
 
 /* ADS7846 Touch */
 #define PICO_EXT_ADS7846_IOMUX_HOBBIT &pinctrl_ext_gpio_ads7846_touch_irq_hobbit
 
 /* FT5606 Touch */
 #define PICO_EXT_FT5X06_IOMUX_HOBBIT &pinctrl_ext_gpio_ft5606_touch_irq_hobbit &pinctrl_ext_gpio_ft5606_touch_reset_hobbit
+#define PICO_EXT_FT5X06_IOMUX_PI &pinctrl_ext_gpio_ft5606_touch_irq_pi &pinctrl_ext_gpio_ft5606_touch_reset_pi
+#define PICO_EXT_FT5X06_IOMUX_DWARF &pinctrl_ext_gpio_ft5606_touch_irq_dwarf
 
 #define PICO_AUD_CLK_SRC sys_mclk 1
 #define PICO_AUD_I2S_CHANNEL sai1
 
 /* hobbit baseboard bus definitions */
-#define PICO_HOBBIT_I2C1 i2c3
+#define PICO_HOBBIT_I2C1 i2c2
 #define PICO_HOBBIT_I2C2 i2c1
-#define PICO_HOBBIT_I2C3 i2c2
+#define PICO_HOBBIT_I2C3 i2c3
 #define PICO_HOBBIT_CSPI2 ecspi3
 
-#define PICO_EXT_GPIO_IOMUX_HOBBIT &pinctrl_ext_gpio_hobbit
+/* pi baseboard bus definitions */
+#define PICO_PI_I2C1 i2c2
+#define PICO_PI_I2C2 i2c3
+#define PICO_PI_I2C4 i2c1
+#define PICO_PI_ECSPI4 ecspi3
 
-#define PICO_HOBBIT_CSPI2 ecspi3
+/* dwarf baseboard bus definitions */
+#define PICO_DWARF_I2C1 i2c2
+#define PICO_DWARF_I2C2 i2c1
+#define PICO_DWARF_I2C3 i2c3
+#define PICO_DWARF_CSPI2 ecspi3
+
 
 #define can1 flexcan1
 #define can2 flexcan2
@@ -129,7 +153,7 @@
 	bt_rfkill {
 		compatible = "net,rfkill-bcm43xx";
 		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_bt_ctrl>;
+		pinctrl-0 = <&pinctrl_bt_ctrl &pinctrl_bt_host>;
 		name = "bt_rfkill";
 		type = <2>;     /* bluetooth */
 		bt_rfkill_reset-gpios = <&gpio5 9 0>;
@@ -157,11 +181,11 @@
 
 	clocks {
 		sys_mclk: clock {
-                        compatible = "fixed-clock";
+			compatible = "fixed-clock";
 			#clock-cells = <0>;
-                        clock-frequency = <24576000>;
-                };
-        };
+			clock-frequency = <24576000>;
+		};
+	};
 };
 
 &cpu0 {
@@ -329,7 +353,7 @@
 
 &iomuxc {
 	pinctrl-names = "default";
-	pico-imx6ul {
+	pico-imx6ull {
 		pinctrl_uart5: uart5grp {
 			fsl,pins = <
 				MX6UL_PAD_GPIO1_IO04__UART5_DCE_TX	0x1b0b1
@@ -395,11 +419,9 @@
 			>;
 		};
 
-		pinctrl_bt_ctrl: bt_ctrlgrp {
+		pinctrl_bt_host: bt_hostgrp {
 			fsl,pins = <
-				MX6UL_PAD_SNVS_TAMPER9__GPIO5_IO09   0x79   /* bluetooth-reg-on */
-				MX6UL_PAD_SNVS_TAMPER8__GPIO5_IO08   0x79   /* bluetooth-wake */
-				MX6UL_PAD_NAND_DATA05__GPIO4_IO07    0x79   /* bluetooth-host-wake */
+				MX6UL_PAD_NAND_DATA05__GPIO4_IO07	0x79   /* bluetooth-host-wake */
 			>;
 		};
 
@@ -441,23 +463,9 @@
 			>;
 		};
 
-		pinctrl_gpmi_nand: gpmi-nand {
+		pinctrl_wdog: wdoggrp {
 			fsl,pins = <
-				MX6UL_PAD_NAND_CLE__RAWNAND_CLE         0xb0b1
-				MX6UL_PAD_NAND_ALE__RAWNAND_ALE         0xb0b1
-				MX6UL_PAD_NAND_WP_B__RAWNAND_WP_B       0xb0b1
-				MX6UL_PAD_NAND_READY_B__RAWNAND_READY_B 0xb000
-				MX6UL_PAD_NAND_CE0_B__RAWNAND_CE0_B     0xb0b1
-				MX6UL_PAD_NAND_RE_B__RAWNAND_RE_B       0xb0b1
-				MX6UL_PAD_NAND_WE_B__RAWNAND_WE_B       0xb0b1
-				MX6UL_PAD_NAND_DATA00__RAWNAND_DATA00   0xb0b1
-				MX6UL_PAD_NAND_DATA01__RAWNAND_DATA01   0xb0b1
-				MX6UL_PAD_NAND_DATA02__RAWNAND_DATA02   0xb0b1
-				MX6UL_PAD_NAND_DATA03__RAWNAND_DATA03   0xb0b1
-				MX6UL_PAD_NAND_DATA04__RAWNAND_DATA04   0xb0b1
-				MX6UL_PAD_NAND_DATA05__RAWNAND_DATA05   0xb0b1
-				MX6UL_PAD_NAND_DATA06__RAWNAND_DATA06   0xb0b1
-				MX6UL_PAD_NAND_DATA07__RAWNAND_DATA07   0xb0b1
+				MX6UL_PAD_LCD_RESET__WDOG1_WDOG_ANY    0x30b0
 			>;
 		};
 
@@ -547,17 +555,6 @@
 			>;
 		};
 
-		pinctrl_qspi: qspigrp {
-			fsl,pins = <
-				MX6UL_PAD_NAND_READY_B__QSPI_A_DATA00 0x70a1
-				MX6UL_PAD_NAND_CE0_B__QSPI_A_DATA01   0x70a1
-				MX6UL_PAD_NAND_CE1_B__QSPI_A_DATA02   0x70a1
-				MX6UL_PAD_NAND_CLE__QSPI_A_DATA03     0x70a1
-				MX6UL_PAD_NAND_WP_B__QSPI_A_SCLK      0x70a1
-				MX6UL_PAD_NAND_DQS__QSPI_A_SS0_B      0x70a1
-				MX6UL_PAD_NAND_DATA07__QSPI_A_SS1_B   0x70a1
-			>;
-		};
 		pinctrl_pwm7: pwm7grp {
 			fsl,pins = <
 				MX6UL_PAD_ENET1_TX_CLK__PWM7_OUT	0x110b0
@@ -580,27 +577,99 @@
 			>;
 		};
 
+		pinctrl_ext_gpio_pi: ext-gpio-grp-pi {
+			fsl,pins = <
+				MX6UL_PAD_CSI_VSYNC__GPIO4_IO19 0x79		/* GPIO_P24 */
+				MX6UL_PAD_CSI_DATA00__GPIO4_IO21 0x79		/* GPIO_P26 */
+				MX6UL_PAD_CSI_DATA01__GPIO4_IO22 0x79		/* GPIO_P28 */
+				MX6UL_PAD_CSI_DATA02__GPIO4_IO23 0x79		/* GPIO_P30 */
+				MX6UL_PAD_UART1_CTS_B__GPIO1_IO18 0x79		/* GPIO_P34 */
+				MX6UL_PAD_SNVS_TAMPER2__GPIO5_IO02 0x79		/* GPIO_P48 */
+			>;
+		};
 		pinctrl_ext_gpioled_hobbit: gpioledgrp_hobbit {
 			fsl,pins = <
-				MX6UL_PAD_UART4_RX_DATA__GPIO1_IO29 0x79	/* GPIO_P44 */
+				MX6UL_PAD_UART4_RX_DATA__GPIO1_IO29 0x79	/* GPIO_P29 */
 			>;
 		};
 
-		pinctrl_ext_gpio_ads7846_touch_irq_hobbit: ext-gpio-ads7846-touch-irq-hobbit {
+		pinctrl_ext_gpioled_pi: gpioledgrp_pi {
 			fsl,pins = <
-				MX6UL_PAD_SNVS_TAMPER2__GPIO5_IO02 0x79 /* GPIO_P48, touch irq */
+				MX6UL_PAD_CSI_HSYNC__GPIO4_IO20 0x79            /* GPIO_P25 */
+			>;
+		};
+
+		pinctrl_ext_gpioled_nymph: gpioledgrp_nymph {
+			fsl,pins = <
+				MX6UL_PAD_UART4_RX_DATA__GPIO1_IO29 0x79	/* GPIO_P29 */
 			>;
 		};
 
 		pinctrl_ext_gpio_ft5606_touch_irq_hobbit: ext-gpio-ft5606-touch-irq-hobbit {
 			fsl,pins = <
-				MX6UL_PAD_CSI_HSYNC__GPIO4_IO20 0x79 /* GPIO_P25, touch irq */
+				MX6UL_PAD_CSI_HSYNC__GPIO4_IO20 0x79 /* capacitive touch irq for hobbit baseboard */
 			>;
 		};
 
 		pinctrl_ext_gpio_ft5606_touch_reset_hobbit: ext-gpio-ft5606-touch-reset-hobbit {
 			fsl,pins = <
-				MX6UL_PAD_CSI_DATA03__GPIO4_IO24 0x79 /* GPIO_P32, touch reset */
+				MX6UL_PAD_CSI_DATA03__GPIO4_IO24 0x79 /* capacitive touch reset for hobbit baseboard */
+			>;
+		};
+
+		pinctrl_ext_gpio_ft5606_touch_irq_pi: ext-gpio-ft5606-touch-irq-pi {
+			fsl,pins = <
+				MX6UL_PAD_UART4_RX_DATA__GPIO1_IO29 0x79 /* capacitive touch irq for pi baseboard */
+			>;
+		};
+
+		pinctrl_ext_gpio_ft5606_touch_reset_pi: ext-gpio-ft5606-touch-reset-pi {
+			fsl,pins = <
+				MX6UL_PAD_CSI_DATA03__GPIO4_IO24 0x79 /* capacitive touch reset for pi baseboard */
+			>;
+		};
+
+		pinctrl_ext_gpio_ft5606_touch_irq_dwarf: ext-gpio-ft5606-touch-irq-dwarf {
+			fsl,pins = <
+				MX6UL_PAD_UART4_RX_DATA__GPIO1_IO29 0x79 /* capacitive touch irq for dwarf baseboard */
+			>;
+		};
+	};
+};
+
+&iomuxc_snvs {
+	pinctrl-names = "default_snvs";
+	pinctrl-0 = <&pinctrl_imx6ull_gpio>;
+	imx6ul-evk {
+		pinctrl_imx6ull_gpio: ext-pinctrl_imx6ull_gpio {
+			fsl,pins = <
+				MX6ULL_PAD_BOOT_MODE0__GPIO5_IO10	0x80000000
+				MX6ULL_PAD_BOOT_MODE1__GPIO5_IO11	0x80000000
+				MX6ULL_PAD_SNVS_TAMPER0__GPIO5_IO00	0x80000000
+				MX6ULL_PAD_SNVS_TAMPER1__GPIO5_IO01	0x80000000
+				MX6ULL_PAD_SNVS_TAMPER3__GPIO5_IO03	0x80000000
+				MX6ULL_PAD_SNVS_TAMPER4__GPIO5_IO04	0x80000000
+				MX6ULL_PAD_SNVS_TAMPER5__GPIO5_IO05	0x80000000
+				MX6ULL_PAD_SNVS_TAMPER7__GPIO5_IO07	0x80000000
+			>;
+		};
+
+		pinctrl_bt_ctrl: bt_ctrlgrp {
+			fsl,pins = <
+				MX6ULL_PAD_SNVS_TAMPER9__GPIO5_IO09	0x79	/* bluetooth-reg-on */
+				MX6ULL_PAD_SNVS_TAMPER8__GPIO5_IO08	0x79	/* bluetooth-wake */
+			>;
+		};
+
+		pinctrl_ext_gpio_ads7846_touch_irq_hobbit: ext-gpio-ads7846-touch-irq-hobbit {
+			fsl,pins = <
+				MX6ULL_PAD_SNVS_TAMPER2__GPIO5_IO02 0x79         /* touch irq */
+			>;
+		};
+
+		pinctrl_enet2_phy: enet2_phy_grp {
+			fsl,pins = <
+				MX6ULL_PAD_SNVS_TAMPER6__GPIO5_IO06      0x800
 			>;
 		};
 	};
@@ -662,16 +731,9 @@
 	};
 };
 
-&gpmi {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_gpmi_nand>;
-	nand-on-flash-bbt;
-};
-
-
 &fec2 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_enet2>;
+	pinctrl-0 = <&pinctrl_enet2 &pinctrl_enet2_phy>;
 	phy-mode = "rmii";
 	phy-handle = <&ethphy1>;
 	status = "okay";
@@ -691,7 +753,6 @@
 		};
 	};
 };
-
 
 &usdhc1 {  /* Baseboard microSD slot */
 	pinctrl-names = "default";
@@ -740,6 +801,12 @@
 	pinctrl-0 = <&pinctrl_uart3>;
 	fsl,uart-has-rtscts;
 	status = "okay";
+};
+
+&wdog1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_wdog>;
+	fsl,wdog_b;
 };
 
 &pwm1 {
