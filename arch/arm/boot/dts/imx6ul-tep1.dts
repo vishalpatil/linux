@@ -82,8 +82,10 @@
 		reg_lcd_5v: regulator@2 {
 			compatible = "regulator-fixed";
 			reg = <2>;
+			pinctrl-names = "default";
+			pinctrl-0 = <&pinctrl_lcd_pwr>;
 			regulator-name = "lcd-5v";
-			gpio = <&pca9555 10 GPIO_ACTIVE_HIGH>;
+			gpio = <&gpio5 0 GPIO_ACTIVE_HIGH>;
 			enable-active-high;
 			regulator-always-on;
 		};
@@ -742,6 +744,12 @@
 		pinctrl_ft5606_touch_reset: ft5606-touch-reset {
 			fsl,pins = <
 				MX6UL_PAD_CSI_DATA03__GPIO4_IO24 0x79 /* touch reset */
+			>;
+		};
+
+		pinctrl_lcd_pwr: lcd-pwr {
+			fsl,pins = <
+				MX6UL_PAD_SNVS_TAMPER0__GPIO5_IO00	0x79
 			>;
 		};
 	};
