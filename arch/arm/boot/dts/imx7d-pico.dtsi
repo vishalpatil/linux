@@ -35,9 +35,9 @@
 #define PICO_EXT_GPIO_EXP1 pca9554 1
 #define PICO_EXT_GPIO_EXP2 pca9554 2
 #define PICO_EXT_GPIO_EXP3 pca9554 3
-#define PICO_EXT_GPIO_EXP4 pca9554 4
+#define PICO_EXT_GPIO_EXP4 gpio2 4
 #define PICO_EXT_GPIO_EXP5 pca9554 5
-#define PICO_EXT_GPIO_EXP6 gpio2 12
+#define PICO_EXT_GPIO_EXP6 gpio2 13
 #define PICO_EXT_GPIO_EXP7 gpio5 27
 
 /* hobbit baseboard bus definitions */
@@ -75,7 +75,7 @@
 /* FT5606 Touch */
 #define PICO_EXT_FT5X06_IOMUX_HOBBIT &pinctrl_ext_gpio_ft5606_touch_irq_hobbit &pinctrl_ext_gpio_ft5606_touch_reset_hobiit
 #define PICO_EXT_FT5X06_IOMUX_PI &pinctrl_ext_gpio_ft5606_touch_irq_pi &pinctrl_ext_gpio_ft5606_touch_reset_pi
-#define PICO_EXT_FT5X06_IOMUX_DWARF &pinctrl_ext_gpio_ft5606_touch_irq_dwarf
+#define PICO_EXT_FT5X06_IOMUX_DWARF &pinctrl_ext_gpio_ft5606_touch_irq_dwarf &pinctrl_ext_gpio_ft5606_touch_reset_dwarf
 
 /* OV5640 */
 #define PICO_EXT_GPIO_P65 gpio1 5
@@ -582,6 +582,12 @@
 		pinctrl_ext_gpio_ft5606_touch_irq_dwarf: ext-gpio-ft5606-touch-irq-dwarf {
 			fsl,pins = <
 				MX7D_PAD_EPDC_DATA13__GPIO2_IO13         0x59 /* capacitive touch irq for dwarf baseboard */
+			>;
+		};
+
+		pinctrl_ext_gpio_ft5606_touch_reset_dwarf: ext-gpio-ft5606-touch-reset-dwarf {
+			fsl,pins = <
+				MX7D_PAD_EPDC_DATA04__GPIO2_IO4		0x59 /* capacitive touch reset for dwarf baseboard */
 			>;
 		};
 
