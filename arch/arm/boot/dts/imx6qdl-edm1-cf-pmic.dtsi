@@ -68,6 +68,7 @@
 		compatible = "android,bcmdhd_wlan";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_wifi_ctrl>;
+		gpios = <&gpio1 29 0>;    /* WL_HOST_WAKE */
 		wlreg_on-supply = <&wlreg_on>;
 	};
 
