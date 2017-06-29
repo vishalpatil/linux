@@ -108,25 +108,26 @@
 	gpio-edm {
 		compatible = "gpio-edm";
 		gpio_p256 {
-			label = "GPIO_P256";
+			label = "GPIO_PORT1_IO1";
 			gpios = <&gpio5 13 0>;
 			dir   = "out";
 		};
 		gpio_p257 {
-			label = "GPIO_P257";
+			label = "GPIO_PORT1_IO2";
 			gpios = <&gpio5 2 0>;
 			dir   = "out";
 		};
 		gpio_p258 {
-			label = "GPIO_P258";
+			label = "GPIO_PORT1_IO3";
 			gpios = <&gpio2 4 0>;
 			dir   = "out";
 		};
 		gpio_p259 {
-			label = "GPIO_P259";
+			label = "GPIO_PORT1_IO4";
 			gpios = <&gpio5 12 0>;
 			dir   = "out";
 		};
+/*
 		gpio_p260 {
 			label = "GPIO_P260";
 			gpios = <&gpio1 8 0>;
@@ -142,14 +143,15 @@
 			gpios = <&gpio1 11 1>;
 			dir   = "out";
 		};
+*/
 		gpio_p263 {
-			label = "GPIO_P263";
+			label = "WIFI_DISABLE";
 			gpios = <&gpio6 22 1>;
-			dir   = "in";
+			dir   = "out";
 		};
 		gpio_p264 {
 			label = "M2_POWER";
-			gpios = <&gpio6 21 1>;
+			gpios = <&gpio2 31 1>;
 			dir   = "out";
 		};
 	};
@@ -532,7 +534,25 @@
 	status = "okay";
 };
 
+&pwm1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pwm1>;
+	status = "okay";
+};
+
+&pwm2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pwm2>;
+	status = "okay";
+};
+
 &pwm3 { /* Backlight */
+	status = "okay";
+};
+
+&pwm4 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pwm4>;
 	status = "okay";
 };
 
