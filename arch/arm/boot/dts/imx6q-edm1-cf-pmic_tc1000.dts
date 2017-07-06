@@ -19,7 +19,7 @@
 #include "baseboard_edm1_tc1000.dtsi"
 
 / {
-	model = "Technexion EDM1-CF-IMX6 Quad/Dual with PMIC and tc1000 baseboard";
+	model = "TechNexion EDM1-IMX6PLUS Quad/Dual and TC1000 baseboard";
 	compatible = "fsl,edm1-cf-imx6q", "fsl,imx6q";
 };
 

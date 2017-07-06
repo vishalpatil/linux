@@ -16,7 +16,7 @@
 #include "imx6qdl-tek3.dtsi"
 
 / {
-	model = "Technexion TEK3-IMX6 Quad board";
+	model = "TechNexion TEK3-IMX6 DualLite/Solo board";
 	compatible = "fsl,tek3-imx6q", "fsl,imx6dl";
 };
 

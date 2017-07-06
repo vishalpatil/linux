@@ -16,7 +16,7 @@
 #include "imx6qdl-pico.dtsi"
 #include "baseboard_pico_pi.dtsi"
 / {
-	model = "Technexion PICO-IMX6 DualLite/Solo with Pi baseboard";
+	model = "TechNexion PICO-IMX6 DualLite/Solo and PI baseboard";
 	compatible = "fsl,pico-cf-imx6dl", "fsl,imx6dl";
 
 	sound-hdmi {

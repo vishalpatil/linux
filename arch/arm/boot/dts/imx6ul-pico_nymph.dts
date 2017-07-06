@@ -18,7 +18,7 @@
 #include "baseboard_pico_nymph.dtsi"
 
 / {
-	model = "Technexion Pico i.MX6 UltraLite Board and nymph baseboard";
+	model = "TechNexion PICO-IMX6UL Board and NYMPH baseboard";
 	compatible = "fsl,imx6ul-pico", "fsl,imx6ul";
 };
 

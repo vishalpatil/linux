@@ -18,7 +18,7 @@
 #include "baseboard_pico_hobbit.dtsi"
 
 / {
-	model = "Technexion PICO-IMX6 DualLite/Solo with hobbit board";
+	model = "TechNexion PICO-IMX6 DualLite/Solo and HOBBIT baseboard";
 	compatible = "fsl,pico-cf-imx6dl", "fsl,imx6dl";
 };
 

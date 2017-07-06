@@ -16,7 +16,7 @@
 #include "imx6ul.dtsi"
 
 / {
-	model = "Freescale i.MX6 UltraLite TEP1 Board";
+	model = "TechNexion TEP1-IMX6UL Board";
 	compatible = "fsl,imx6ul-tep1", "fsl,imx6ul";
 
 	chosen {

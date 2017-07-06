@@ -17,7 +17,7 @@
 #include "imx6qdl-pico.dtsi"
 #include "baseboard_pico_dwarf.dtsi"
 / {
-	model = "Technexion PICO-IMX6 Quad with dwarf board";
+	model = "TechNexion PICO-IMX6 Quad and DWARF baseboard";
 	compatible = "fsl,pico-cf-imx6q", "fsl,imx6q";
 };
 

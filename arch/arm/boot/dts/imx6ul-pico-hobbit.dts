@@ -17,7 +17,7 @@
 #include "imx6ul.dtsi"
 
 / {
-	model = "Technexion Pico i.MX6 UltraLite Board";
+	model = "TechNexion PICO-IMX6UL-EMMC and HOBBIT baseboard";
 	compatible = "fsl,imx6ul-pico", "fsl,imx6ul";
 
 	memory {

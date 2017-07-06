@@ -16,7 +16,7 @@
 #include "imx7d-pico.dtsi"
 #include "baseboard_pico_nymph.dtsi"
 / {
-	model = "Technexion PICO-IMX7 Dual/Solo with Nymph baseboard";
+	model = "TechNexion PICO-IMX7D and NYMPH baseboard";
 	compatible = "fsl,pico-cf-imx7d", "fsl,imx7d";
 };
 

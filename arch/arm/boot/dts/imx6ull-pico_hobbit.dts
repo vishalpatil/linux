@@ -18,6 +18,6 @@
 #include "baseboard_pico_hobbit.dtsi"
 
 / {
-	model = "Technexion Pico i.MX6 UltraLite Board and hobbit baseboard";
+	model = "TechNexion PICO-IMX6ULL-EMMC and HOBBIT baseboard";
 	compatible = "fsl,imx6ull-pico", "fsl,imx6ull";
 };

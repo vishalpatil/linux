@@ -16,7 +16,7 @@
 #include "imx6ul.dtsi"
 
 / {
-	model = "Freescale i.MX6 UltraLite TEK3 Board";
+	model = "TechNexion TEK3-IMX6UL Board";
 	compatible = "fsl,imx6ul-tek3", "fsl,imx6ul";
 
 	chosen {

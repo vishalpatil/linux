@@ -17,7 +17,7 @@
 #include "imx6sx.dtsi"
 
 / {
-	model = "Technexion EDM1-CF-IMX6SX";
+	model = "TechNexion EDM1-CF-IMX6SX";
 	compatible = "fsl,edm1-cf-imx6sx", "fsl,imx6sx";
 
 	chosen {
