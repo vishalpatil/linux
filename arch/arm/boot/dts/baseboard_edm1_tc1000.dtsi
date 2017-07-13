@@ -19,6 +19,11 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <EDM1_EXT_GPIO_IOMUX_TC1000>;
 #endif
+		gpio_p255 {
+			label = "GPIO_P255";
+			gpios = <&EDM1_EXT_GPIO_P255 1>;
+			dir   = "out";
+		};
 		gpio_p256 {
 			label = "GPIO_P256";
 			gpios = <&EDM1_EXT_GPIO_P256 1>;
@@ -82,7 +87,7 @@
 #ifdef EDM1_EXT_PCA9555_IOMUX_TC1000
 		pinctrl-0 = <EDM1_EXT_PCA9555_IOMUX_TC1000>;
 #endif
-		interrupt-parent = <&gpio1>;
+		interrupt-parent = <&gpio7>;
 		interrupts = <8 IRQ_TYPE_EDGE_FALLING>;
 		gpio-controller;
 		#gpio-cells = <2>;
