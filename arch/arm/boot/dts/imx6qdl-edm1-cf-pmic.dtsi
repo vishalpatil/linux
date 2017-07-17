@@ -25,6 +25,19 @@
 #define EDM1_EXT_GPIO_P263 gpio1 4
 #define EDM1_EXT_GPIO_P264 gpio7 8
 
+#define EDM1_EXT_GPIO_EXP0 pca9555 0
+#define EDM1_EXT_GPIO_EXP1 pca9555 1
+#define EDM1_EXT_GPIO_EXP2 pca9555 2
+#define EDM1_EXT_GPIO_EXP3 pca9555 3
+#define EDM1_EXT_GPIO_EXP4 pca9555 4
+#define EDM1_EXT_GPIO_EXP5 pca9555 5
+#define EDM1_EXT_GPIO_EXP6 pca9555 6
+#define EDM1_EXT_GPIO_EXP7 pca9555 7
+#define EDM1_EXT_GPIO_EXP8 pca9555 8
+#define EDM1_EXT_GPIO_EXP9 pca9555 9
+#define EDM1_EXT_GPIO_EXP10 pca9555 10
+#define EDM1_EXT_GPIO_EXP11 pca9555 11
+
 #define EDM1_EXT_GPIO_IOMUX_FAIRY &pinctrl_ext_gpio_fairy
 #define EDM1_EXT_GPIO_IOMUX_TC0700 &pinctrl_ext_gpio_tc0700
 #define EDM1_EXT_GPIO_IOMUX_TC1000 &pinctrl_ext_gpio_tc1000
@@ -704,13 +717,13 @@
 
 		pinctrl_hdmi_cec: hdmicecgrp {
 			fsl,pins = <
-			MX6QDL_PAD_EIM_A25__HDMI_TX_CEC_LINE 0x1f8b0
+				MX6QDL_PAD_EIM_A25__HDMI_TX_CEC_LINE	0x1f8b0
 			>;
 		};
 
 		pinctrl_pca9555_interrupt: pca9555_interrupt {
 			fsl,pins = <
-			MX6QDL_PAD_SD3_RST__GPIO7_IO08			0x4001b0b5
+				MX6QDL_PAD_SD3_RST__GPIO7_IO08		0x4001b0b5
 			>;
 		};
 	};
