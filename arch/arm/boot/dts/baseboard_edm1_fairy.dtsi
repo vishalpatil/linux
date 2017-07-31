@@ -87,10 +87,10 @@
 		reg = <0x38>;
 #ifdef EDM1_EXT_FT5X06_IOMUX_FAIRY
 		pinctrl-names = "default";
-		pinctrl-0 = <EDM1_EXT_FT5X06_IOMUX_FAIRY>; /* Touch IRQ and Touch Reset */
-        reset-gpios = <&EDM1_EXT_GPIO_P264 GPIO_ACTIVE_LOW>; /* GPIO_P264 J1B-264 */
+		pinctrl-0 = <EDM1_EXT_FT5X06_IOMUX_FAIRY>; /* Touch IRQ and Touch Reset */        
 #endif
 		interrupt-parent = <&GPIO_BANK(EDM1_EXT_GPIO_P261)>; /* GPIO_P261 J1B-261 */
+		reset-gpios = <&EDM1_EXT_GPIO_P264 GPIO_ACTIVE_LOW>; /* GPIO_P264 J1B-264 */
 		interrupts = <GPIO_NO(EDM1_EXT_GPIO_P261) 0>;
 		touchscreen-size-x = <800>;
 		touchscreen-size-y = <480>;
