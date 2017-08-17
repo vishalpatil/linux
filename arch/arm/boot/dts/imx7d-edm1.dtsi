@@ -13,16 +13,16 @@
 #include <dt-bindings/gpio/gpio.h>
 
 /* external GPIO */
-#define EDM1_EXT_GPIO_P255 gpio2 0
-#define EDM1_EXT_GPIO_P256 gpio2 1
-#define EDM1_EXT_GPIO_P257 gpio2 2
-#define EDM1_EXT_GPIO_P258 gpio2 3
-#define EDM1_EXT_GPIO_P259 gpio2 4
-#define EDM1_EXT_GPIO_P260 gpio2 5
-#define EDM1_EXT_GPIO_P261 gpio4 0
-#define EDM1_EXT_GPIO_P262 gpio4 1
-#define EDM1_EXT_GPIO_P263 gpio1 11
-#define EDM1_EXT_GPIO_P264 gpio1 9
+#define EDM_EXT_GPIO_P255 gpio2 0
+#define EDM_EXT_GPIO_P256 gpio2 1
+#define EDM_EXT_GPIO_P257 gpio2 2
+#define EDM_EXT_GPIO_P258 gpio2 3
+#define EDM_EXT_GPIO_P259 gpio2 4
+#define EDM_EXT_GPIO_P260 gpio2 5
+#define EDM_EXT_GPIO_P261 gpio4 0
+#define EDM_EXT_GPIO_P262 gpio4 1
+#define EDM_EXT_GPIO_P263 gpio1 11
+#define EDM_EXT_GPIO_P264 gpio1 9
 /* audio codec */
 #define EDM1_AUD_I2S_CHANNEL sai1
 #define EDM1_AUD_CLK_SRC clks IMX7D_AUDIO_MCLK_ROOT_CLK
@@ -192,7 +192,7 @@
 
             gpio_p257 {
                     label = "GPIO_P257";
-                    gpios = <&EDM1_EXT_GPIO_P257 1>;
+                    gpios = <&EDM_EXT_GPIO_P257 1>;
                     dir   = "in";
             };
         };
