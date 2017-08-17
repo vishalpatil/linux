@@ -25,8 +25,8 @@
 #define EDM_EXT_GPIO_P264 pca9555 14
 
 /* audio codec */
-#define EDM1_AUD_I2S_CHANNEL sai2
-#define EDM1_AUD_CLK_SRC clks IMX6UL_CLK_OSC
+#define EDM_AUD_I2S_CHANNEL sai2
+#define EDM_AUD_CLK_SRC clks IMX6UL_CLK_OSC
 
 /* ADS7846 Touch */
 #define EDM1_EXT_ADS7846_IOMUX_FAIRY &pinctrl_ext_gpio_ads7846_touch_irq_fairy

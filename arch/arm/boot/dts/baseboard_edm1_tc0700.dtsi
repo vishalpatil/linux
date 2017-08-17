@@ -47,14 +47,14 @@
 		compatible = "fsl,imx-sgtl5000",
 			     "fsl,imx-audio-sgtl5000";
 		model = "audio-sgtl5000";
-		ssi-controller = <&EDM1_AUD_I2S_CHANNEL>;
+		ssi-controller = <&EDM_AUD_I2S_CHANNEL>;
 		audio-codec = <&codec>;
 		audio-routing =
 			"MIC_IN", "Mic Jack",
 			"Mic Jack", "Mic Bias",
 			"Line Out Jack", "HP_OUT";
-		mux-int-port = <EDM1_AUD_MUX_INT>;
-		mux-ext-port = <EDM1_AUD_MUX_EXT>;
+		mux-int-port = <EDM_AUD_MUX_INT>;
+		mux-ext-port = <EDM_AUD_MUX_EXT>;
 	};
 };
 
@@ -68,7 +68,7 @@
 	codec: sgtl5000@0a {
 		compatible = "fsl,sgtl5000";
 		reg = <0x0a>;
-		clocks = <&EDM1_AUD_CLK_SRC>;
+		clocks = <&EDM_AUD_CLK_SRC>;
 		VDDA-supply = <&reg_2p5v>;
 		VDDIO-supply = <&reg_3p3v>;
 	};

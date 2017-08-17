@@ -44,10 +44,10 @@
 #define EDM1_EXT_PCA9555_IOMUX_TC1000 &pinctrl_pca9555_interrupt
 
 /* audio codec */
-#define EDM1_AUD_I2S_CHANNEL ssi1
-#define EDM1_AUD_MUX_INT 1
-#define EDM1_AUD_MUX_EXT 3
-#define EDM1_AUD_CLK_SRC clks 201
+#define EDM_AUD_I2S_CHANNEL ssi1
+#define EDM_AUD_MUX_INT 1
+#define EDM_AUD_MUX_EXT 3
+#define EDM_AUD_CLK_SRC clks 201
 
 /* ADS7846 Touch */
 #define EDM1_EXT_ADS7846_IOMUX_FAIRY &pinctrl_ext_gpio_ads7846_touch_irq_fairy
