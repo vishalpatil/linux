@@ -500,6 +500,7 @@ dtb-$(CONFIG_SOC_IMX7D) += \
 	imx7d-pico_nymph.dtb \
 	imx7d-pico_hobbit.dtb \
 	imx7d-pico_pi.dtb \
+	imx7d-intel_edison.dtb \
 	imx7d-edm1_goblin.dtb
 dtb-$(CONFIG_SOC_LS1021A) += \
 	ls1021a-qds.dtb \
