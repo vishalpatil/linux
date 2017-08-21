@@ -294,6 +294,7 @@ dtb-$(CONFIG_SOC_IMX6Q) += \
 	imx6dl-pico_dwarf.dtb \
 	imx6dl-pico_hobbit.dtb \
 	imx6dl-pico_nymph.dtb \
+	imx6dl-intel_edison.dtb \
 	imx6dl-tek3.dtb \
 	imx6dl-tep5.dtb \
 	imx6q-arm2.dtb \
@@ -357,6 +358,7 @@ dtb-$(CONFIG_SOC_IMX6Q) += \
 	imx6q-pico_dwarf.dtb \
 	imx6q-pico_hobbit.dtb \
 	imx6q-pico_nymph.dtb \
+	imx6q-intel_edison.dtb \
 	imx6q-tek3.dtb \
 	imx6q-tep5.dtb \
 	imx6dqscm-1gb-qwks-rev2-fix-ldo.dtb \
