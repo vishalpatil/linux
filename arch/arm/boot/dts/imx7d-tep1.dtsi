@@ -127,23 +127,6 @@
 			gpios = <&gpio5 12 0>;
 			dir   = "out";
 		};
-/*
-		gpio_p260 {
-			label = "GPIO_P260";
-			gpios = <&gpio1 8 0>;
-			dir   = "out";
-		};
-		gpio_p261 {
-			label = "GPIO_P261";
-			gpios = <&gpio1 9 0>;
-			dir   = "out";
-		};
-		gpio_p262 {
-			label = "GPIO_P262";
-			gpios = <&gpio1 11 1>;
-			dir   = "out";
-		};
-*/
 		gpio_p263 {
 			label = "WIFI_DISABLE";
 			gpios = <&gpio6 22 1>;
@@ -462,9 +445,6 @@
 				MX7D_PAD_SD1_RESET_B__GPIO5_IO2		0x15
 				MX7D_PAD_EPDC_DATA04__GPIO2_IO4		0x15
 				MX7D_PAD_SD2_CLK__GPIO5_IO12		0x15
-				MX7D_PAD_GPIO1_IO08__GPIO1_IO8		0x15
-				MX7D_PAD_GPIO1_IO09__GPIO1_IO9		0x15
-				MX7D_PAD_GPIO1_IO11__GPIO1_IO11		0x15
 				MX7D_PAD_SAI2_TX_DATA__GPIO6_IO22 	0x15
 				MX7D_PAD_I2C4_SDA__GPIO4_IO15		0x15	/* fec power */
 				MX7D_PAD_SAI2_RX_DATA__GPIO6_IO21	0x15	/* M2 power */
@@ -863,5 +843,5 @@
 
 &adc2 {
 	vref-supply = <&reg_vref_1v8>;
-	status = "okay";
+	status = "disabled";
 };
