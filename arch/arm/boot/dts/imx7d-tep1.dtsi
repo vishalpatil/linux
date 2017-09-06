@@ -180,8 +180,8 @@
 
 		pinctrl_enet1: enet1grp {
 			fsl,pins = <
-				MX7D_PAD_SD2_CD_B__ENET2_MDIO				0x3
-				MX7D_PAD_SD2_WP__ENET2_MDC				0x3
+				MX7D_PAD_SD2_CD_B__ENET1_MDIO				0x3
+				MX7D_PAD_SD2_WP__ENET1_MDC				0x3
 				MX7D_PAD_EPDC_DATA06__GPIO2_IO6				0x3  /* MDIO interrupt */
 				MX7D_PAD_ENET1_RGMII_TXC__ENET1_RGMII_TXC		0x3
 				MX7D_PAD_ENET1_RGMII_TD0__ENET1_RGMII_TD0		0x3
@@ -795,19 +795,6 @@
 	phy-handle = <&ethphy0>;
 	fsl,magic-packet;
 	status = "okay";
-};
-
-&fec2 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_enet2>;
-	assigned-clocks = <&clks IMX7D_ENET2_TIME_ROOT_SRC>,
-			  <&clks IMX7D_ENET2_TIME_ROOT_CLK>;
-	assigned-clock-parents = <&clks IMX7D_PLL_ENET_MAIN_100M_CLK>;
-	assigned-clock-rates = <0>, <100000000>;
-	phy-mode = "rgmii";
-	phy-handle = <&ethphy1>;
-	fsl,magic-packet;
-	status = "okay";
 
 	mdio {
 		#address-cells = <1>;
@@ -823,6 +810,19 @@
 			reg = <2>;
 		};
 	};
+};
+
+&fec2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_enet2>;
+	assigned-clocks = <&clks IMX7D_ENET2_TIME_ROOT_SRC>,
+			  <&clks IMX7D_ENET2_TIME_ROOT_CLK>;
+	assigned-clock-parents = <&clks IMX7D_PLL_ENET_MAIN_100M_CLK>;
+	assigned-clock-rates = <0>, <100000000>;
+	phy-mode = "rgmii";
+	phy-handle = <&ethphy1>;
+	fsl,magic-packet;
+	status = "okay";
 };
 
 &pcie {
