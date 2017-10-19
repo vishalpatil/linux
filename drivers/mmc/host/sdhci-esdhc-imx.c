@@ -238,6 +238,7 @@ struct pltfm_imx_data {
 		WAIT_FOR_INT,        /* sent CMD12, waiting for response INT */
 	} multiblock_status;
 	u32 is_ddr;
+	u32 double_clock;
 };
 
 static const struct platform_device_id imx_esdhc_devtype[] = {
@@ -724,6 +725,8 @@ static inline void esdhc_pltfm_set_clock(struct sdhci_host *host,
 			clock = clock > 150000000 ? 150000000 : clock;
 	}
 
+	if (imx_data->double_clock) clock *= 2;
+
 	while (host_clock / pre_div / 16 > clock && pre_div < 256)
 		pre_div *= 2;
 
@@ -731,6 +734,7 @@ static inline void esdhc_pltfm_set_clock(struct sdhci_host *host,
 		div++;
 
 	host->mmc->actual_clock = host_clock / pre_div / div;
+
 	dev_dbg(mmc_dev(host->mmc), "desired SD clock: %d, actual: %d\n",
 		clock, host->mmc->actual_clock);
 
@@ -875,6 +879,7 @@ static int esdhc_change_pinstate(struct sdhci_host *host,
 	switch (uhs) {
 	case MMC_TIMING_UHS_SDR50:
 	case MMC_TIMING_UHS_DDR50:
+	case MMC_TIMING_MMC_DDR52:
 		pinctrl = imx_data->pins_100mhz;
 		break;
 	case MMC_TIMING_UHS_SDR104:
@@ -1087,6 +1092,8 @@ sdhci_esdhc_imx_probe_dt(struct platform_device *pdev,
 
 	if (of_property_read_u32(np, "fsl,delay-line", &boarddata->delay_line))
 		boarddata->delay_line = 0;
+
+        imx_data->double_clock = of_find_property(np, "fsl,double-clock", NULL);
 
 	mmc_of_parse_voltage(np, &host->ocr_mask);
 
