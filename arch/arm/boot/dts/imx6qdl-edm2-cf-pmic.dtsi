@@ -1,9 +1,8 @@
 /*
- * Copyright 2016 Technexion Ltd.
+ * Copyright 2017 Technexion Ltd.
  *
- * Author: Wig Cheng <wig.cheng@technexion.com>
+ * Author: Tapani Utriainen <tapani@technexion.com>
  *	   Richard Hu <richard.hu@technexion.com>
- *	   Tapani Utriainen <tapani@technexion.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -959,13 +958,14 @@
 
 &usdhc3 { /* Module i-Nand */
 	pinctrl-names = "default", "state_100mhz", "state_200mhz";
-	pinctrl-0 = <&pinctrl_usdhc3_50mhz>;
+	pinctrl-0 = <&pinctrl_usdhc3_100mhz>;
 	pinctrl-1 = <&pinctrl_usdhc3_100mhz>;
 	pinctrl-2 = <&pinctrl_usdhc3_200mhz>;
 	bus-width = <8>;
 	cd-gpios = <&gpio3 9 GPIO_ACTIVE_LOW>;
 	vmmc-supply = <&reg_1p8v>;
 	keep-power-in-suspend;
+	fsl,double-clock;
 	status = "okay";
 };
 
