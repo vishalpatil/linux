@@ -440,7 +440,8 @@ dtb-$(CONFIG_SOC_IMX6UL) += \
 	imx6ul-tek3.dtb \
 	imx6ul-tep1.dtb \
 	imx6ul-edm1-nand_goblin.dtb \
-	imx6ul-edm1-nand_fairy.dtb
+	imx6ul-edm1-nand_fairy.dtb \
+	imx6ul-edm1-nand_gnome.dtb
 dtb-$(CONFIG_SOC_IMX6ULL) += \
 	imx6ull-14x14-ddr3-arm2.dtb \
 	imx6ull-14x14-ddr3-arm2-adc.dtb \
