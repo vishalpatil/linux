@@ -23,6 +23,8 @@
 #define EDM_EXT_GPIO_P261 gpio5 0
 #define EDM_EXT_GPIO_P262 pca9555 15
 #define EDM_EXT_GPIO_P264 pca9555 14
+#define EDM_EXT_GPIO_P265 gpio1 5
+#define EDM_EXT_GPIO_P266 gpio1 1
 
 /* audio codec */
 #define EDM_AUD_I2S_CHANNEL sai2
@@ -33,6 +35,9 @@
 
 /* FT5606 Touch */
 #define EDM1_EXT_FT5X06_IOMUX_FAIRY &pinctrl_ext_gpio_ft5606_touch_irq_fairy
+#define EDM1_EXT_FT5X06_IOMUX_GNOME &pinctrl_ext_gpio_ft5606_touch_irq_gnome
+
+#define EDM_EXT_GPIO_IOMUX_GNOME &pinctrl_ext_gpio_gnome
 
 #define can1 flexcan1
 #define can2 flexcan2
@@ -40,6 +45,10 @@
 #define EDM1_FAIRY_I2C1 i2c3
 #define EDM1_FAIRY_I2C2 i2c1
 #define EDM1_FAIRY_I2C3 i2c2
+
+#define EDM1_GNOME_I2C1 i2c3
+#define EDM1_GNOME_I2C2 i2c1
+#define EDM1_GNOME_I2C3 i2c2
 
 / {
 	memory {
@@ -392,9 +401,17 @@
 	pinctrl-0 = <&pinctrl_hog_1>;
 
 	edm1-imx6ul {
+                  pinctrl_ext_gpio_gnome: ext-gpio-grp-gnome {
+                        fsl,pins = <
+				MX6UL_PAD_GPIO1_IO01__GPIO1_IO01	0x79
+                                MX6UL_PAD_GPIO1_IO05__GPIO1_IO05	0x79
+                                MX6UL_PAD_SNVS_TAMPER7__GPIO5_IO07	0x79
+                        >;
+                  };
+
 		  pinctrl_hog_1: hoggrp-1 {
 			fsl,pins = <
-				MX6UL_PAD_GPIO1_IO03__GPIO1_IO03 	0x17059		/* SD1 CD */
+				MX6UL_PAD_GPIO1_IO03__GPIO1_IO03	0x17059		/* SD1 CD */
 				MX6UL_PAD_JTAG_TMS__CCM_CLKO1		0x17088
 			>;
 		  };
@@ -648,7 +665,13 @@
                                 MX6UL_PAD_SNVS_TAMPER0__GPIO5_IO00     0x79 /* GPIO6_03 EDM pin 261, touch irq */
                         >;
                 };
-        };
+
+		pinctrl_ext_gpio_ft5606_touch_irq_gnome: ext-gpio-ft5606-touch-irq-gnome {
+			fsl,pins = <
+				MX6UL_PAD_SNVS_TAMPER0__GPIO5_IO00	0x79 /* GPIO6_03 EDM pin 261, touch irq */
+			>;
+		};
+	};
 };
 
 &usbotg1 {
@@ -802,7 +825,7 @@
 	pinctrl-0 = <&pinctrl_pwm4>;
 	clocks = <&clks IMX6UL_CLK_PWM4>,
 		  <&clks IMX6UL_CLK_PWM4>;
-	status = "okay";
+	status = "disabled";
 };
 
 &spdif {
