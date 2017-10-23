@@ -46,6 +46,13 @@
 			gpios = <&EDM_EXT_GPIO_P262 1>;
 			dir   = "in";
 		};
+#ifdef EDM_EXT_GPIO_P265
+		gpio_p265 {
+			label = "GPIO_P265";
+			gpios = <&EDM_EXT_GPIO_P265 1>;
+			dir   = "out";
+		};
+#endif
 	};
 
 	sound {
