@@ -737,12 +737,14 @@
 	status = "okay";
 };
 
+#ifdef PICO_PCIE_FUNCTION
 &pcie {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pcie_reset>;
 	reset-gpio = <&gpio5 21 0>;
 	status = "okay";
 };
+#endif
 
 &pwm1 {
 	pinctrl-names = "default";

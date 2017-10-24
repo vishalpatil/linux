@@ -12,6 +12,7 @@
  */
 /dts-v1/;
 
+#define PICO_PCIE_FUNCTION
 #include <dt-bindings/interrupt-controller/irq.h>
 #include "imx6q.dtsi"
 #include "imx6qdl-pico.dtsi"
