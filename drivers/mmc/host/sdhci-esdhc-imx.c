@@ -870,10 +870,10 @@ static int esdhc_change_pinstate(struct sdhci_host *host,
 
 	dev_dbg(mmc_dev(host->mmc), "change pinctrl state for uhs %d\n", uhs);
 
-	if (IS_ERR(imx_data->pinctrl) ||
-		IS_ERR(imx_data->pins_default) ||
-		IS_ERR(imx_data->pins_100mhz) ||
-		IS_ERR(imx_data->pins_200mhz))
+	if (IS_ERR_OR_NULL(imx_data->pinctrl) ||
+		IS_ERR_OR_NULL(imx_data->pins_default) ||
+		IS_ERR_OR_NULL(imx_data->pins_100mhz) ||
+		IS_ERR_OR_NULL(imx_data->pins_200mhz))
 		return -EINVAL;
 
 	switch (uhs) {
@@ -1093,7 +1093,9 @@ sdhci_esdhc_imx_probe_dt(struct platform_device *pdev,
 	if (of_property_read_u32(np, "fsl,delay-line", &boarddata->delay_line))
 		boarddata->delay_line = 0;
 
-        imx_data->double_clock = of_find_property(np, "fsl,double-clock", NULL);
+        imx_data->double_clock = of_find_property(np, "fsl,double-clock", NULL) != NULL;
+        imx_data->pins_100mhz = NULL;
+        imx_data->pins_200mhz = NULL;
 
 	mmc_of_parse_voltage(np, &host->ocr_mask);
 
