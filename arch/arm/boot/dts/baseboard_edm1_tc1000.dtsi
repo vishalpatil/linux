@@ -114,6 +114,11 @@
 			gpios = <&EDM_EXT_GPIO_EXP11 0>;
 			dir   = "in";
 		};
+		lvds_power {
+			label = "LVDS_PWR";
+			gpios = <&EDM_EXT_LVDS_PWR 1>;
+			dir   = "out";
+		};
 	};
 
 	sound {
