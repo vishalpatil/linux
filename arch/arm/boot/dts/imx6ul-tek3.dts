@@ -699,7 +699,7 @@
 		bus-width = <24>;
 
 		display-timings {
-			native-mode = <&vga_timing0>;
+			native-mode = <&vga_timing1>;
 			vga_timing0: vga_timing0 {
 			clock-frequency = <74929000>;
 			hactive = <1024>;
@@ -710,6 +710,22 @@
 			vfront-porch = <3>;
 			hsync-len = <136>;
 			vsync-len = <6>;
+			hsync-active = <0>;
+			vsync-active = <0>;
+			de-active = <1>;
+			pixelclk-active = <0>;
+			interlaced =  <0>;
+			};
+			vga_timing1: vga_timing1 {
+			clock-frequency = <85860000>;
+			hactive = <1368>;
+			hfront-porch = <72>;
+			hsync-len = <144>;
+			hback-porch = <216>;
+			vactive = <768>;
+			vfront-porch = <1>;
+			vsync-len = <3>;
+			vback-porch = <23>;
 			hsync-active = <0>;
 			vsync-active = <0>;
 			de-active = <1>;
