@@ -168,8 +168,8 @@
 	mxcfb1: fb@0 {
 		compatible = "fsl,mxc_sdc_fb";
 		disp_dev = "ldb";
-		interface_pix_fmt = "RGB666";
-		default_bpp = <16>;
+		interface_pix_fmt = "RGB24";
+		default_bpp = <32>;
 		int_clk = <0>;
 		late_init = <0>;
 		status = "disabled";
@@ -189,7 +189,7 @@
 	mxcfb3: fb@2 {
 		compatible = "fsl,mxc_sdc_fb";
 		disp_dev = "lcd";
-		interface_pix_fmt = "RGB565";
+		interface_pix_fmt = "RGB24";
 		mode_str ="CLAA-WVGA";
 		default_bpp = <16>;
 		int_clk = <0>;
@@ -200,7 +200,7 @@
 	mxcfb4: fb@3 {
 		compatible = "fsl,mxc_sdc_fb";
 		disp_dev = "ldb";
-		interface_pix_fmt = "RGB666";
+		interface_pix_fmt = "RGB24";
 		default_bpp = <16>;
 		int_clk = <0>;
 		late_init = <0>;
@@ -653,7 +653,7 @@
 	status = "okay";
 	lvds-channel@0 {
 		fsl,data-mapping = "spwg";
-		fsl,data-width = <18>;
+		fsl,data-width = <24>;
 		primary;
 		status = "okay";
 
@@ -677,7 +677,7 @@
 		fsl,data-mapping = "spwg";
 		fsl,data-width = <18>;
 		primary;
-		status = "okay";
+		status = "disabled";
 
 		display-timings {
 			native-mode = <&timing1>;
