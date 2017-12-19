@@ -3,8 +3,7 @@
 
 / {
 	memory {
-		linux,usable-memory = <0x80000000 0x1ff00000>,
-				<0xa0000000 0x1ff00000>;
+		linux,usable-memory = <0x80000000 0x1ff00000>;
 	};
 
 	m4_tcm: tcml@007f8000 {
@@ -38,6 +37,7 @@
 };
 
 &rpmsg{
+	reg = <0x9FFF0000 0x8000>;
 	status = "okay";
 };
 
