@@ -300,8 +300,8 @@ static int imx_rpmsg_probe(struct platform_device *pdev)
 					rpdev->vring[1] = res->start + size;
 				} else {
 					/* hardcodes here now. */
-					rpdev->vring[0] = 0xBFFF0000;
-					rpdev->vring[1] = 0xBFFF8000;
+					rpdev->vring[0] = 0x9FFF0000;
+					rpdev->vring[1] = 0x9FFF8000;
 				}
 			}
 		} else {
